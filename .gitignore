@@ -1,0 +1,26 @@
+# Disposable local analysis; never application source.
+/graphify-out/
+
+# Secrets at any depth. Only a deliberately sanitized example may be versioned.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+/secrets/
+
+# Future framework/build/runtime output (M0 does not create these).
+/vendor/
+/node_modules/
+/public/build/
+/public/hot
+/public/storage
+/storage/
+/bootstrap/cache/*.php
+/coverage/
+/test-results/
+/playwright-report/
+*.log
+.phpunit.result.cache
+.phpunit.cache/
+.DS_Store
