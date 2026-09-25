@@ -2,7 +2,7 @@
 
 The reference environment is Linux/Fedora with Docker Engine and the Compose plugin. All PHP,
 PostgreSQL, Redis and Node services run in containers; Fedora host services are not needed.
-Allow roughly four CPU cores and 8 GB RAM, and keep ports 8080 and 5173 free. The stack is a
+Allow roughly four CPU cores and 8 GB RAM, and keep ports 8061 and 5173 free. The stack is a
 local development setup; it publishes those ports on loopback and does not configure public TLS.
 
 ## First start
@@ -22,7 +22,7 @@ docker compose exec app php artisan user:create
 ```
 
 The user command prompts privately for name, email and a password of at least 12 characters.
-Open <http://localhost:8080/login> and sign in. The workspace shows only structural placeholders;
+Open <http://localhost:8061/login> and sign in. The workspace shows only structural placeholders;
 there is no mail connectivity in M1. Do not use actual mailbox credentials. No default login is
 created by migrations or seeders.
 
@@ -56,7 +56,7 @@ docker compose run --rm --no-deps vite npm run format:check
 docker compose run --rm --no-deps vite npm run build
 ```
 
-`http://localhost:8080/up` checks PHP liveness. `/ready` checks PostgreSQL and both Redis
+`http://localhost:8061/up` checks PHP liveness. `/ready` checks PostgreSQL and both Redis
 connections; it returns 503 if any are unavailable. `/api/me` requires the authenticated session.
 `/mail` redirects an unauthenticated browser to `/login`. The Horizon dashboard is disabled in M1
 because there is no operator role model yet; Horizon workers still run. View service logs with

@@ -6,6 +6,7 @@ TypeScript, PostgreSQL, Redis, Laravel Queues, Vite, and Docker.
 Current phase: **M1 project foundation**. Laravel, Vue, PostgreSQL, Redis and the Docker
 development stack are in place. Start with the [developer setup](docs/development.md).
 The [M0 architecture specification](docs/architecture/README.md) remains the design contract.
+The default local URL is <http://localhost:8061>.
 
 All Mail includes every synchronized, locally non-deleted message from enabled accounts.
 Application folders, tags, important/done state, and notes are local organization;

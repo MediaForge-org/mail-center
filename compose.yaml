@@ -18,7 +18,7 @@ services:
   web:
     image: caddy:2.10-alpine
     ports:
-      - "127.0.0.1:8080:80"
+      - "127.0.0.1:8061:80"
     volumes:
       - ./:/var/www/html:ro,z
       - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro,z
