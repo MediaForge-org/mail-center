@@ -30,7 +30,7 @@ jobs:
         run: |
           docker compose run --rm app php artisan test
           docker compose run --rm app php vendor/bin/pint --test
-          docker compose run --rm app php vendor/bin/phpstan analyse --no-progress
+          docker compose run --rm app php vendor/bin/phpstan analyse --no-progress --memory-limit=512M
           docker compose run --rm app composer audit --no-interaction
       - name: Frontend tests, static checks and build
         run: |
