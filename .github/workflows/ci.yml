@@ -1,0 +1,48 @@
+name: M1 foundation
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare local-only environment
+        run: |
+          cp .env.example .env
+          printf 'LOCAL_UID=%s\nLOCAL_GID=%s\n' "$(id -u)" "$(id -g)" >> .env
+      - name: Build PHP image
+        run: docker compose build app
+      - name: Install locked PHP packages
+        run: docker compose run --rm app composer install --no-interaction --prefer-dist
+      - name: Generate test application key and migrate
+        run: |
+          docker compose run --rm app php artisan key:generate
+          docker compose run --rm app php artisan migrate --force
+      - name: Prepare isolated Node dependency volume
+        run: |
+          docker compose run --rm --no-deps --user root vite chown "$(id -u):$(id -g)" /var/www/html/node_modules
+          docker compose run --rm --no-deps vite npm ci
+      - name: PHP tests and static checks
+        run: |
+          docker compose run --rm app php artisan test
+          docker compose run --rm app php vendor/bin/pint --test
+          docker compose run --rm app php vendor/bin/phpstan analyse --no-progress
+          docker compose run --rm app composer audit --no-interaction
+      - name: Frontend tests, static checks and build
+        run: |
+          docker compose run --rm --no-deps vite npm test
+          docker compose run --rm --no-deps vite npm run typecheck
+          docker compose run --rm --no-deps vite npm run lint
+          docker compose run --rm --no-deps vite npm run format:check
+          docker compose run --rm --no-deps vite npm run build
+          docker compose run --rm --no-deps vite npm audit --omit=dev
+      - name: Validate Compose and repository exclusions
+        run: |
+          docker compose config --quiet
+          git check-ignore -q graphify-out/
+          git check-ignore -q .env
+          git check-ignore -q public/build/

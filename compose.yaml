@@ -1,0 +1,101 @@
+services:
+  app:
+    build: .
+    image: mailcenter-app:dev
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html:z
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis-queue:
+        condition: service_healthy
+      redis-cache:
+        condition: service_healthy
+
+  web:
+    image: caddy:2.10-alpine
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - ./:/var/www/html:ro,z
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro,z
+    depends_on:
+      - app
+
+  horizon:
+    image: mailcenter-app:dev
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html:z
+    env_file: .env
+    command: php artisan horizon
+    depends_on:
+      - app
+
+  scheduler:
+    image: mailcenter-app:dev
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html:z
+    env_file: .env
+    command: php artisan schedule:work
+    depends_on:
+      - app
+
+  vite:
+    image: node:22-alpine
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html:z
+      - node_modules:/var/www/html/node_modules
+    command: npm run dev -- --host 0.0.0.0
+    ports:
+      - "127.0.0.1:5173:5173"
+    depends_on:
+      - web
+
+  postgres:
+    image: postgres:18.6-alpine
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-mailcenter}
+      POSTGRES_USER: ${DB_USERNAME:-mailcenter}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-mailcenter_dev_only}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./docker/postgres-init:/docker-entrypoint-initdb.d:ro,z
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis-queue:
+    image: redis:8.2.9-alpine
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+    volumes:
+      - redis_queue_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis-cache:
+    image: redis:8.2.9-alpine
+    command: ["redis-server", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  postgres_data:
+  redis_queue_data:
+  node_modules:

@@ -7,9 +7,9 @@ claim has been proven by code. The following gates make that distinction explici
 
 | Gate | Required resolution | Owner / evidence |
 |---|---|---|
-| G1 — Supported version matrix | Pin mutually supported PHP, Laravel, Horizon/Fortify/Sanctum, PostgreSQL, Redis, Node, Vue, Vite and selected tooling; confirm required extensions and deployment image availability. Remove any incompatible candidate before scaffolding. | M1 implementer; version table, upstream support references and dependency-resolution result |
-| G2 — License | Product is intended to be open source, but no license was inherited. Repository owner chooses a license and reviews runtime/distribution dependencies before publishing code; no license is invented by this takeover. | Repository owner; selected LICENSE and compatibility record |
-| G3 — Reference environment | Confirm Docker/Compose availability, host resource budget and supported development OS. Baseline target is Linux, 4 cores/8 GB/SSD, browser desktop; production domain/backup location can wait until M7. | M1 implementer/operator; reproducible environment checklist |
+| G1 — Supported version matrix (resolved for M1) | PHP 8.5/Laravel 13, PostgreSQL 18, Redis 8.2 and Vue 3.5 were selected; locked package versions and container extension checks are recorded in the [M1 setup](../development.md). Revalidate support at upgrade time. | M1 implementer; lockfiles, image build and package checks |
+| G2 — License (resolved for M1) | The user selected AGPL-3.0; M1 adds the official AGPL-3.0-only LICENSE and Composer metadata. Dependency compatibility remains a release review before publishing. | User selection; LICENSE and manifest |
+| G3 — Reference environment (resolved for M1) | Linux/Fedora with Docker Compose is the tested reference; the [M1 setup](../development.md) documents startup and resource assumptions. Production domain/backup location remains an M7 decision. | M1 implementer/operator; working Compose startup and checks |
 
 Do not silently substitute a different core stack to solve a gate. Library selections listed in
 01 are candidates until G1 and the relevant feature spike pass. No speculative "latest" version
