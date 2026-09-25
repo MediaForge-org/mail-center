@@ -15,7 +15,7 @@
 /public/build/
 /public/hot
 /public/storage
-/storage/
+# storage/ is tracked only as empty placeholders; each directory's own .gitignore excludes its contents.
 /bootstrap/cache/*.php
 /coverage/
 /test-results/
