@@ -51,6 +51,10 @@ services:
     image: node:22-alpine
     user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
     working_dir: /var/www/html
+    environment:
+      # An arbitrary UID (e.g. GitHub runners) has no passwd entry, so HOME would be / (unwritable).
+      HOME: /tmp
+      npm_config_cache: /tmp/.npm
     volumes:
       - ./:/var/www/html:z
       - node_modules:/var/www/html/node_modules
