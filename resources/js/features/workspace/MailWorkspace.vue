@@ -1,6 +1,16 @@
 <script setup lang="ts">
-defineProps<{ userName: string }>();
-defineEmits<{ signOut: [] }>();
+import type { AccountSummary } from '../../api/accounts';
+import { statusLabels, statusTone } from '../accounts/statusLabel';
+
+withDefaults(
+    defineProps<{
+        userName: string;
+        accounts?: AccountSummary[];
+        section?: 'mail' | 'accounts';
+    }>(),
+    { accounts: () => [], section: 'mail' },
+);
+defineEmits<{ signOut: []; navigate: [section: 'mail' | 'accounts'] }>();
 
 const navigation = ['All Mail', 'Inbox', 'Unread', 'Starred', 'Completed'];
 const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
@@ -22,7 +32,7 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
             </div>
         </header>
 
-        <div class="workspace-grid">
+        <div class="workspace-grid" :class="{ 'workspace-grid-accounts': section === 'accounts' }">
             <aside class="sidebar" aria-label="Navigation" data-testid="left-pane">
                 <div class="sidebar-inner">
                     <p class="section-label">Workspace</p>
@@ -42,7 +52,30 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
                     </nav>
                     <div class="sidebar-divider"></div>
                     <p class="section-label">Accounts</p>
-                    <div class="sidebar-hint">No account connected</div>
+                    <div v-if="accounts.length === 0" class="sidebar-hint">
+                        No account connected
+                    </div>
+                    <span
+                        v-for="account in accounts"
+                        :key="account.id"
+                        class="nav-row account-nav-row"
+                        :title="statusLabels[account.sync_status]"
+                    >
+                        <span
+                            class="status-dot"
+                            :class="`tone-${statusTone(account.sync_status)}`"
+                            aria-hidden="true"
+                        ></span>
+                        {{ account.display_name }}
+                    </span>
+                    <button
+                        class="nav-row nav-button"
+                        :class="{ 'nav-row-current': section === 'accounts' }"
+                        type="button"
+                        @click="$emit('navigate', section === 'accounts' ? 'mail' : 'accounts')"
+                    >
+                        {{ section === 'accounts' ? '← Back to workspace' : 'Manage accounts' }}
+                    </button>
                     <div class="sidebar-divider"></div>
                     <p class="section-label">Folders</p>
                     <div v-for="folder in folders" :key="folder" class="nav-row nav-row-muted">
@@ -51,10 +84,24 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
                     </div>
                     <p class="sidebar-caption">Folder names are layout examples.</p>
                 </div>
-                <div class="sidebar-footer">MailCenter · M1</div>
+                <div class="sidebar-footer">MailCenter · M2</div>
             </aside>
 
-            <section class="message-list-pane" aria-label="Message list" data-testid="center-pane">
+            <section
+                v-if="section === 'accounts'"
+                class="accounts-pane"
+                aria-label="Mail accounts"
+                data-testid="accounts-pane"
+            >
+                <slot name="accounts" />
+            </section>
+
+            <section
+                v-if="section === 'mail'"
+                class="message-list-pane"
+                aria-label="Message list"
+                data-testid="center-pane"
+            >
                 <div class="pane-toolbar">
                     <div>
                         <p class="eyebrow">WORKSPACE</p>
@@ -69,7 +116,12 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
                 </div>
             </section>
 
-            <section class="reader-pane" aria-label="Message viewer" data-testid="right-pane">
+            <section
+                v-if="section === 'mail'"
+                class="reader-pane"
+                aria-label="Message viewer"
+                data-testid="right-pane"
+            >
                 <div class="reader-toolbar">
                     <span>Message viewer</span><span class="toolbar-dots">···</span>
                 </div>

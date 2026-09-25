@@ -1,4 +1,4 @@
-# MailCenter development setup (M1)
+# MailCenter development setup (M1–M2)
 
 The reference environment is Linux/Fedora with Docker Engine and the Compose plugin. All PHP,
 PostgreSQL, Redis and Node services run in containers; Fedora host services are not needed.
@@ -90,3 +90,51 @@ M1 follows [the architecture specification](architecture/README.md). The explici
 excludes folders beyond placeholders, so the M0 milestone table's suggested folder seeding is
 deferred. The official [AGPL-3.0-only license](../LICENSE) is selected by the user; the M0 license
 gate is now resolved. Before public distribution, review the final dependency/license inventory.
+
+## M2: mail accounts and synchronization
+
+M2 adds IMAP account management and background synchronization (INBOX by default). It only reads
+mail: nothing is moved, deleted, flagged or sent on the server.
+
+### One-time setup
+
+Credentials are encrypted with a dedicated key that must never be committed. Generate one, put it
+in the ignored `.env`, and recreate the PHP services so they read it:
+
+```bash
+echo "MAIL_CREDENTIALS_KEY=base64:$(openssl rand -base64 32)" >> .env
+docker compose run --rm app php artisan migrate
+docker compose up -d --force-recreate app horizon scheduler
+```
+
+Losing the key makes stored mailbox passwords unreadable (re-enter them). To rotate, set a new
+`MAIL_CREDENTIALS_KEY`/`MAIL_CREDENTIALS_KEY_ID` and list the old key as
+`MAIL_CREDENTIALS_PREVIOUS_KEYS='{"v1":"base64:…"}'`. IMAP ports are limited to 143/993 and
+loopback/private/link-local destinations are refused; to reach a mail server on a private network,
+list its range in `MAIL_IMAP_PRIVATE_ALLOWLIST` (comma-separated CIDRs). TLS certificates are
+always verified.
+
+### Using it
+
+Sign in, open **Manage accounts** in the sidebar, choose **Add account**, optionally **Test
+connection**, then add it. The `scheduler` container runs `sync:dispatch-due` every minute and
+Horizon (`sync` queue, connection `mail_sync`) runs one bounded job per account; the first job
+downloads newest mail first and continues in follow-up jobs until the mailbox is covered. **Sync now**
+queues an immediate run. Run one manually with
+`docker compose exec app php artisan sync:dispatch-due`. Failures show on the account with a
+sanitized message; a rejected password stops retries until a new password is saved.
+
+### Checks
+
+```bash
+docker compose exec app php vendor/bin/pint --test
+docker compose exec app php vendor/bin/phpstan analyse --no-progress --memory-limit=512M
+docker compose exec app php artisan test
+docker compose exec vite npm run typecheck && docker compose exec vite npm run lint
+docker compose exec vite npm run format:check && docker compose exec vite npm test
+docker compose exec vite npm run build
+```
+
+Automated tests use a deterministic in-memory IMAP client (`tests/Support/FakeImapClient.php`) and
+the library's fake stream; no real mailbox is needed. The test base class keeps the cache in memory
+and disables `after_commit` for queue fakes.

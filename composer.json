@@ -7,6 +7,7 @@
     "license": "AGPL-3.0-only",
     "require": {
         "php": "^8.5",
+        "directorytree/imapengine": "^1.25",
         "laravel/fortify": "^1.40",
         "laravel/framework": "^13.17",
         "laravel/horizon": "^5.50",
@@ -38,7 +39,7 @@
         "check": [
             "@php artisan test",
             "@php vendor/bin/pint --test",
-            "@php vendor/bin/phpstan analyse --no-progress"
+            "@php vendor/bin/phpstan analyse --no-progress --memory-limit=512M"
         ],
         "test": [
             "@php artisan config:clear --ansi @no_additional_args",

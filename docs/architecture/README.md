@@ -1,6 +1,6 @@
 # MailCenter — M0 Architecture Specification
 
-Status: **M0 specification complete; M1 foundation added**. Mail features remain future work.
+Status: **M0 specification complete; M1 foundation and M2 accounts/ingestion added**. Reading, organizing and sending mail remain future work.
 Pre-M1 dependency and release gates remain explicit in [10](10-open-decisions-and-risks.md).
 The documents in this folder are the
 contract that M1+ implementation work follows. If an implementation needs to deviate, update the

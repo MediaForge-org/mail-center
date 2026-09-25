@@ -192,7 +192,11 @@ Batch size: up to 100 UIDs or ~25 MB by `RFC822.SIZE`, whichever is smaller.
 3. **Unknown location:** headers are hints only, not identity. It must be fetched and hashed
    before linking to a logical message (§4), unless a future provider supplies a verified stable ID.
 4. `UID FETCH <uid> (BODY.PEEK[])`, streamed to a temp file (never fully in
-   memory for large messages). Messages above `max_message_bytes` (default 100 MB) are recorded in
+   memory for large messages). The selected M2 pure-PHP adapter currently materializes one literal
+   before handing it to the blob store, so M2 temporarily caps it at 10 MB after checking
+   `RFC822.SIZE`; larger messages are visible `too_large` quarantines. Streaming fetch and the
+   original 100 MB target remain an adapter release gate, not a hidden memory-risk acceptance.
+   Messages above `max_message_bytes` are recorded in
    `sync_failures` with reason `too_large` and surfaced in account status.
 5. **Ingest** (§4.2) in one DB transaction per message.
 6. Per-message failure (fetch or parse crash) → upsert `sync_failures`, continue with the next UID.
@@ -388,6 +392,25 @@ select due/unleased rows, and redispatch by ID. Include bulk operations, connect
 maintenance runs and outgoing messages when those milestones introduce them. A failed jobs row
 is diagnostic; it is not the only recovery mechanism. Auth failures pause flag writes as well as
 sync; credential replacement wakes both. Revoked/disabled accounts cannot start new remote work.
+
+### M2 implementation notes
+
+- The Horizon connection is named `mail_sync` (queue `sync`, `retry_after` 660 s) so that it does
+  not shadow Laravel's built-in `sync` queue driver.
+- M2 synchronizes **INBOX only** by default: other folders are discovered and listed, but
+  `sync_enabled` starts false for them (`PATCH /api/remote-folders/{id}` opts in). Sent/other-folder
+  behaviour above is implemented but not enabled by default because the M2 brief scopes to INBOX.
+- A run makes repeated passes over the enabled folders (one UID window per folder per pass)
+  until the 240 s budget ends; checkpoints (`sync_high_uid`, `backfill_low_uid`, membership
+  cursor) are written after each completed window, or after the last completed message when the
+  budget ends mid-window. Quarantined UIDs are retried at the start of each folder pass.
+- `SyncRunner` classifies failures (`ImapFailure` categories) into the statuses of §7 and never
+  logs exception text or traces for unexpected errors, because library traces can carry
+  connection arguments. Unexpected errors are recorded on the account and retried with backoff
+  rather than rethrown, so they do not reach Horizon's failed-jobs list.
+- The advisory lock is verified against `pg_locks` before every batch, not just by pinging the
+  connection, because a silent reconnect would keep querying without owning the lock.
+- Connection tests use the default `redis`/`default` queue; the job carries only the row id.
 
 ## 10. Future providers (compatibility notes only)
 

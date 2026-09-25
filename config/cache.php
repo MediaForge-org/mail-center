@@ -17,6 +17,9 @@ return [
 
     'default' => env('CACHE_STORE', 'redis'),
 
+    // Store for rate-limit counters; null uses the default store. Tests point this at memory.
+    'limiter' => env('CACHE_LIMITER'),
+
     /*
     |--------------------------------------------------------------------------
     | Cache Stores

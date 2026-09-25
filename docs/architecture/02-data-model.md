@@ -218,7 +218,7 @@ processed for checkpoint movement but not as a successfully synchronized message
 
 | Column | Type | Notes |
 |---|---|---|
-| `folder_id` | bigint FK folders not null | exactly one internal folder |
+| `folder_id` | bigint FK folders not null after M4 | M2 temporarily leaves this nullable because the current M2 brief excludes internal folders; initial placement is applied when folder functionality arrives. |
 | `is_read` | bool | initial = `remote_seen` |
 | `is_starred` | bool | initial = `remote_flagged` |
 | `seen_mirror_generation`, `flagged_mirror_generation` | bigint default 0 | last initialized account mirror generation for each local flag |

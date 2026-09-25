@@ -13,8 +13,11 @@ takeover of the application itself and SSRF via image proxying.
   CSRF via `XSRF-TOKEN` cookie + header; sessions stored in Redis; session regenerated on login.
 - Rate limiting: login 5/min per email+IP; API default 600/min per user; connection-test endpoint
   10/min.
-- 2FA: required in M2 before real credentials are accepted, including recovery codes and a
-  documented local operator recovery command. M1 auth uses synthetic data only.
+- 2FA: deferred by the M2 implementation brief; schema support exists, but no application 2FA
+  flow is enabled in M2. Operators must restrict access to the local instance and use a strong
+  password. Require a separate 2FA security gate before exposing real credentials on a public
+  deployment. This is a known reduction from the original M0 M2 gate, not an implicit approval
+  to deploy without 2FA.
 - Sensitive actions (replace account credentials, delete account, purge) require recent
   password confirmation (Fortify `password.confirm`, 15 min).
 

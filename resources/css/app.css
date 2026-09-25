@@ -413,3 +413,145 @@ button {
         min-width: 805px;
     }
 }
+
+/* M2: account management, built from the existing tokens. */
+.workspace-grid-accounts {
+    grid-template-columns: 224px minmax(0, 1fr);
+}
+.accounts-pane {
+    min-width: 0;
+}
+.account-nav-row {
+    cursor: default;
+}
+.nav-button {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    color: var(--text-muted);
+}
+.status-dot {
+    width: 8px;
+    height: 8px;
+    margin-right: 10px;
+    border-radius: 50%;
+    background: var(--text-soft);
+}
+.status-dot.tone-ok {
+    background: #3f9d6a;
+}
+.status-dot.tone-busy {
+    background: var(--accent-soft);
+}
+.status-dot.tone-bad {
+    background: #ad3c4b;
+}
+.accounts-panel {
+    max-width: 760px;
+}
+.panel-message {
+    margin: 14px 26px 0;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+.padded {
+    margin: 20px 26px;
+}
+.account-list {
+    margin: 0;
+    padding: 0 26px 30px;
+    list-style: none;
+}
+.account-card {
+    margin-top: 16px;
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+}
+.account-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+.account-head strong {
+    display: block;
+    font-size: 14px;
+}
+.status-pill {
+    padding: 4px 9px;
+    border-radius: 6px;
+    background: var(--surface-soft);
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 650;
+    white-space: nowrap;
+}
+.status-pill.tone-ok {
+    color: #2f7d54;
+}
+.status-pill.tone-bad {
+    color: #ad3c4b;
+}
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+.small-button {
+    height: 30px;
+    padding: 0 12px;
+    border: 1px solid var(--input-border);
+    border-radius: 7px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 650;
+}
+.small-button:hover:not(:disabled) {
+    border-color: var(--accent-soft);
+    color: var(--accent);
+}
+.small-button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+.small-button.danger {
+    color: #ad3c4b;
+}
+.primary-button.inline {
+    height: 30px;
+    margin-top: 0;
+    padding: 0 14px;
+}
+.account-form {
+    margin: 0;
+    padding: 4px 26px 18px;
+}
+.account-card .account-form {
+    padding: 4px 0 0;
+}
+.account-form select {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--input-border);
+    border-radius: 7px;
+    background: var(--surface);
+    color: var(--text);
+}
+
+.test-result {
+    align-self: center;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+.test-success {
+    color: #2f7d54;
+}
+.test-failure {
+    color: #ad3c4b;
+}

@@ -20,6 +20,10 @@ class FortifyServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($email.'|'.$request->ip());
         });
 
+        $perUser = fn (Request $request) => (string) ($request->user()?->getAuthIdentifier() ?? $request->ip());
+        RateLimiter::for('connection-test', fn (Request $request) => Limit::perMinute(10)->by($perUser($request)));
+        RateLimiter::for('manual-sync', fn (Request $request) => Limit::perMinute(6)->by($perUser($request)));
+
         RateLimiter::for('api', fn (Request $request) => Limit::perMinute(600)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip()))
         );
     }

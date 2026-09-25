@@ -1,21 +1,6 @@
+import { request } from './http';
+
 export type CurrentUser = { id: number; name: string; email: string };
-
-async function request(path: string, init: RequestInit = {}): Promise<Response> {
-    const token = document.cookie
-        .split('; ')
-        .find((part) => part.startsWith('XSRF-TOKEN='))
-        ?.split('=')[1];
-
-    return fetch(path, {
-        credentials: 'same-origin',
-        ...init,
-        headers: {
-            Accept: 'application/json',
-            ...(token ? { 'X-XSRF-TOKEN': decodeURIComponent(token) } : {}),
-            ...init.headers,
-        },
-    });
-}
 
 export async function currentUser(): Promise<CurrentUser | null> {
     const response = await request('/api/me');
