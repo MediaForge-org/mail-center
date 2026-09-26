@@ -218,7 +218,7 @@ processed for checkpoint movement but not as a successfully synchronized message
 
 | Column | Type | Notes |
 |---|---|---|
-| `folder_id` | bigint FK folders not null after M4 | M2 temporarily leaves this nullable because the current M2 brief excludes internal folders; initial placement is applied when folder functionality arrives. |
+| `folder_id` | bigint FK folders, nullable until M4 | M2 omitted this column because internal folders were excluded. M3.2 adds system folders, assigns existing rows from the first committed remote location, and sets initial placement on ingestion; M4 may enforce NOT NULL. |
 | `is_read` | bool | initial = `remote_seen` |
 | `is_starred` | bool | initial = `remote_flagged` |
 | `seen_mirror_generation`, `flagged_mirror_generation` | bigint default 0 | last initialized account mirror generation for each local flag |

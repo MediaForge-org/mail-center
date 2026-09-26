@@ -3,32 +3,8 @@
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\DB;
 
 uses(RefreshDatabase::class);
-
-function listMessage(User $user, int $accountId, string $subject, string $date, array $overrides = []): int
-{
-    $sha = hash('sha256', $user->id.$accountId.$subject.microtime(true).random_int(1, PHP_INT_MAX));
-    DB::table('blobs')->insert(['sha256' => $sha, 'size_bytes' => 1, 'disk' => 'local', 'path' => 'private/'.$sha, 'created_at' => now()]);
-
-    return DB::table('messages')->insertGetId(array_merge([
-        'user_id' => $user->id,
-        'mail_account_id' => $accountId,
-        'dedupe_key' => 'raw-v1:'.$sha,
-        'subject' => $subject,
-        'from_name' => 'Sender',
-        'from_address' => 'sender@example.test',
-        'to' => json_encode([['name' => 'Recipient', 'address' => 'recipient@example.test']]),
-        'snippet' => 'Safe preview',
-        'sort_date' => $date,
-        'received_at' => $date,
-        'size_bytes' => 1,
-        'raw_blob_sha256' => $sha,
-        'created_at' => now(),
-        'updated_at' => now(),
-    ], $overrides));
-}
 
 it('requires authentication and handles an empty mailbox', function () {
     $this->getJson('/api/messages')->assertUnauthorized();
@@ -54,7 +30,7 @@ it('isolates owners, excludes local deletion and disabled or deleted accounts, a
     $response = $this->actingAs($alice)->getJson('/api/messages')->assertOk();
     expect(array_column($response->json('data'), 'id'))->toBe([$visible]);
     $this->getJson('/api/messages?user_id='.$bob->id.'&mail_account_id='.$bobAccount->id)
-        ->assertOk()->assertJsonCount(1, 'data');
+        ->assertUnprocessable()->assertJsonValidationErrors('query');
 });
 
 it('orders newest first with an id tie breaker and traverses pages without duplicates', function () {

@@ -4,27 +4,32 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MessageListItem;
+use App\Messages\MessageView;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class MessageController extends Controller
 {
-    private const FILTER_HASH = 'all-mail:v1';
-
     public function index(Request $request): JsonResponse
     {
+        if (array_diff(array_keys($request->query()), ['view', 'limit', 'cursor']) !== []) {
+            throw ValidationException::withMessages(['query' => 'Unknown message filter.']);
+        }
         $input = $request->validate([
+            'view' => ['sometimes', Rule::in(['all', 'inbox', 'unread'])],
             'limit' => ['sometimes', 'integer', 'min:1', 'max:100'],
             'cursor' => ['sometimes', 'string', 'max:2048'],
         ]);
+        $view = MessageView::from($input['view'] ?? 'all');
         $limit = (int) ($input['limit'] ?? 50);
         $userId = (int) $request->user()->getAuthIdentifier();
-        $after = isset($input['cursor']) ? $this->decodeCursor($input['cursor'], $userId) : null;
+        $after = isset($input['cursor']) ? $this->decodeCursor($input['cursor'], $userId, $view) : null;
 
         $query = DB::table('messages')
             ->join('mail_accounts', 'mail_accounts.id', '=', 'messages.mail_account_id')
@@ -33,6 +38,7 @@ class MessageController extends Controller
             ->where('mail_accounts.enabled', true)
             ->whereNull('mail_accounts.deleted_at')
             ->whereNull('messages.deleted_at');
+        $view->apply($query, $userId);
 
         if ($after !== null) {
             $query->where(function ($query) use ($after) {
@@ -59,23 +65,23 @@ class MessageController extends Controller
 
         return response()->json([
             'data' => $page->map(fn ($row) => MessageListItem::fromRow($row))->values(),
-            'next_cursor' => $hasMore && $last !== null ? $this->encodeCursor($last, $userId) : null,
+            'next_cursor' => $hasMore && $last !== null ? $this->encodeCursor($last, $userId, $view) : null,
         ]);
     }
 
-    private function encodeCursor(object $row, int $userId): string
+    private function encodeCursor(object $row, int $userId, MessageView $view): string
     {
         return Crypt::encryptString(json_encode([
             'v' => 1,
             'user_id' => $userId,
-            'filter' => self::FILTER_HASH,
+            'filter' => $view->cursorScope(),
             'sort_date' => CarbonImmutable::parse($row->sort_date)->utc()->format('Y-m-d H:i:s.uP'),
             'id' => (int) $row->id,
         ], JSON_THROW_ON_ERROR));
     }
 
     /** @return array{sort_date: string, id: int} */
-    private function decodeCursor(string $cursor, int $userId): array
+    private function decodeCursor(string $cursor, int $userId, MessageView $view): array
     {
         try {
             $payload = json_decode(Crypt::decryptString($cursor), true, flags: JSON_THROW_ON_ERROR);
@@ -85,7 +91,7 @@ class MessageController extends Controller
 
         if (! is_array($payload) || array_keys($payload) !== ['v', 'user_id', 'filter', 'sort_date', 'id']
             || $payload['v'] !== 1 || $payload['user_id'] !== $userId
-            || $payload['filter'] !== self::FILTER_HASH || ! is_string($payload['sort_date'])
+            || $payload['filter'] !== $view->cursorScope() || ! is_string($payload['sort_date'])
             || ! preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}\+00:00$/', $payload['sort_date'])
             || ! is_int($payload['id']) || $payload['id'] < 1) {
             throw ValidationException::withMessages(['cursor' => 'Invalid cursor.']);

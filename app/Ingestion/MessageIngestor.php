@@ -4,6 +4,7 @@ namespace App\Ingestion;
 
 use App\Models\MailAccount;
 use App\Models\RemoteFolder;
+use App\Organization\SystemFolders;
 use App\Storage\BlobStore;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +31,9 @@ class MessageIngestor
             } else {
                 $messageId = DB::table('messages')->insertGetId([
                     'user_id' => $account->user_id, 'mail_account_id' => $account->id,
+                    'folder_id' => SystemFolders::idFor($account->user_id, match ($folder->role) {
+                        'inbox' => 'inbox', 'sent' => 'sent', default => 'archive',
+                    }),
                     'dedupe_key' => $key, 'message_id_header' => $parsed['message_id'],
                     'in_reply_to' => $parsed['in_reply_to'], 'references' => json_encode($parsed['references']),
                     'subject' => $parsed['subject'], 'from_name' => $parsed['from_name'],

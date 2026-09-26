@@ -5,6 +5,7 @@ use App\Connectors\Imap\ImapFailure;
 use App\Ingestion\MessageIngestor;
 use App\Models\MailAccount;
 use App\Models\User;
+use App\Organization\SystemFolders;
 use App\Sync\AccountSyncLock;
 use App\Sync\SyncAborted;
 use App\Sync\SyncRunner;
@@ -96,6 +97,23 @@ it('links identical content in two locations to one message without merging dist
     expect(DB::table('message_locations')->count())->toBe(3);
     expect(DB::table('message_locations')->distinct('message_id')->count('message_id'))->toBe(2);
     expect(DB::table('messages')->where('message_id_header', 'shared-id@example.test')->count())->toBe(2);
+});
+
+it('sets the local folder from the first ingested remote role and preserves it for later copies', function () {
+    $sent = $this->account->remoteFolders()->create(['raw_name' => 'Sent', 'name' => 'Sent', 'role' => 'sent']);
+    $inbox = $this->account->remoteFolders()->create(['raw_name' => 'INBOX', 'name' => 'INBOX', 'role' => 'inbox']);
+    $other = $this->account->remoteFolders()->create(['raw_name' => 'Other', 'name' => 'Other', 'role' => 'other']);
+    $ingestor = app(MessageIngestor::class);
+
+    $sentId = $ingestor->ingest($this->account, $sent, 1, 1000, FakeImapClient::raw('Sent placement'), [], null);
+    $inboxId = $ingestor->ingest($this->account, $inbox, 1, 1000, FakeImapClient::raw('Inbox placement'), [], null);
+    $archiveId = $ingestor->ingest($this->account, $other, 1, 1000, FakeImapClient::raw('Archive placement'), [], null);
+    expect((int) DB::table('messages')->where('id', $sentId)->value('folder_id'))->toBe(SystemFolders::idFor($this->user->id, 'sent'));
+    expect((int) DB::table('messages')->where('id', $inboxId)->value('folder_id'))->toBe(SystemFolders::idFor($this->user->id, 'inbox'));
+    expect((int) DB::table('messages')->where('id', $archiveId)->value('folder_id'))->toBe(SystemFolders::idFor($this->user->id, 'archive'));
+
+    $ingestor->ingest($this->account, $inbox, 2, 1000, FakeImapClient::raw('Sent placement'), [], null);
+    expect((int) DB::table('messages')->where('id', $sentId)->value('folder_id'))->toBe(SystemFolders::idFor($this->user->id, 'sent'));
 });
 
 it('does not duplicate messages when ingestion is retried after a crash', function () {
