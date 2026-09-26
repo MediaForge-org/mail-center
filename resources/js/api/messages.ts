@@ -48,6 +48,7 @@ export type MessageDetail = Omit<MessageListItem, 'snippet' | 'sort_date'> & {
     reply_to: MessageListItem['to'];
     date_header: string | null;
     remote_status: 'present' | 'missing' | 'removed';
+    read_writeback: 'pending' | 'processing' | 'failed' | null;
     attachments: Attachment[];
     html_available: boolean;
     remote_content_count: number;
@@ -75,4 +76,19 @@ export async function getMailboxCounts(signal: AbortSignal): Promise<MailboxCoun
     const data = (await response.json()) as MailboxCounts;
     if (!data.views || !data.accounts) throw new Error('Counts unavailable.');
     return data;
+}
+
+export type ReadChange = {
+    id: number;
+    is_read: boolean;
+    read_writeback: MessageDetail['read_writeback'];
+};
+export async function setMessageRead(id: number, is_read: boolean): Promise<ReadChange> {
+    const response = await request(`/api/messages/${id}/read`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_read }),
+    });
+    if (!response.ok) throw new Error('Unable to change read state. Please try again.');
+    return ((await response.json()) as { data: ReadChange }).data;
 }

@@ -11,6 +11,8 @@ export type AccountSummary = {
     incoming: { host: string; port: number; security: 'tls' | 'starttls'; username: string };
     enabled: boolean;
     sync_enabled: boolean;
+    write_back_seen: boolean;
+    seen_writeback_error: string | null;
     sync_status: SyncStatus;
     next_sync_at: string | null;
     last_successful_sync_at: string | null;
@@ -95,7 +97,9 @@ export async function testConnection(
 
 export async function updateAccount(
     id: number,
-    changes: Partial<Pick<AccountSummary, 'enabled' | 'sync_enabled' | 'display_name'>>,
+    changes: Partial<
+        Pick<AccountSummary, 'enabled' | 'sync_enabled' | 'display_name' | 'write_back_seen'>
+    >,
 ): Promise<void> {
     const response = await request(`/api/accounts/${id}`, {
         method: 'PATCH',

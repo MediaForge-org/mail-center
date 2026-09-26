@@ -6,6 +6,7 @@ use App\Sync\SyncRunner;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 
 /**
  * One job per account. No Laravel-level retries: the run is checkpointed and idempotent, and the
@@ -26,6 +27,11 @@ class SyncAccountJob implements ShouldBeUnique, ShouldQueue
     {
         $this->onConnection('mail_sync');
         $this->onQueue('sync');
+    }
+
+    public function middleware(): array
+    {
+        return [(new WithoutOverlapping('imap-account:'.$this->accountId))->shared()->releaseAfter(30)->expireAfter(900)];
     }
 
     public function uniqueId(): string

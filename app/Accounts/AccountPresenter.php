@@ -20,6 +20,8 @@ class AccountPresenter
                 'host' => $incoming['host'] ?? null, 'port' => $incoming['port'] ?? null,
                 'security' => $incoming['security'] ?? null, 'username' => $incoming['username'] ?? null,
             ],
+            'write_back_seen' => $account->write_back_seen,
+            'seen_writeback_error' => $account->seen_writeback_error,
             'enabled' => $account->enabled, 'sync_enabled' => $account->sync_enabled,
             'sync_interval_seconds' => $account->sync_interval_seconds,
             'sync_status' => $account->sync_status, 'next_sync_at' => $account->next_sync_at,

@@ -27,5 +27,16 @@ interface ImapClient
     /** @return array<int, array> UID => flags */
     public function flags(int $low, int $high): array;
 
+    /** @return array{uidvalidity:int, writable_seen:bool} */
+    public function selectForSeen(string $rawName): array;
+
+    /** @param int[] $uids */
+    public function storeSeen(array $uids, bool $seen): void;
+
+    /** @param int[] $uids
+     * @return array<int, array>
+     */
+    public function flagsForUids(array $uids): array;
+
     public function close(): void;
 }

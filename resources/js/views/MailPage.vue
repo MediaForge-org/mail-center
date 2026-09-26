@@ -2,7 +2,12 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { listAccounts, type AccountSummary } from '../api/accounts';
-import { getMailboxCounts, type MailboxCounts, type MailboxView } from '../api/messages';
+import {
+    getMailboxCounts,
+    type ReadChange,
+    type MailboxCounts,
+    type MailboxView,
+} from '../api/messages';
 import { currentUser, logout } from '../api/auth';
 import AccountsPanel from '../features/accounts/AccountsPanel.vue';
 import MailWorkspace from '../features/workspace/MailWorkspace.vue';
@@ -13,6 +18,12 @@ const accounts = ref<AccountSummary[]>([]);
 const accountId = computed(() => (route.params.accountId ? Number(route.params.accountId) : null));
 const counts = ref<MailboxCounts | null>(null);
 const refreshVersion = ref(0);
+const readChange = ref<ReadChange | null>(null);
+function onReadChanged(change: ReadChange) {
+    readChange.value = change;
+    if (view.value === 'unread' && !change.is_read) refreshVersion.value++;
+    void refreshCounts();
+}
 let countsController: AbortController | undefined;
 async function refreshCounts() {
     countsController?.abort();
@@ -106,6 +117,8 @@ async function signOut() {
     <MailWorkspace
         v-else
         :user-name="name"
+        :read-change="readChange"
+        @read-changed="onReadChanged"
         :accounts="accounts"
         :section="section"
         :view="view"

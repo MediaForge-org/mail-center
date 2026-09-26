@@ -219,6 +219,53 @@ class LibraryImapClient implements ImapClient
         return $this->guard(fn () => $this->flagsRaw($low, $high), ImapFailure::TRANSIENT);
     }
 
+    public function selectForSeen(string $rawName): array
+    {
+        return $this->guard(function () use ($rawName) {
+            $result = ['uidvalidity' => 0, 'writable_seen' => false];
+            foreach ($this->connection()->select($rawName) as $response) {
+                foreach ($response->toArray() as $part) {
+                    if (! is_array($part)) {
+                        continue;
+                    }
+                    if (strtoupper((string) ($part[0] ?? '')) === 'UIDVALIDITY') {
+                        $result['uidvalidity'] = (int) ($part[1] ?? 0);
+                    }
+                    if (strtoupper((string) ($part[0] ?? '')) === 'PERMANENTFLAGS') {
+                        $flags = (array) ($part[1] ?? []);
+                        $result['writable_seen'] = in_array('\\Seen', $flags, true) || in_array('\\*', $flags, true);
+                    }
+                }
+            }
+
+            return $result;
+        }, ImapFailure::FOLDER);
+    }
+
+    public function storeSeen(array $uids, bool $seen): void
+    {
+        if ($uids === [] || count($uids) > 100 || array_filter($uids, fn ($uid) => $uid < 1)) {
+            throw new ImapFailure(ImapFailure::MESSAGE, 'Invalid UID batch.');
+        }
+        $this->guard(fn () => $this->connection()->store(['\\Seen'], $uids, null, $seen ? '+' : '-', true));
+    }
+
+    public function flagsForUids(array $uids): array
+    {
+        return $this->guard(function () use ($uids) {
+            $result = [];
+            foreach ($this->connection()->fetch(['UID', 'FLAGS'], $uids) as $response) {
+                $values = $this->pairs($response->toArray()[3] ?? []);
+                $uid = (int) ($values['UID'] ?? 0);
+                if (in_array($uid, $uids, true)) {
+                    $result[$uid] = (array) ($values['FLAGS'] ?? []);
+                }
+            }
+
+            return $result;
+        });
+    }
+
     public function close(): void
     {
         $this->mailbox?->disconnect();

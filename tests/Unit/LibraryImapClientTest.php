@@ -132,3 +132,24 @@ it('refuses to connect to disallowed destinations before opening any socket', fu
     expect(fn () => $client->connect($account, new Secret('pw')))->toThrow(fn (ImapFailure $e) => $e->category === ImapFailure::DESTINATION);
     expect($opened)->toBeFalse();
 });
+
+it('uses UID STORE Seen only and verifies via UID FETCH without CLOSE or expunge', function () {
+    $stream = new FakeStream;
+    $stream->open();
+    $stream->feed([
+        '* OK ready', 'TAG1 OK login',
+        '* OK [UIDVALIDITY 1000]', '* OK [PERMANENTFLAGS (\\Seen \\*)]', 'TAG2 OK [READ-WRITE] selected',
+        'TAG3 OK store', '* 1 FETCH (UID 4 FLAGS (\\Seen))', '* 2 FETCH (UID 7 FLAGS (\\Seen))', 'TAG4 OK fetched',
+        'TAG5 OK store', '* BYE bye', 'TAG6 OK logout',
+    ]);
+    $client = clientWith($stream);
+    $client->connect(imapAccount(), new Secret('pw'));
+    expect($client->selectForSeen('INBOX'))->toBe(['uidvalidity' => 1000, 'writable_seen' => true]);
+    $client->storeSeen([4, 7], true);
+    expect($client->flagsForUids([4, 7]))->toBe([4 => ['\\Seen'], 7 => ['\\Seen']]);
+    $client->storeSeen([4, 7], false);
+    $client->close();
+    $sent = implode('', (new ReflectionProperty($stream, 'written'))->getValue($stream));
+    expect($sent)->toContain('UID STORE 4,7 +FLAGS.SILENT (\\Seen)', 'UID STORE 4,7 -FLAGS.SILENT (\\Seen)')
+        ->not->toContain('CLOSE', 'EXPUNGE', '\\Deleted', '\\Flagged');
+});

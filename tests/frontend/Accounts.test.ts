@@ -16,6 +16,8 @@ const account = (over: Partial<AccountSummary> = {}): AccountSummary => ({
     incoming: { host: 'imap.example.test', port: 993, security: 'tls', username: 'me' },
     enabled: true,
     sync_enabled: true,
+    write_back_seen: false,
+    seen_writeback_error: null,
     sync_status: 'idle',
     next_sync_at: null,
     last_successful_sync_at: '2026-01-01T10:00:00Z',
@@ -276,4 +278,27 @@ describe('test connection feedback', () => {
         expect(wrapper.find('[data-testid="test-result"]').classes()).toContain('test-failure');
         expect(wrapper.text()).toContain('The host field format is invalid.');
     });
+});
+
+it('explicitly toggles Seen mirroring without enabling it by default', async () => {
+    const fetchMock = vi
+        .fn()
+        .mockResolvedValue(
+            new Response(JSON.stringify({ data: account({ write_back_seen: true }) })),
+        );
+    vi.stubGlobal('fetch', fetchMock);
+    const wrapper = mount(AccountsPanel, { props: { accounts: [account()] } });
+    const toggle = wrapper.find('.seen-mirroring-setting input');
+    expect((toggle.element as HTMLInputElement).checked).toBe(false);
+    await toggle.setValue(true);
+    await flushPromises();
+    expect(fetchMock).toHaveBeenCalledWith(
+        '/api/accounts/1',
+        expect.objectContaining({
+            method: 'PATCH',
+            body: JSON.stringify({ write_back_seen: true }),
+        }),
+    );
+    expect(wrapper.emitted('changed')).toHaveLength(1);
+    wrapper.unmount();
 });

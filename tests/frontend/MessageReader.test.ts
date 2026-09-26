@@ -226,3 +226,101 @@ it('shows compact attachment downloads for the selected message and clears stale
     expect(wrapper.find('.reader-attachments').exists()).toBe(false);
     expect(wrapper.text()).toContain('Real subject 3');
 });
+
+it('explicit read actions update reader, Unread rows and server counts without remote failure rollback', async () => {
+    let isRead = false;
+    let fail = false;
+    const fetchMock = vi.fn((url: string, init?: RequestInit) => {
+        if (url === '/api/me')
+            return Promise.resolve(new Response(JSON.stringify({ id: 1, name: 'Operator' })));
+        if (url === '/api/accounts') return Promise.resolve(response([]));
+        if (url === '/api/mailbox-counts')
+            return Promise.resolve(
+                new Response(
+                    JSON.stringify({
+                        views: {
+                            all: { total: 1, unread: isRead ? 0 : 1 },
+                            inbox: { total: 1, unread: isRead ? 0 : 1 },
+                            unread: { total: isRead ? 0 : 1, unread: isRead ? 0 : 1 },
+                        },
+                        accounts: {},
+                    }),
+                ),
+            );
+        if (url === '/api/messages/1/read') {
+            if (fail) return Promise.resolve(response({}, 500));
+            isRead = JSON.parse(init?.body as string).is_read;
+            return Promise.resolve(response({ id: 1, is_read: isRead, read_writeback: 'failed' }));
+        }
+        if (url.startsWith('/api/messages?'))
+            return Promise.resolve(
+                new Response(
+                    JSON.stringify({ data: isRead ? [] : [message(1)], next_cursor: null }),
+                ),
+            );
+        return Promise.resolve(response({ ...message(1), is_read: isRead }));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const router = createRouter({ history: createMemoryHistory(), routes });
+    await router.push('/mail/unread?message=1');
+    await router.isReady();
+    const wrapper = mount(App, { global: { plugins: [router] } });
+    wrappers.push(wrapper);
+    await flushPromises();
+    expect(fetchMock.mock.calls.filter(([, init]) => init?.method === 'PATCH')).toHaveLength(0);
+    const button = () => wrapper.find('.reader-read-action .small-button');
+    expect(button().text()).toBe('Mark read');
+    const before = fetchMock.mock.calls.filter(([url]) => url === '/api/mailbox-counts').length;
+    await button().trigger('click');
+    await flushPromises();
+    expect(wrapper.find('.message-row').exists()).toBe(false);
+    expect(button().text()).toBe('Mark unread');
+    expect(wrapper.text()).toContain('Local read state saved; remote update failed');
+    expect(
+        fetchMock.mock.calls.filter(([url]) => url === '/api/mailbox-counts').length,
+    ).toBeGreaterThan(before);
+    await button().trigger('click');
+    await flushPromises();
+    expect(wrapper.find('.message-row').classes()).toContain('message-unread');
+    expect(button().text()).toBe('Mark read');
+    fail = true;
+    await button().trigger('click');
+    await flushPromises();
+    expect(wrapper.find('.reader-read-action [role="alert"]').text()).toContain(
+        'Unable to change read state',
+    );
+    expect(wrapper.find('.message-row').classes()).toContain('message-unread');
+    expect(button().text()).toBe('Mark read');
+    await wrapper
+        .findAll('.nav-button')
+        .find((b) => b.text().includes('Inbox'))!
+        .trigger('click');
+    await flushPromises();
+    expect(router.currentRoute.value.path).toBe('/mail/inbox');
+});
+
+it('shows a pending local action and ignores its detail result after selecting another message', async () => {
+    let finish!: (response: Response) => void;
+    const fetchMock = vi
+        .fn()
+        .mockResolvedValueOnce(response(message(1)))
+        .mockImplementationOnce(
+            () =>
+                new Promise<Response>((resolve) => {
+                    finish = resolve;
+                }),
+        )
+        .mockResolvedValueOnce(response(message(2)));
+    vi.stubGlobal('fetch', fetchMock);
+    const wrapper = mount(MessageReader, { props: { messageId: 1, accounts: [] } });
+    wrappers.push(wrapper);
+    await flushPromises();
+    await wrapper.find('.reader-read-action .small-button').trigger('click');
+    expect(wrapper.text()).toContain('Saving…');
+    await wrapper.setProps({ messageId: 2 });
+    await flushPromises();
+    finish(response({ id: 1, is_read: true, read_writeback: 'pending' }));
+    await flushPromises();
+    expect(wrapper.text()).toContain('Real subject 2');
+    expect(wrapper.find('.reader-read-action .small-button').text()).toBe('Mark read');
+});

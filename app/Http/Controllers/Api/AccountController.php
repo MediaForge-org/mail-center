@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Accounts\AccountPresenter;
 use App\Accounts\Credentials\CredentialVault;
 use App\Http\Controllers\Controller;
+use App\Jobs\PushRemoteFlagChangesJob;
 use App\Jobs\SyncAccountJob;
 use App\Models\MailAccount;
+use App\Organization\OrganizationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -59,6 +61,7 @@ class AccountController extends Controller
             'display_name' => ['sometimes', 'string', 'max:120'],
             'enabled' => ['sometimes', 'boolean'],
             'sync_enabled' => ['sometimes', 'boolean'],
+            'write_back_seen' => ['sometimes', 'boolean'],
             'sync_interval_seconds' => ['sometimes', 'integer', 'min:120', 'max:3600'],
         ]);
         if (array_key_exists('display_name', $data)) {
@@ -68,7 +71,13 @@ class AccountController extends Controller
             $active = ($data['enabled'] ?? $account->enabled) && ($data['sync_enabled'] ?? $account->sync_enabled);
             $data['next_sync_at'] = $active && $account->sync_status !== 'auth_failed' ? now() : null;
         }
-        $account->update($data);
+        DB::transaction(function () use ($account, $data, $request) {
+            if (array_key_exists('write_back_seen', $data)) {
+                app(OrganizationService::class)->setSeenMirroring((int) $request->user()->id, $account->id, (bool) $data['write_back_seen']);
+                unset($data['write_back_seen']);
+            }
+            $account->update($data);
+        });
 
         return response()->json(['data' => $this->present($account->refresh())]);
     }
@@ -103,6 +112,13 @@ class AccountController extends Controller
             'last_error_code' => null, 'last_error_message' => null, 'last_error_at' => null,
             'next_sync_at' => $account->enabled && $account->sync_enabled ? now() : null,
         ]);
+
+        DB::table('remote_flag_changes')->where('mail_account_id', $account->id)->where('last_error', 'auth_failed')
+            ->where('status', 'pending')->update(['next_attempt_at' => now(), 'last_error' => null]);
+        $account->update(['seen_writeback_error' => null]);
+        if ($account->write_back_seen) {
+            PushRemoteFlagChangesJob::dispatch($account->id)->afterCommit();
+        }
 
         return response()->json(['has_password' => true]);
     }

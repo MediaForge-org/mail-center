@@ -70,7 +70,7 @@ it('only synchronizes INBOX by default and never issues a remote write', functio
     expect($this->account->remoteFolders()->where('sync_enabled', true)->pluck('raw_name')->all())->toBe(['INBOX']);
     expect($this->account->remoteFolders()->count())->toBe(3);
     foreach ($this->imap->calls as $call) {
-        expect($call)->toMatch('/^(CONNECT|LIST|CLOSE|EXAMINE |UID SEARCH |UID FETCH )/');
+        expect($call)->toMatch('/^(CONNECT|LIST|DISCONNECT|EXAMINE |UID SEARCH |UID FETCH )/');
         expect($call)->not->toMatch('/STORE|EXPUNGE|COPY|MOVE|DELETE|APPEND|SELECT /');
     }
 });

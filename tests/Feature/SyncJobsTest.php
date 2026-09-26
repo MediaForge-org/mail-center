@@ -99,7 +99,7 @@ describe('connection tests', function () {
         $this->actingAs($this->user)->getJson("/api/connection-tests/{$id}")->assertOk()
             ->assertJsonPath('data.status', 'succeeded')->assertJsonPath('data.result_code', 'ok');
         expect(DB::table('connection_tests')->value('encrypted_settings'))->toBeNull();
-        expect($this->imap->calls)->toContain('CONNECT')->toContain('LIST')->toContain('CLOSE');
+        expect($this->imap->calls)->toContain('CONNECT')->toContain('LIST')->toContain('DISCONNECT');
     });
 
     it('reports connection failures with sanitized text', function () {

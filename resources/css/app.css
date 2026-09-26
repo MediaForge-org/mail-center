@@ -846,3 +846,19 @@ button {
     align-self: flex-end;
     margin: 6px 16px;
 }
+
+.reader-read-action {
+    margin: 12px 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+.seen-mirroring-setting {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    margin-top: 12px;
+}

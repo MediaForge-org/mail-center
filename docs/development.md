@@ -393,3 +393,70 @@ indexes were added.
 `storage/logs/mailcenter-m38-plans.json` using only the guarded isolated test DB.
 The new index migration has **not** been applied to persistent development data.
 Normal deployment migrations are required separately. No reprocessing is needed.
+
+## M3.9 local read state and optional Seen mirroring
+
+`PATCH /api/messages/{id}/read` accepts a required boolean `is_read`. It returns
+`data: {id, is_read, read_writeback}`. Ownership and local deletion are enforced;
+disabled owned accounts allow local organization. `OrganizationService` serializes
+changes and maintains local revision/timestamp, user change version and monotonic
+read-intent generation. Identical initialized state is a no-op, except an explicit
+retry of a failed remote intent. Selection never marks a message read.
+
+Account management exposes `write_back_seen`, default **false**. Enabling increments
+the account mirror generation; it does not bulk-push existing local states. The next
+complete remote observation initializes existing messages unless a newer explicit
+local action takes precedence. Disabling supersedes queued intent. An already
+issued STORE cannot be undone by cancelling a job.
+
+With mirroring enabled, the local action and durable `remote_flag_changes` intent
+commit in one transaction. Dispatch occurs after commit; dispatch failure leaves
+recoverable intent and does not report the saved local action as failed. Jobs carry
+only an account ID. New pending intent supersedes older pending/failed intent;
+processing work can finish but generation and lease checks prevent it acknowledging
+new intent. Failed intent remains visible and blocks remote reconciliation.
+
+The `writeback` Redis/Horizon queue uses timeout 120s and retry_after 180s. Workers
+claim at most 100 intents with 150s leases and a 90s work budget. Sync and writeback
+share the Redis account overlap lock and PostgreSQL advisory account lock; lock
+ownership is checked before remote batches. There is no network IO inside the
+worker's database transactions. One connection batches compatible folder/state
+operations (up to 100 UIDs), verifies UIDVALIDITY and permanent Seen permission,
+sends only `UID STORE +/-FLAGS.SILENT (\Seen)`, then re-fetches exact UID flags.
+Cleanup disconnects; it never CLOSEs or expunges. Every active copy must verify.
+Partial completion is recorded; retries safely reapply and verify all active copies.
+
+`php artisan writeback:sweep` is scheduled every five minutes. It redispatches
+pending intent older than two minutes whose persisted backoff is due and expired
+processing leases. Transient backoff starts at 60s and caps at 3600s; ten failed
+attempts retain a terminal failed row. Missing unconfirmed locations remain pending;
+confirmed removal supersedes with an account warning. UIDVALIDITY mismatch sends no
+STORE and schedules synchronization. Authentication failure pauses remote work;
+password replacement wakes pending work. Terminal failures can be explicitly retried
+from the reader. Local state remains saved throughout.
+
+Sync always tracks remote flags separately. Mirroring off preserves existing local
+read choices. Mirroring on requires a complete observation of all active locations
+for the current account/read generations and no unresolved local intent. Observation
+timestamps and the last complete remote baseline prevent mixed old/new samples from
+overwriting local state; verified writeback invalidates pre-write observations.
+Removal of the last location never marks a message unread.
+
+The reader has explicit Mark read/Mark unread controls, saving/error feedback and
+remote pending/failure status. Successful mutations update loaded rows and reader,
+remove read rows from Unread, and refresh authoritative sidebar/account counts.
+Marking unread from the retained reader refreshes Unread in server order. API failure
+leaves displayed state unchanged. Navigation remains independent.
+
+Deployment requires the new normal migration and restarted Horizon workers; neither
+was run against persistent development mail by this implementation. Keep the
+scheduler running for recovery. No dependencies were added. Automated tests use only
+the guarded isolated `postgres-test` / `mailcenter_test` service.
+
+Limitations: real-provider STORE interoperability still needs an operator-controlled
+smoke test; automated tests use the connector stream and fake IMAP server. Remote
+completion status refreshes with reader/account reload, without live notifications.
+Crash recovery can wait for the shared overlap lock to expire. This package adds the
+organization change-version seam, not the future general `/changes` API or migration
+of every earlier mutation to that protocol. Starred/Flagged and all other organization
+mutations remain unimplemented.

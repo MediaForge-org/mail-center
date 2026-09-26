@@ -1,10 +1,18 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue';
-import { getMessage, MessageDetailError, type MessageDetail } from '../../api/messages';
+import {
+    getMessage,
+    setMessageRead,
+    MessageDetailError,
+    type MessageDetail,
+    type ReadChange,
+} from '../../api/messages';
 import type { AccountSummary } from '../../api/accounts';
 
 const props = defineProps<{ messageId: number | null; accounts: AccountSummary[] }>();
-defineEmits<{ close: [] }>();
+const emit = defineEmits<{ close: []; readChanged: [change: ReadChange] }>();
+const savingRead = ref(false);
+const readError = ref('');
 const detail = shallowRef<MessageDetail | null>(null);
 const plainMode = ref(false);
 const state = ref<'idle' | 'loading' | 'ready' | 'missing' | 'error'>('idle');
@@ -13,6 +21,25 @@ const account = computed(() =>
 );
 const date = computed(() => detail.value?.date_header || detail.value?.received_at);
 let controller: AbortController | undefined;
+
+async function changeRead(desired: boolean) {
+    if (!detail.value || savingRead.value) return;
+    const id = detail.value.id;
+    const active = controller;
+    savingRead.value = true;
+    readError.value = '';
+    try {
+        const change = await setMessageRead(id, desired);
+        if (controller === active && detail.value?.id === id)
+            detail.value = { ...detail.value, ...change };
+        emit('readChanged', change);
+    } catch {
+        if (controller === active)
+            readError.value = 'Unable to change read state. Please try again.';
+    } finally {
+        if (controller === active) savingRead.value = false;
+    }
+}
 
 function sizeLabel(bytes: number): string {
     if (bytes < 1024) return bytes.toLocaleString() + ' B';
@@ -26,6 +53,8 @@ async function load() {
     const active = new AbortController();
     controller = active;
     detail.value = null;
+    savingRead.value = false;
+    readError.value = '';
     plainMode.value = false;
     if (props.messageId === null) {
         state.value = 'idle';
@@ -112,6 +141,36 @@ onBeforeUnmount(() => controller?.abort());
                         </template>
                     </template>
                 </dl>
+                <div class="reader-read-action">
+                    <button
+                        class="small-button"
+                        type="button"
+                        :disabled="savingRead"
+                        @click="changeRead(!detail.is_read)"
+                    >
+                        {{ savingRead ? 'Saving…' : detail.is_read ? 'Mark unread' : 'Mark read' }}
+                    </button>
+                    <span
+                        v-if="
+                            detail.read_writeback === 'pending' ||
+                            detail.read_writeback === 'processing'
+                        "
+                        class="muted"
+                        >Remote read update pending</span
+                    >
+                    <template v-if="detail.read_writeback === 'failed'">
+                        <span class="muted">Local read state saved; remote update failed.</span>
+                        <button
+                            class="text-button"
+                            type="button"
+                            :disabled="savingRead"
+                            @click="changeRead(detail.is_read)"
+                        >
+                            Retry remote update
+                        </button>
+                    </template>
+                    <p v-if="readError" role="alert" class="form-error">{{ readError }}</p>
+                </div>
                 <div class="reader-status">
                     <span>{{ detail.is_read ? 'Read' : 'Unread' }}</span>
                     <span v-if="detail.is_starred">★ Starred</span>

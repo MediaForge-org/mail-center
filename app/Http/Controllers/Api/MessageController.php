@@ -9,6 +9,7 @@ use App\Messages\AttachmentMetadata;
 use App\Messages\EmailHtml;
 use App\Messages\MessageFilter;
 use App\Messages\MessageView;
+use App\Organization\OrganizationService;
 use App\Storage\BlobStore;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -100,6 +101,13 @@ class MessageController extends Controller
             ->header('Cache-Control', 'private, no-store');
     }
 
+    public function setRead(Request $request, int $id, OrganizationService $organization): JsonResponse
+    {
+        $data = $request->validate(['is_read' => ['required', 'boolean']]);
+
+        return response()->json(['data' => $organization->setRead((int) $request->user()->id, $id, (bool) $data['is_read'])]);
+    }
+
     public function show(Request $request, int $id): JsonResponse
     {
         $row = $this->readableMessage($request, $id)
@@ -116,6 +124,8 @@ class MessageController extends Controller
         abort_if($row === null, 404);
 
         $data = MessageDetail::fromRow($row);
+        $data['read_writeback'] = DB::table('remote_flag_changes')->where('message_id', $id)->where('flag', '\\Seen')
+            ->whereIn('status', ['pending', 'processing', 'failed'])->orderByDesc('generation')->value('status');
         $data['attachments'] = DB::table('attachments')->where('message_id', $id)
             ->orderBy('part_order')->orderBy('id')
             ->get(['id', 'filename', 'content_type', 'size_bytes', 'disposition'])

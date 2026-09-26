@@ -22,6 +22,12 @@ class FakeImapClient implements ImapClient
 
     public ?Closure $onFetch = null;
 
+    public ?Closure $onStore = null;
+
+    public bool $ignoreStore = false;
+
+    public ?ImapFailure $storeFailure = null;
+
     /** @var string[] */
     public array $calls = [];
 
@@ -135,9 +141,48 @@ class FakeImapClient implements ImapClient
         return collect($this->box()['messages'])->filter(fn ($m, $uid) => $uid >= $low && $uid <= $high)->map(fn ($m) => $m['flags'])->all();
     }
 
+    public function selectForSeen(string $rawName): array
+    {
+        $box = $this->examine($rawName);
+        $this->calls[] = "SELECT {$rawName}";
+
+        return ['uidvalidity' => $box['uidvalidity'], 'writable_seen' => true];
+    }
+
+    public function storeSeen(array $uids, bool $seen): void
+    {
+        $this->calls[] = 'UID STORE '.implode(',', $uids).' '.($seen ? '+' : '-').'FLAGS.SILENT (\\Seen)';
+        if ($this->storeFailure) {
+            throw $this->storeFailure;
+        }
+        if ($this->onStore) {
+            ($this->onStore)($uids, $seen);
+        }
+        if ($this->ignoreStore) {
+            return;
+        }
+        foreach ($uids as $uid) {
+            if (! isset($this->mailboxes[$this->selected]['messages'][$uid])) {
+                continue;
+            }
+            $flags = array_values(array_diff($this->mailboxes[$this->selected]['messages'][$uid]['flags'], ['\\Seen']));
+            if ($seen) {
+                $flags[] = '\\Seen';
+            }
+            $this->mailboxes[$this->selected]['messages'][$uid]['flags'] = $flags;
+        }
+    }
+
+    public function flagsForUids(array $uids): array
+    {
+        $this->calls[] = 'UID FETCH '.implode(',', $uids).' (FLAGS)';
+
+        return array_intersect_key(array_map(fn ($m) => $m['flags'], $this->box()['messages']), array_flip($uids));
+    }
+
     public function close(): void
     {
-        $this->calls[] = 'CLOSE';
+        $this->calls[] = 'DISCONNECT';
         $this->selected = null;
     }
 

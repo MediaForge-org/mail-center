@@ -8,6 +8,7 @@ use App\Connectors\Imap\ImapFailure;
 use App\Ingestion\MessageIngestor;
 use App\Models\MailAccount;
 use App\Models\RemoteFolder;
+use App\Organization\OrganizationService;
 use App\Sync\AccountSyncDriver;
 use App\Sync\AccountSyncLock;
 use App\Sync\SyncAborted;
@@ -194,7 +195,9 @@ class ImapSyncDriver implements AccountSyncDriver
         $folder->update(['last_reconciled_at' => now(), 'reconcile_cycle_id' => $account->id]);
         unset($state['membership'][(string) $folder->id]);
         $account->update(['sync_state' => $state]);
-        if ($folder->last_flag_scan_at === null || $folder->last_flag_scan_at->lt(now()->subSeconds((int) config('mailcenter.imap.flag_scan_seconds')))) {
+        $needsInitialization = $account->write_back_seen && DB::table('messages')->where('mail_account_id', $account->id)
+            ->where('seen_mirror_generation', '<>', $account->seen_mirror_generation)->whereNull('deleted_at')->exists();
+        if ($needsInitialization || $folder->last_flag_scan_at === null || $folder->last_flag_scan_at->lt(now()->subSeconds((int) config('mailcenter.imap.flag_scan_seconds')))) {
             $this->scanFlags($folder, $upper, $deadline);
         }
         $folder->update(['last_synced_at' => now()]);
@@ -333,12 +336,18 @@ class ImapSyncDriver implements AccountSyncDriver
     private function scanFlags(RemoteFolder $folder, int $upper, float $deadline): void
     {
         for ($low = 1; $low <= $upper && microtime(true) < $deadline; $low += 5000) {
+            $account = MailAccount::findOrFail($folder->mail_account_id);
+            $this->assertActive($account);
+            $snapshots = DB::table('message_locations')->join('messages', 'messages.id', '=', 'message_locations.message_id')
+                ->where('message_locations.remote_folder_id', $folder->id)->where('message_locations.uidvalidity', $folder->uidvalidity)
+                ->whereNull('message_locations.removed_at')->whereBetween('uid', [$low, min($upper, $low + 4999)])
+                ->select('message_locations.id', 'message_locations.uid', 'message_locations.message_id', 'messages.read_intent_generation')->get()->keyBy('uid');
             foreach ($this->client->flags($low, min($upper, $low + 4999)) as $uid => $flags) {
-                $location = DB::table('message_locations')->where('remote_folder_id', $folder->id)
-                    ->where('uidvalidity', $folder->uidvalidity)->where('uid', $uid)
-                    ->whereNull('removed_at')->first();
-                if ($location && json_decode($location->flags, true) !== array_values($flags)) {
-                    DB::table('message_locations')->where('id', $location->id)->update(['flags' => json_encode(array_values($flags))]);
+                $location = $snapshots->get($uid);
+                if ($location) {
+                    app(OrganizationService::class)->observeSeen(
+                        $location->id, $flags, $account->seen_mirror_generation, $location->read_intent_generation
+                    );
                     $this->ingestor->refreshRemoteSummary($location->message_id);
                 }
             }

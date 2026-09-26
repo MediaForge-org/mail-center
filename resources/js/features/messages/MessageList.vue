@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue';
-import { listMessages, type MailboxView, type MessageListItem } from '../../api/messages';
+import {
+    listMessages,
+    type MailboxView,
+    type MessageListItem,
+    type ReadChange,
+} from '../../api/messages';
 import type { AccountSummary } from '../../api/accounts';
 
 const props = defineProps<{
     view: MailboxView;
+    readChange?: ReadChange | null;
     accountId?: number | null;
     refreshVersion?: number;
     accounts: AccountSummary[];
@@ -25,6 +31,17 @@ const emptyText = computed(
 let controller: AbortController;
 let seen = new Set<number>();
 
+const readOverrides = new Map<number, boolean>();
+watch(
+    () => props.readChange,
+    (change) => {
+        if (!change) return;
+        readOverrides.set(change.id, change.is_read);
+        messages.value = messages.value
+            .map((m) => (m.id === change.id ? { ...m, is_read: change.is_read } : m))
+            .filter((m) => props.view !== 'unread' || !m.is_read);
+    },
+);
 async function loadPage() {
     if (loading.value) return;
     const active = controller;
@@ -34,11 +51,18 @@ async function loadPage() {
         const firstPage = cursor.value === null;
         const page = await listMessages(props.view, cursor.value, active.signal, props.accountId);
         if (active.signal.aborted) return;
-        const additions = page.data.filter((message) => {
-            if (seen.has(message.id)) return false;
-            seen.add(message.id);
-            return true;
-        });
+        const additions = page.data
+            .map((message) =>
+                readOverrides.has(message.id)
+                    ? { ...message, is_read: readOverrides.get(message.id)! }
+                    : message,
+            )
+            .filter((message) => {
+                if (props.view === 'unread' && message.is_read) return false;
+                if (seen.has(message.id)) return false;
+                seen.add(message.id);
+                return true;
+            });
         messages.value = messages.value.concat(additions);
         cursor.value = page.next_cursor;
         if (firstPage) emit('loaded');
@@ -53,6 +77,7 @@ watch(
     () => [props.view, props.accountId, props.refreshVersion],
     () => {
         controller?.abort();
+        readOverrides.clear();
         controller = new AbortController();
         messages.value = [];
         cursor.value = null;

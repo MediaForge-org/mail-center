@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import MessageReader from '../messages/MessageReader.vue';
 import MessageList from '../messages/MessageList.vue';
-import type { MailboxCounts, MailboxView } from '../../api/messages';
+import type { MailboxCounts, MailboxView, ReadChange } from '../../api/messages';
 import type { AccountSummary } from '../../api/accounts';
 import { statusLabels, statusTone } from '../accounts/statusLabel';
 
 withDefaults(
     defineProps<{
         userName: string;
+        readChange?: ReadChange | null;
         accounts?: AccountSummary[];
         section?: 'mail' | 'accounts';
         view?: MailboxView;
@@ -20,6 +21,7 @@ withDefaults(
 );
 defineEmits<{
     signOut: [];
+    readChanged: [change: ReadChange];
     openAccount: [id: number];
     mailboxLoaded: [];
     refreshMailbox: [];
@@ -193,6 +195,7 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
                     Refresh mailbox
                 </button>
                 <MessageList
+                    :read-change="readChange"
                     :view="view"
                     :account-id="accountId"
                     :refresh-version="refreshVersion"
@@ -210,6 +213,7 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
                 data-testid="right-pane"
             >
                 <MessageReader
+                    @read-changed="$emit('readChanged', $event)"
                     :message-id="selectedMessageId ?? null"
                     :accounts="accounts"
                     @close="$emit('select', null)"

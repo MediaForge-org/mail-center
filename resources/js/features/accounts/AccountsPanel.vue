@@ -226,6 +226,28 @@ async function submitSecret(account: AccountSummary) {
                 <p v-if="account.last_error_message" class="form-error" role="alert">
                     {{ account.last_error_message }}
                 </p>
+                <label class="seen-mirroring-setting">
+                    <input
+                        type="checkbox"
+                        :checked="account.write_back_seen"
+                        :disabled="pending"
+                        @change="
+                            run(() =>
+                                updateAccount(account.id, {
+                                    write_back_seen: !account.write_back_seen,
+                                }),
+                            )
+                        "
+                    />
+                    Mirror read state to IMAP
+                </label>
+                <p class="muted">
+                    Off keeps read changes local. Enabling adopts the next observed server state;
+                    later local actions take precedence.
+                </p>
+                <p v-if="account.seen_writeback_error" class="form-error">
+                    Remote read updates need attention. Local read changes remain saved.
+                </p>
                 <div class="button-row">
                     <button
                         class="small-button"
