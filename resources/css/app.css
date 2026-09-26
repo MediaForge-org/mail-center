@@ -555,3 +555,27 @@ button {
 .test-failure {
     color: #ad3c4b;
 }
+
+.nav-button:not(:disabled) {
+    cursor: pointer;
+}
+.nav-button:not(:disabled):hover {
+    background: var(--surface-accent);
+}
+.nav-button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+.nav-button.nav-row-current {
+    color: var(--accent);
+    background: var(--surface-accent);
+}
+.nav-button:disabled {
+    color: var(--text-soft);
+    cursor: not-allowed;
+}
+.nav-later {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 400;
+}

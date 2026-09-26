@@ -48,7 +48,10 @@ describe('accounts in the workspace shell', () => {
         expect(wrapper.text()).toContain('Work');
         expect(wrapper.text()).toContain('Ops');
         expect(wrapper.text()).not.toContain('No account connected');
-        await wrapper.find('button.nav-button').trigger('click');
+        await wrapper
+            .findAll('button')
+            .find((button) => button.text() === 'Manage accounts')!
+            .trigger('click');
         expect(wrapper.emitted('navigate')?.[0]).toEqual(['accounts']);
     });
 

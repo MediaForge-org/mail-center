@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { MailboxView } from '../../api/messages';
 import type { AccountSummary } from '../../api/accounts';
 import { statusLabels, statusTone } from '../accounts/statusLabel';
 
@@ -7,12 +8,19 @@ withDefaults(
         userName: string;
         accounts?: AccountSummary[];
         section?: 'mail' | 'accounts';
+        view?: MailboxView;
+        mailboxState?: 'loading' | 'ready' | 'empty' | 'error';
     }>(),
-    { accounts: () => [], section: 'mail' },
+    { accounts: () => [], section: 'mail', view: 'all', mailboxState: 'ready' },
 );
-defineEmits<{ signOut: []; navigate: [section: 'mail' | 'accounts'] }>();
+defineEmits<{ signOut: []; navigate: [section: MailboxView | 'accounts'] }>();
 
-const navigation = ['All Mail', 'Inbox', 'Unread', 'Starred', 'Completed'];
+const navigation: { view: MailboxView; label: string }[] = [
+    { view: 'all', label: 'All Mail' },
+    { view: 'inbox', label: 'Inbox' },
+    { view: 'unread', label: 'Unread' },
+];
+const unavailable = ['Starred', 'Important', 'Completed'];
 const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
 </script>
 
@@ -37,18 +45,29 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
                 <div class="sidebar-inner">
                     <p class="section-label">Workspace</p>
                     <nav aria-label="Views">
-                        <span
-                            v-for="(item, index) in navigation"
-                            :key="item"
-                            class="nav-row"
-                            :class="{ 'nav-row-current': index === 0 }"
-                            :aria-current="index === 0 ? 'page' : undefined"
+                        <button
+                            v-for="item in navigation"
+                            :key="item.view"
+                            type="button"
+                            class="nav-row nav-button"
+                            :class="{ 'nav-row-current': section === 'mail' && view === item.view }"
+                            :aria-current="
+                                section === 'mail' && view === item.view ? 'page' : undefined
+                            "
+                            @click="$emit('navigate', item.view)"
                         >
-                            <span class="nav-glyph" aria-hidden="true">{{
-                                index === 0 ? '▦' : '◇'
-                            }}</span>
-                            {{ item }}
-                        </span>
+                            <span class="nav-glyph" aria-hidden="true">◇</span>
+                            {{ item.label }}
+                        </button>
+                        <button
+                            v-for="item in unavailable"
+                            :key="item"
+                            type="button"
+                            class="nav-row nav-button"
+                            disabled
+                        >
+                            {{ item }} <span class="nav-later">Coming later</span>
+                        </button>
                     </nav>
                     <div class="sidebar-divider"></div>
                     <p class="section-label">Accounts</p>
@@ -72,9 +91,10 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
                         class="nav-row nav-button"
                         :class="{ 'nav-row-current': section === 'accounts' }"
                         type="button"
-                        @click="$emit('navigate', section === 'accounts' ? 'mail' : 'accounts')"
+                        :aria-current="section === 'accounts' ? 'page' : undefined"
+                        @click="$emit('navigate', 'accounts')"
                     >
-                        {{ section === 'accounts' ? '← Back to workspace' : 'Manage accounts' }}
+                        Manage accounts
                     </button>
                     <div class="sidebar-divider"></div>
                     <p class="section-label">Folders</p>
@@ -105,14 +125,22 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
                 <div class="pane-toolbar">
                     <div>
                         <p class="eyebrow">WORKSPACE</p>
-                        <h1>All Mail</h1>
+                        <h1>{{ navigation.find((item) => item.view === view)?.label }}</h1>
                     </div>
-                    <span class="placeholder-pill">0 messages</span>
                 </div>
                 <div class="list-placeholder">
                     <div class="placeholder-icon" aria-hidden="true">✉</div>
-                    <h2>Your messages will appear here</h2>
-                    <p>The message list is ready for account setup in a later milestone.</p>
+                    <div aria-live="polite">
+                        <p v-if="mailboxState === 'loading'">Loading mailbox…</p>
+                        <p v-else-if="mailboxState === 'error'" role="alert">
+                            Unable to load this mailbox. Try another view or return here to retry.
+                        </p>
+                        <p v-else-if="mailboxState === 'empty'">No messages in this view.</p>
+                        <template v-else
+                            ><h2>Your messages will appear here</h2>
+                            <p>Mailbox connected. Message display is coming next.</p></template
+                        >
+                    </div>
                 </div>
             </section>
 
