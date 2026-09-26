@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\MessageDetail;
 use App\Http\Resources\MessageListItem;
 use App\Messages\MessageView;
 use Carbon\CarbonImmutable;
@@ -67,6 +68,32 @@ class MessageController extends Controller
             'data' => $page->map(fn ($row) => MessageListItem::fromRow($row))->values(),
             'next_cursor' => $hasMore && $last !== null ? $this->encodeCursor($last, $userId, $view) : null,
         ]);
+    }
+
+    public function show(Request $request, int $id): JsonResponse
+    {
+        $userId = (int) $request->user()->getAuthIdentifier();
+        $row = DB::table('messages')
+            ->join('mail_accounts', 'mail_accounts.id', '=', 'messages.mail_account_id')
+            ->leftJoin('message_bodies', 'message_bodies.message_id', '=', 'messages.id')
+            ->where('messages.id', $id)
+            ->where('messages.user_id', $userId)
+            ->where('mail_accounts.user_id', $userId)
+            ->where('mail_accounts.enabled', true)
+            ->whereNull('mail_accounts.deleted_at')
+            ->whereNull('messages.deleted_at')
+            ->select([
+                'messages.id', 'messages.mail_account_id', 'messages.subject',
+                'messages.from_name', 'messages.from_address', 'messages.to',
+                'messages.cc', 'messages.bcc', 'messages.reply_to', 'messages.date_header',
+                'messages.received_at', 'messages.direction', 'messages.is_read',
+                'messages.is_starred', 'messages.is_important', 'messages.is_done',
+                'messages.has_attachments', 'messages.remote_status', 'messages.parse_status',
+                'message_bodies.text_plain',
+            ])->first();
+        abort_if($row === null, 404);
+
+        return response()->json(['data' => MessageDetail::fromRow($row)]);
     }
 
     private function encodeCursor(object $row, int $userId, MessageView $view): string

@@ -170,3 +170,22 @@ docker compose start app horizon scheduler
 
 For a fresh clone, `docker compose up -d postgres` initializes the volume before backup or restore.
 Never use `docker compose down -v` as a reset step.
+
+## M3.5 plain-text reader
+
+`GET /api/messages/{id}` returns an individual message in a `data` envelope.
+Both message and account must belong to the authenticated user. Locally deleted
+messages and deleted or disabled accounts return 404, matching the currently
+available unified mailbox views. Paused synchronization and remotely removed mail
+remain readable. Explicit access to disabled accounts is deferred with account views.
+
+The reader uses only stored `message_bodies.text_plain`. `body_status` is
+`available` or `unavailable`; missing/empty text or failed parsing returns
+`text_plain: null`. No MIME parsing or HTML retrieval occurs in the request path.
+Stored recipient metadata, including Bcc when present, is exposed only to the owner.
+
+Selection is stored as `?message=<id>` on the current mailbox URL. Sidebar
+navigation clears selection; browser history restores it. Selection never changes
+read, star, important or done flags. The reader shows one message; conversation
+thread presentation remains a later M3 item. HTML rendering, remote resources and
+attachment downloads are not implemented.

@@ -16,6 +16,18 @@ const section = computed<'mail' | 'accounts'>(() =>
 const view = computed<MailboxView>(() =>
     route.params.view === 'inbox' || route.params.view === 'unread' ? route.params.view : 'all',
 );
+const selectedMessageId = computed(() => {
+    const value = route.query.message;
+    if (typeof value !== 'string' || !/^[1-9]\d*$/.test(value)) return null;
+    const id = Number(value);
+    return Number.isSafeInteger(id) ? id : null;
+});
+function selectMessage(id: number | null) {
+    const query = { ...route.query };
+    if (id === null) delete query.message;
+    else query.message = String(id);
+    void router.push({ path: route.path, query });
+}
 let timer: ReturnType<typeof setInterval> | undefined;
 
 async function refreshAccounts() {
@@ -72,6 +84,8 @@ async function signOut() {
         :accounts="accounts"
         :section="section"
         :view="view"
+        :selected-message-id="selectedMessageId"
+        @select="selectMessage"
         @sign-out="signOut"
         @navigate="(target) => router.push(`/mail/${target}`)"
     >

@@ -3,12 +3,16 @@ import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue';
 import { listMessages, type MailboxView, type MessageListItem } from '../../api/messages';
 import type { AccountSummary } from '../../api/accounts';
 
-const props = defineProps<{ view: MailboxView; accounts: AccountSummary[] }>();
+const props = defineProps<{
+    view: MailboxView;
+    accounts: AccountSummary[];
+    selectedMessageId?: number | null;
+}>();
 const messages = shallowRef<MessageListItem[]>([]);
 const cursor = ref<string | null>(null);
 const loading = ref(false);
 const error = ref(false);
-const selected = ref<number | null>(null);
+defineEmits<{ select: [id: number] }>();
 const accountMap = computed(() => new Map(props.accounts.map((account) => [account.id, account])));
 const emptyText = computed(
     () =>
@@ -48,7 +52,6 @@ watch(
         controller = new AbortController();
         messages.value = [];
         cursor.value = null;
-        selected.value = null;
         seen = new Set();
         loading.value = false;
         void loadPage();
@@ -81,10 +84,10 @@ function dateLabel(value: string): string {
                     class="message-row"
                     :class="{
                         'message-unread': !message.is_read,
-                        'message-selected': selected === message.id,
+                        'message-selected': selectedMessageId === message.id,
                     }"
-                    :aria-pressed="selected === message.id"
-                    @click="selected = message.id"
+                    :aria-pressed="selectedMessageId === message.id"
+                    @click="$emit('select', message.id)"
                 >
                     <span class="message-topline">
                         <span class="message-sender" :title="message.from_address">{{

@@ -31,3 +31,23 @@ export async function listMessages(
     if (!response.ok) throw new Error('Unable to load this mailbox.');
     return (await response.json()) as MessagePage;
 }
+
+export type MessageDetail = Omit<MessageListItem, 'snippet' | 'sort_date'> & {
+    cc: MessageListItem['to'];
+    bcc: MessageListItem['to'];
+    reply_to: MessageListItem['to'];
+    date_header: string | null;
+    remote_status: 'present' | 'missing' | 'removed';
+    body_status: 'available' | 'unavailable';
+    text_plain: string | null;
+};
+export class MessageDetailError extends Error {
+    constructor(public readonly notFound: boolean) {
+        super('Unable to load this message.');
+    }
+}
+export async function getMessage(id: number, signal: AbortSignal): Promise<MessageDetail> {
+    const response = await request(`/api/messages/${id}`, { signal });
+    if (!response.ok) throw new MessageDetailError(response.status === 404);
+    return ((await response.json()) as { data: MessageDetail }).data;
+}

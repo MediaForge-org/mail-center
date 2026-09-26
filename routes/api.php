@@ -18,6 +18,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
 
     Route::get('/accounts', [AccountController::class, 'index']);
     Route::get('/messages', [MessageController::class, 'index']);
+    Route::get('/messages/{id}', [MessageController::class, 'show'])->whereNumber('id');
     Route::post('/accounts', [AccountController::class, 'store']);
     Route::post('/accounts/test-connection', [ConnectionTestController::class, 'store'])->middleware('throttle:connection-test');
     Route::get('/connection-tests/{id}', [ConnectionTestController::class, 'show'])->whereNumber('id');

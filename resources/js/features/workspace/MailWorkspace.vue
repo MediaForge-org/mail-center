@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import MessageReader from '../messages/MessageReader.vue';
 import MessageList from '../messages/MessageList.vue';
 import type { MailboxView } from '../../api/messages';
 import type { AccountSummary } from '../../api/accounts';
@@ -10,10 +11,15 @@ withDefaults(
         accounts?: AccountSummary[];
         section?: 'mail' | 'accounts';
         view?: MailboxView;
+        selectedMessageId?: number | null;
     }>(),
     { accounts: () => [], section: 'mail', view: 'all' },
 );
-defineEmits<{ signOut: []; navigate: [section: MailboxView | 'accounts'] }>();
+defineEmits<{
+    signOut: [];
+    navigate: [section: MailboxView | 'accounts'];
+    select: [id: number | null];
+}>();
 
 const navigation: { view: MailboxView; label: string }[] = [
     { view: 'all', label: 'All Mail' },
@@ -128,7 +134,12 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
                         <h1>{{ navigation.find((item) => item.view === view)?.label }}</h1>
                     </div>
                 </div>
-                <MessageList :view="view" :accounts="accounts" />
+                <MessageList
+                    :view="view"
+                    :accounts="accounts"
+                    :selected-message-id="selectedMessageId"
+                    @select="$emit('select', $event)"
+                />
             </section>
 
             <section
@@ -137,14 +148,11 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
                 aria-label="Message viewer"
                 data-testid="right-pane"
             >
-                <div class="reader-toolbar">
-                    <span>Message viewer</span><span class="toolbar-dots">···</span>
-                </div>
-                <div class="reader-placeholder">
-                    <div class="reader-lines" aria-hidden="true"><i></i><i></i><i></i></div>
-                    <h2>A place for the conversation</h2>
-                    <p>Selecting a message will open it here when mail features arrive.</p>
-                </div>
+                <MessageReader
+                    :message-id="selectedMessageId ?? null"
+                    :accounts="accounts"
+                    @close="$emit('select', null)"
+                />
             </section>
         </div>
     </div>

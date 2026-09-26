@@ -68,6 +68,8 @@ it('renders safe message metadata and read state with account identity and local
     for (const flag of ['Starred', 'Important', 'Done']) expect(rows[0].text()).toContain(flag);
     expect(rows[0].find('time').attributes('datetime')).toBe(long.sort_date);
     await rows[0].trigger('click');
+    expect(wrapper.emitted('select')).toEqual([[1]]);
+    await wrapper.setProps({ selectedMessageId: 1 });
     expect(rows[0].attributes('aria-pressed')).toBe('true');
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(wrapper.text()).toContain('End of messages');
