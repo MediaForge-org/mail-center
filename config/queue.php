@@ -73,6 +73,11 @@ return [
             'after_commit' => true,
         ],
 
+        'maintenance' => [
+            'driver' => 'redis', 'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
+            'queue' => 'maintenance', 'retry_after' => 3660, 'block_for' => null, 'after_commit' => true,
+        ],
+
         'writeback' => [
             'driver' => 'redis', 'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
             'queue' => 'writeback', 'retry_after' => 180, 'block_for' => null, 'after_commit' => true,

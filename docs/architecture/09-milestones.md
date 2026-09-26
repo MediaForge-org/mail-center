@@ -1,7 +1,7 @@
 # 09 — Milestone Boundaries
 
-Milestones are sequential acceptance gates, not authorization to start the next one. This task
-ends at M0. An implementation change that contradicts the specification must update the relevant
+Milestones are sequential acceptance gates, not authorization to start the next one. The
+[M3 acceptance record](../m3-acceptance.md) records the implemented reading milestone and its gates. An implementation change that contradicts the specification must update the relevant
 contract and acceptance tests together.
 
 | Milestone | In scope | Exit criteria | Explicitly excluded |

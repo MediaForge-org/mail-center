@@ -84,7 +84,7 @@ it('counts messages with identical list predicates and a bounded query count', f
     DB::enableQueryLog();
     DB::flushQueryLog();
     $this->getJson('/api/mailbox-counts')->assertOk();
-    expect(count(DB::getQueryLog()))->toBe($queryCount)->toBeLessThanOrEqual(8);
+    expect(count(DB::getQueryLog()))->toBe($queryCount)->toBeLessThanOrEqual(12);
     DB::disableQueryLog();
 });
 

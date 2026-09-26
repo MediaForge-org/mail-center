@@ -195,25 +195,27 @@ it('notices completed automatic sync and refreshes local messages and authoritat
         url.startsWith('/api/messages?'),
     ).length;
     fetchMock.mockImplementation((url: string) =>
-        url === '/api/accounts'
-            ? Promise.resolve(
-                  new Response(
-                      JSON.stringify({
-                          data: [
-                              {
-                                  id: 1,
-                                  display_name: 'Work',
-                                  enabled: true,
-                                  sync_enabled: true,
-                                  sync_status: 'idle',
-                                  sync_interval_seconds: 180,
-                                  last_successful_sync_at: '2026-01-01T00:03:00Z',
-                              },
-                          ],
-                      }),
-                  ),
-              )
-            : original(url),
+        url.startsWith('/api/changes')
+            ? Promise.resolve(new Response(JSON.stringify({ version: '2', invalidate: true })))
+            : url === '/api/accounts'
+              ? Promise.resolve(
+                    new Response(
+                        JSON.stringify({
+                            data: [
+                                {
+                                    id: 1,
+                                    display_name: 'Work',
+                                    enabled: true,
+                                    sync_enabled: true,
+                                    sync_status: 'idle',
+                                    sync_interval_seconds: 180,
+                                    last_successful_sync_at: '2026-01-01T00:03:00Z',
+                                },
+                            ],
+                        }),
+                    ),
+                )
+              : original(url),
     );
     await vi.advanceTimersByTimeAsync(30000);
     await flushPromises();
@@ -221,4 +223,30 @@ it('notices completed automatic sync and refreshes local messages and authoritat
         fetchMock.mock.calls.filter(([url]) => url.startsWith('/api/messages?')).length,
     ).toBeGreaterThan(messagesBefore);
     expect(wrapper.text()).toContain('sync automatically');
+});
+
+it('keeps idle freshness polls cheap and exposes read-only system folder routes', async () => {
+    vi.useFakeTimers();
+    const { fetchMock, wrapper, router } = await open('/mail/sent');
+    const original = fetchMock.getMockImplementation()!;
+    fetchMock.mockImplementation((url: string) =>
+        url.startsWith('/api/changes')
+            ? Promise.resolve(new Response(JSON.stringify({ version: '0', invalidate: false })))
+            : original(url),
+    );
+    const before = fetchMock.mock.calls.filter(([url]) => !url.startsWith('/api/changes')).length;
+    await vi.advanceTimersByTimeAsync(30000);
+    await flushPromises();
+    expect(fetchMock.mock.calls.filter(([url]) => !url.startsWith('/api/changes')).length).toBe(
+        before,
+    );
+    expect(wrapper.find('.pane-toolbar').text()).toContain('Sent');
+    await router.push('/mail/account/1/archive');
+    await flushPromises();
+    expect(wrapper.find('.account-view-tabs [aria-current=page]').text()).toBe('Archive');
+    expect(
+        fetchMock.mock.calls.some(
+            ([url]) => url.includes('view=archive') && url.includes('account_id=1'),
+        ),
+    ).toBe(true);
 });

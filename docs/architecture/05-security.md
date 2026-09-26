@@ -90,8 +90,8 @@ Defense in depth — every layer assumes the others might fail.
   - `data:` images allowed only for raster types (png, jpeg, gif, webp) under a size cap.
 - Remove all unapproved URL-bearing attributes, including background, poster, ping, srcset,
   SVG references and relative URLs. Only server-issued inline/proxy routes become image sources.
-- Output stored in `message_bodies.html_sanitized` with `sanitizer_version`; a version bump causes
-  queued re-sanitization from the raw blob. Until current-version output exists, serve escaped
+- Output stored in `message_bodies.html_sanitized` with `sanitizer_version`; a version bump requires
+  an operator-started, durable `messages:sanitize-html` run from the raw blob. Until current-version output exists, serve escaped
   plain text; never serve known-stale HTML and never parse attacker MIME in an HTTP request.
   Ingestion sanitizes into neutral attachment/resource references; rendering resolves authorized
   routes after message IDs exist. Do not persist expiring signed URLs in cached HTML.

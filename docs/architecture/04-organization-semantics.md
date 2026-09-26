@@ -150,7 +150,7 @@ those filters. A local folder, tag or done action cannot change account eligibil
 - The list shows **one row per message** (D16); the reader pane shows the thread across folders.
   It excludes locally trashed messages unless explicitly opened in Trash; all account and user
   authorization rules still apply. Remote-removed messages retain their badge.
-- Actions apply to the selected messages. The reader offers explicit thread actions ("Move
+- Actions apply to the selected messages. In M4, the reader may offer explicit thread actions ("Move
   conversation", "Mark conversation done") that expand to the thread's message ids on the server.
 - Threads are per account; the same conversation received by two accounts forms two threads.
 - A "group by conversation" list mode is a possible M5+ enhancement; it does not change storage.
@@ -203,3 +203,12 @@ arrays are OR, tags are all-of; unknown fields or incompatible combinations retu
   its own transaction, and persist item completion in the same transaction. Retries skip completed
   items; progress distinguishes completed, conflicted, and failed items. Folder deletion remains
   an atomic reassignment plus delete under a folder lock; large deletes may run on the queue.
+
+
+### M3 finalization reading surface
+
+Read-only Sent and Archive select the corresponding local system folder through MessageFilter;
+they do not exclude Done or remotely removed mail. Global and explicit account scopes retain the
+base visibility rules above. The conversation endpoint returns chronological member metadata in
+50-row signed cursor pages. Each expanded member uses the shared secure individual reader.
+All editing, thread-wide organization and bulk operations remain M4.

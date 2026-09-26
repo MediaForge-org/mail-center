@@ -17,9 +17,11 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     });
 
     Route::get('/accounts', [AccountController::class, 'index']);
+    Route::get('/changes', [MessageController::class, 'changes']);
     Route::get('/mailbox-counts', [MessageController::class, 'counts']);
     Route::get('/messages', [MessageController::class, 'index']);
     Route::patch('/messages/{id}/read', [MessageController::class, 'setRead'])->whereNumber('id');
+    Route::get('/messages/{id}/conversation', [MessageController::class, 'conversation'])->whereNumber('id');
     Route::get('/messages/{id}', [MessageController::class, 'show'])->whereNumber('id');
     Route::post('/accounts', [AccountController::class, 'store']);
     Route::post('/accounts/test-connection', [ConnectionTestController::class, 'store'])->middleware('throttle:connection-test');

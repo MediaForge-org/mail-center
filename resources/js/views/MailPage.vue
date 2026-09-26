@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { listAccounts, type AccountSummary } from '../api/accounts';
 import {
     getMailboxCounts,
+    getMailboxVersion,
     type ReadChange,
     type MailboxCounts,
     type MailboxView,
@@ -32,10 +33,14 @@ async function refreshCounts() {
     counts.value = null;
     try {
         const result = await getMailboxCounts(active.signal);
-        if (!active.signal.aborted) counts.value = result;
+        if (!active.signal.aborted) {
+            counts.value = result;
+            return true;
+        }
     } catch {
         // Counts are optional; never replace unavailable data with false zeroes.
     }
+    return false;
 }
 async function accountsChanged() {
     await refreshAccounts();
@@ -46,7 +51,9 @@ const section = computed<'mail' | 'accounts'>(() =>
     route.params.view === 'accounts' ? 'accounts' : 'mail',
 );
 const view = computed<MailboxView>(() =>
-    route.params.view === 'inbox' || route.params.view === 'unread' ? route.params.view : 'all',
+    ['inbox', 'unread', 'sent', 'archive'].includes(String(route.params.view))
+        ? (route.params.view as MailboxView)
+        : 'all',
 );
 const selectedMessageId = computed(() => {
     const value = route.query.message;
@@ -69,18 +76,12 @@ async function refreshAccounts() {
         const request = ++accountRequest;
         const updated = await listAccounts();
         if (request !== accountRequest || disposed) return;
-        const synced = updated.some((account) => {
-            const previous = accounts.value.find((item) => item.id === account.id);
-            return previous && account.last_successful_sync_at !== previous.last_successful_sync_at;
-        });
         accounts.value = updated;
-        if (synced) {
-            refreshVersion.value++;
-            void refreshCounts();
-        }
+        return true;
     } catch {
         // Keep the last known list; the next poll retries.
     }
+    return false;
 }
 const name = ref('');
 const loading = ref(true);
@@ -94,6 +95,7 @@ onMounted(async () => {
             return;
         }
         name.value = user.name;
+        await pollChanges();
         await refreshAccounts();
         void refreshCounts();
         schedulePoll();
@@ -105,20 +107,40 @@ onMounted(async () => {
     }
 });
 
+let observedVersion = '0';
+let polling = false;
+async function pollChanges() {
+    if (polling || disposed) return;
+    polling = true;
+    try {
+        // Sample BEFORE loading data. A commit during reload stays visible at the next poll.
+        const change = await getMailboxVersion(observedVersion);
+        if (disposed) return;
+        if (change.invalidate) {
+            refreshVersion.value++;
+            const results = await Promise.all([refreshAccounts(), refreshCounts()]);
+            if (results.every(Boolean)) observedVersion = change.version;
+        }
+    } catch {
+        // Preserve data and retry; an unavailable poll never acknowledges a version.
+    } finally {
+        polling = false;
+    }
+}
 function schedulePoll() {
     const busy = accounts.value.some(
         (a) => a.enabled && a.sync_enabled && a.sync_status === 'syncing',
     );
     timer = setTimeout(
         async () => {
-            if (document.visibilityState !== 'hidden') await refreshAccounts();
+            if (document.visibilityState !== 'hidden') await pollChanges();
             if (!disposed) schedulePoll();
         },
         busy ? 5000 : 30000,
     );
 }
 function onVisibility() {
-    if (document.visibilityState === 'visible') void refreshAccounts();
+    if (document.visibilityState === 'visible') void pollChanges();
 }
 onBeforeUnmount(() => {
     disposed = true;

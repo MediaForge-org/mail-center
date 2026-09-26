@@ -3,6 +3,7 @@
 use App\Ingestion\AttachmentExtractor;
 use App\Ingestion\MessageIngestor;
 use App\Jobs\ExtractMessageAttachments;
+use App\Jobs\SanitizeMaintenance;
 use App\Jobs\SanitizeMessageHtml;
 use App\Messages\EmailHtml;
 use App\Messages\InlineImages;
@@ -156,7 +157,8 @@ it('ingests inline parts and reprocesses old HTML safely through existing operat
     $this->getJson("/api/messages/$id")->assertJsonPath('data.html_available', false);
     Queue::fake();
     $this->artisan('messages:sanitize-html')->assertSuccessful();
-    Queue::assertPushed(SanitizeMessageHtml::class, fn ($job) => $job->messageId === $id);
+    Queue::assertPushed(SanitizeMaintenance::class);
+    (new SanitizeMaintenance(DB::table('maintenance_runs')->value('id')))->handle(new EmailHtml);
     (new SanitizeMessageHtml($id))->handle(new EmailHtml);
     $this->get("/api/messages/$id/render")->assertOk()->assertSee("/api/messages/$id/inline/$attachment->id", false);
     // Extraction can finish later without re-sanitizing or changing the neutral references.

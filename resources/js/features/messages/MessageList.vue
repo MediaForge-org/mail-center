@@ -24,9 +24,13 @@ const emit = defineEmits<{ select: [id: number]; loaded: [] }>();
 const accountMap = computed(() => new Map(props.accounts.map((account) => [account.id, account])));
 const emptyText = computed(
     () =>
-        ({ all: 'No messages yet.', inbox: 'Your Inbox is empty.', unread: 'No unread messages.' })[
-            props.view
-        ],
+        ({
+            all: 'No messages yet.',
+            inbox: 'Your Inbox is empty.',
+            unread: 'No unread messages.',
+            sent: 'No sent messages.',
+            archive: 'Your Archive is empty.',
+        })[props.view],
 );
 let controller: AbortController;
 let seen = new Set<number>();

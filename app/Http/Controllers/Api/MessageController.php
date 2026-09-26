@@ -36,7 +36,7 @@ class MessageController extends Controller
         }
         $input = $request->validate([
             'account_id' => ['sometimes', 'integer', 'min:1'],
-            'view' => ['sometimes', Rule::in(['all', 'inbox', 'unread'])],
+            'view' => ['sometimes', Rule::enum(MessageView::class)],
             'limit' => ['sometimes', 'integer', 'min:1', 'max:100'],
             'cursor' => ['sometimes', 'string', 'max:2048'],
         ]);
@@ -80,8 +80,24 @@ class MessageController extends Controller
         ]);
     }
 
+    public function changes(Request $request): JsonResponse
+    {
+        $input = $request->validate(['since' => ['sometimes', 'integer', 'min:0']]);
+        $version = (string) (DB::table('user_change_versions')->where('user_id', $request->user()->id)->value('version') ?? 0);
+
+        return response()->json(['version' => $version, 'invalidate' => $version !== (string) ($input['since'] ?? '0')])
+            ->header('Cache-Control', 'private, no-store');
+    }
+
     public function counts(Request $request): JsonResponse
     {
+        if (DB::transactionLevel() === 0) {
+            return DB::transaction(function () use ($request) {
+                DB::statement('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY');
+
+                return $this->counts($request);
+            });
+        }
         $userId = (int) $request->user()->getAuthIdentifier();
         $views = [];
         foreach (MessageView::cases() as $view) {
@@ -133,6 +149,37 @@ class MessageController extends Controller
             ->map(fn ($attachment) => AttachmentMetadata::fromRow($attachment))->all();
 
         return response()->json(['data' => $data]);
+    }
+
+    public function conversation(Request $request, int $id): JsonResponse
+    {
+        $selected = self::readableMessage($request, $id)->first(['messages.thread_id', 'messages.mail_account_id']);
+        abort_if($selected === null, 404);
+        $input = $request->validate(['cursor' => ['sometimes', 'string', 'max:2048']]);
+        $scope = [(int) $request->user()->id, $id, $selected->thread_id];
+        $query = MessageFilter::base((int) $request->user()->id, true)
+            ->where('messages.mail_account_id', $selected->mail_account_id);
+        $selected->thread_id === null ? $query->where('messages.id', $id) : $query->where('messages.thread_id', $selected->thread_id);
+        if (isset($input['cursor'])) {
+            try {
+                $cursor = json_decode(Crypt::decryptString($input['cursor']), true, flags: JSON_THROW_ON_ERROR);
+                if (! is_array($cursor) || ($cursor['scope'] ?? null) !== $scope || ! is_string($cursor['date'] ?? null) || ! is_int($cursor['id'] ?? null)) {
+                    throw new \RuntimeException;
+                }
+            } catch (\Throwable) {
+                throw ValidationException::withMessages(['cursor' => 'Invalid conversation cursor.']);
+            }
+            $query->where(fn ($q) => $q->where('messages.sort_date', '>', $cursor['date'])
+                ->orWhere(fn ($q) => $q->where('messages.sort_date', $cursor['date'])->where('messages.id', '>', $cursor['id'])));
+        }
+        $rows = $query->orderBy('messages.sort_date')->orderBy('messages.id')->limit(51)
+            ->get(['messages.id', 'messages.subject', 'messages.from_name', 'messages.from_address', 'messages.sort_date', 'messages.is_read', 'messages.remote_status']);
+        $last = $rows->take(50)->last();
+
+        return response()->json([
+            'data' => $rows->take(50)->values(),
+            'next_cursor' => $rows->count() > 50 ? Crypt::encryptString(json_encode(['scope' => $scope, 'date' => $last->sort_date, 'id' => $last->id], JSON_THROW_ON_ERROR)) : null,
+        ])->header('Cache-Control', 'private, no-store');
     }
 
     public function downloadAttachment(Request $request, int $id, int $attachment, BlobStore $blobs): BinaryFileResponse

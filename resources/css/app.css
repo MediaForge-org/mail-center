@@ -1168,3 +1168,47 @@ button {
     color: var(--text-muted, #64748b);
     font-size: 11px;
 }
+
+.conversation-reader {
+    min-width: 0;
+    overflow-y: auto;
+    height: 100%;
+}
+.conversation-message {
+    border-bottom: 1px solid var(--border, #e2e8f0);
+    min-width: 0;
+}
+.conversation-selected {
+    border-left: 3px solid var(--accent, #5b61d6);
+}
+.conversation-summary {
+    display: grid;
+    gap: 3px;
+    width: 100%;
+    padding: 10px 16px;
+    text-align: left;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+.conversation-summary span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.conversation-summary small {
+    color: #697386;
+}
+.conversation-summary:focus-visible {
+    outline: 2px solid #5b61d6;
+    outline-offset: -2px;
+}
+.conversation-status,
+.conversation-more {
+    margin: 10px 16px;
+}
+.conversation-reader .reader-content {
+    overflow: visible;
+    flex: none;
+}

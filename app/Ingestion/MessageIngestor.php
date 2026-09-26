@@ -2,9 +2,11 @@
 
 namespace App\Ingestion;
 
+use App\Conversations\Threader;
 use App\Messages\EmailHtml;
 use App\Models\MailAccount;
 use App\Models\RemoteFolder;
+use App\Organization\OrganizationService;
 use App\Organization\SystemFolders;
 use App\Storage\BlobStore;
 use Illuminate\Support\Carbon;
@@ -25,6 +27,7 @@ class MessageIngestor
         $now = now()->utc();
 
         return DB::transaction(function () use ($account, $folder, $uid, $uidvalidity, $raw, $flags, $sha, $parsed, $received, $date, $now) {
+            app(OrganizationService::class)->lockVersion($account->user_id);
             $key = 'raw-v1:'.$sha;
             $existing = DB::table('messages')->where('mail_account_id', $account->id)->where('dedupe_key', $key)->first();
             if ($existing) {
@@ -72,8 +75,10 @@ class MessageIngestor
                 // Keep the raw message and leave extraction retryable; no parser details in logs.
             }
 
+            app(Threader::class)->assign($messageId);
+
             return $messageId;
-        });
+        }, 5);
     }
 
     public function refreshRemoteSummary(int $messageId): void

@@ -10,8 +10,11 @@ export const routes: RouteRecordRaw[] = [
         path: '/mail/account/:accountId(\\d+)',
         redirect: (to) => ({ path: `/mail/account/${to.params.accountId}/all`, query: to.query }),
     },
-    { path: '/mail/account/:accountId(\\d+)/:view(all|inbox|unread)', component: MailPage },
-    { path: '/mail/:view(all|inbox|unread|accounts)', component: MailPage },
+    {
+        path: '/mail/account/:accountId(\\d+)/:view(all|inbox|unread|sent|archive)',
+        component: MailPage,
+    },
+    { path: '/mail/:view(all|inbox|unread|sent|archive|accounts)', component: MailPage },
     { path: '/mail/:pathMatch(.*)*', redirect: '/mail/all' },
 ];
 

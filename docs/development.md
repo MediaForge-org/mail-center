@@ -767,3 +767,28 @@ narrow-pane containment and no external requests; screenshot: `/tmp/mailcenter-h
 The database-free hostile smoke now includes CSS URL/position/expression/binding payloads.
 The guarded session/remote-image fixture also uses this styled email, exercising default blocking,
 consent, allowlisting/revocation and same-origin proxy fetching with a controlled upstream.
+
+## M3 acceptance and deployment
+
+See [the M3 acceptance record](m3-acceptance.md) for the requirement matrix, benchmark environment,
+raw query plans, browser/security evidence, limitations and operator deployment commands.
+The final isolated browser fixture is `tests/browser/m3-fixture.php`; it extends the existing
+session fixture with a two-message conversation, 65 plain messages and a disabled account.
+Run `python3 tests/browser/m3-acceptance-smoke.py` against the existing isolated port-8072 harness.
+Never run backend database refreshes concurrently with that browser server.
+
+M3 finalization adds pending migrations for durable freshness, thread lookup indexes/scoped
+membership, durable thread repairs, and maintenance runs. Apply these before restarting workers
+on the new application code. Existing mail remains readable individually until the operator runs
+`messages:assign-threads`. `messages:sanitize-html` now records checkpointed maintenance progress;
+inspect `maintenance_runs.stats` and `completed_with_errors`, then repeat after repairing missing
+raw blobs or parsing failures. No deployment reprocessing is automatic.
+
+Performance reproduction (test service only):
+
+```sh
+docker compose run --rm test php artisan test --group=performance
+```
+
+The isolated PostgreSQL tmpfs is capped at 1 GiB for the 100k fixtures and their WAL. It is separate
+from persistent `postgres_data`; this does not change development data persistence.

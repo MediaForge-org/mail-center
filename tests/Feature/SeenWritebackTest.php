@@ -391,3 +391,19 @@ it('requires authentication before accepting local read actions', function () {
     $this->patchJson("/api/messages/{$this->id}/read", ['is_read' => true])->assertUnauthorized();
     expect(DB::table('messages')->value('is_read'))->toBeFalse();
 });
+
+it('converges rapid read unread read even while the first generation is in flight', function () {
+    $this->org->setSeenMirroring($this->user->id, $this->account->id, true);
+    $this->org->setRead($this->user->id, $this->id, true);
+    $this->imap->onStore = function () {
+        $this->org->setRead($this->user->id, $this->id, false);
+        $this->org->setRead($this->user->id, $this->id, true);
+        $this->imap->onStore = null;
+    };
+    app(SeenWriteback::class)->run($this->account->id);
+    expect(DB::table('remote_flag_changes')->orderBy('generation')->pluck('status')->all())->toBe(['superseded', 'superseded', 'pending']);
+    app(SeenWriteback::class)->run($this->account->id);
+    expect(DB::table('messages')->value('is_read'))->toBeTrue();
+    expect($this->imap->mailboxes['INBOX']['messages'][1]['flags'])->toContain('\\Seen');
+    expect(DB::table('remote_flag_changes')->orderByDesc('generation')->value('status'))->toBe('done');
+});

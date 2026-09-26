@@ -256,8 +256,8 @@ Threads are scoped per account (see [04](04-organization-semantics.md) §6).
 `message_id PK`, `text_plain text` (from text part, or derived from HTML), `html_sanitized text
 null`, `sanitizer_version smallint`, `remote_content_count int` (blocked remote resources),
 `created_at`, `updated_at`. Raw HTML is always re-derivable from the raw blob; when the sanitizer
-version increases, reading schedules re-sanitization; escaped plain text is served until current
-output exists. MIME parsing and sanitization run in a bounded worker process, never inline on read.
+version increases, the operator starts a durable `messages:sanitize-html` run; escaped plain text
+is served until current output exists. Reads do not automatically enqueue raw-message processing. MIME parsing and sanitization run in a bounded worker process, never inline on read.
 
 ### `message_participants`
 `id`, `message_id`, `role` (`from`, `sender`, `to`, `cc`, `bcc`, `reply_to`), `address citext`,
@@ -320,9 +320,14 @@ row; processing rows retain their generation and cannot acknowledge newer intent
 
 ### Durable UI freshness and organization operations (M3/M4)
 `user_change_versions`: `user_id PK/FK`, `version bigint NOT NULL default 0`.
-Every transaction affecting API-visible state locks and increments this user's row before its
-domain writes. No independent sequence or timestamp is used as a commit cursor. Read version and
-related responses in a consistent snapshot. `GET /changes?since=` returns current version and
+M3 finalization enforces transactional increments with PostgreSQL statement triggers on messages,
+accounts, bodies, attachments, folders, sender preferences and flag intents. One increment per
+affected user per statement also covers bulk/operator writes. Application organization, account
+and ingestion transactions acquire the version row first; other writers serialize at their
+statement's trigger boundary. A detected deadlock aborts the transaction, never publishes a
+partial invalidation. No independent sequence or timestamp is used as a commit cursor. Counts
+use a repeatable-read snapshot; clients sample the version **before** reloading related data,
+so commits during a reload remain detectable on the next poll. `GET /api/changes?since=` returns current version and
 `invalidate: true|false`; the client refreshes lists, counts, detail, and lookup queries on change.
 It is an invalidation protocol, not a row-event log; deletes and account/folder changes are covered.
 Lock order for DB mutations is user version row → thread advisory lock if needed → account,
@@ -382,7 +387,7 @@ Sessions, cache and advisory Redis locks use Redis (no SQL tables). `failed_jobs
 `result_code`, `created_at`, `finished_at`. Jobs carry only the ID; clear encrypted settings on
 completion/expiry and sweep expired leases. This temporary secret uses the credential keyring.
 `maintenance_runs` (M3 re-sanitization; M5 reindex): `id`, `kind`, `scope jsonb`, `target_version`,
-`cursor jsonb`, `status`, `lease_expires_at`, `next_attempt_at`, `stats jsonb`, timestamps.
+`cursor bigint` (last processed message ID in the M3 implementation), `status`, `lease_expires_at`, `next_attempt_at`, `stats jsonb`, timestamps.
 One active run per kind/scope/version; sweeper redelivers abandoned work. Sanitizer jobs also
 compare the content/parser version before replacing derived output. Bulk operation jobs have
 their own durable operation/item records, not solely Redis progress.

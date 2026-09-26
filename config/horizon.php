@@ -6,6 +6,11 @@ return [
     'middleware' => ['web'],
     'waits' => ['mail_sync:sync' => 120, 'redis:default' => 60],
     'defaults' => [
+        'maintenance-supervisor' => [
+            'connection' => 'maintenance', 'queue' => ['maintenance'], 'balance' => 'simple',
+            'maxProcesses' => 1, 'memory' => 512, 'tries' => 1, 'timeout' => 3600,
+            'maxJobs' => 50, 'maxTime' => 7200,
+        ],
         'writeback-supervisor' => [
             'connection' => 'writeback', 'queue' => ['writeback'], 'balance' => 'simple',
             'maxProcesses' => 2, 'memory' => 256, 'tries' => 1, 'timeout' => 120,

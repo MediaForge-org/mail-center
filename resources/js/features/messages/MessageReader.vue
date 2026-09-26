@@ -11,7 +11,12 @@ import {
 } from '../../api/messages';
 import type { AccountSummary } from '../../api/accounts';
 
-const props = defineProps<{ messageId: number | null; accounts: AccountSummary[] }>();
+const props = defineProps<{
+    messageId: number | null;
+    accounts: AccountSummary[];
+    embedded?: boolean;
+    refreshVersion?: number;
+}>();
 const emit = defineEmits<{ close: []; readChanged: [change: ReadChange] }>();
 const savingRead = ref(false);
 const readError = ref('');
@@ -110,7 +115,8 @@ function sizeLabel(bytes: number): string {
 }
 
 async function load() {
-    revokeGrant();
+    const refreshing = detail.value !== null && detail.value.id === props.messageId;
+    if (!refreshing) revokeGrant();
     imageBusy.value = false;
     imageError.value = '';
     frameObserver?.disconnect();
@@ -118,16 +124,16 @@ async function load() {
     controller?.abort();
     const active = new AbortController();
     controller = active;
-    detail.value = null;
+    if (!refreshing) detail.value = null;
     savingRead.value = false;
     readError.value = '';
-    plainMode.value = false;
+    if (!refreshing) plainMode.value = false;
     resourceError.value = false;
     if (props.messageId === null) {
         state.value = 'idle';
         return;
     }
-    state.value = 'loading';
+    if (!refreshing) state.value = 'loading';
     try {
         const result = await getMessage(props.messageId, active.signal);
         if (active.signal.aborted) return;
@@ -139,7 +145,7 @@ async function load() {
                 cause instanceof MessageDetailError && cause.notFound ? 'missing' : 'error';
     }
 }
-watch(() => props.messageId, load, { immediate: true });
+watch(() => [props.messageId, props.refreshVersion], load, { immediate: true });
 onBeforeUnmount(() => {
     revokeGrant();
     controller?.abort();
@@ -148,7 +154,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="reader-toolbar">
+    <div v-if="!embedded" class="reader-toolbar">
         <span>Message</span>
         <button v-if="messageId !== null" type="button" class="text-button" @click="$emit('close')">
             Close message

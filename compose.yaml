@@ -45,7 +45,7 @@ services:
       POSTGRES_USER: ${DB_USERNAME:-mailcenter}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-mailcenter_dev_only}
     tmpfs:
-      - /var/lib/postgresql:size=512m
+      - /var/lib/postgresql:size=1024m
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 3s

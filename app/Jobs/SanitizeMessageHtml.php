@@ -18,7 +18,7 @@ class SanitizeMessageHtml implements ShouldQueue
 
     public function handle(EmailHtml $sanitizer): void
     {
-        $row = DB::table('messages')->where('id', $this->messageId)->first(['raw_blob_sha256']);
+        $row = DB::table('messages')->where('id', $this->messageId)->first(['raw_blob_sha256', 'parser_version']);
         if ($row === null) {
             return;
         }
@@ -42,6 +42,7 @@ class SanitizeMessageHtml implements ShouldQueue
             return;
         }
         DB::table('message_bodies')->where('message_id', $this->messageId)
+            ->whereExists(fn ($query) => $query->selectRaw('1')->from('messages')->whereColumn('messages.id', 'message_bodies.message_id')->where('raw_blob_sha256', $sha)->where('parser_version', $row->parser_version))
             ->where('sanitizer_version', '<>', EmailHtml::VERSION)
             ->update([...$result, 'updated_at' => now()]);
     }

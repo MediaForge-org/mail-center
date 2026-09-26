@@ -36,6 +36,7 @@ class AccountController extends Controller
         }
         $encrypted = $vault->encrypt($data['password']);
         $account = DB::transaction(function () use ($request, $data, $encrypted) {
+            app(OrganizationService::class)->lockVersion((int) $request->user()->id);
             $account = MailAccount::query()->create([
                 'user_id' => $request->user()->id, 'provider' => 'imap',
                 'display_name' => $data['display_name'],
@@ -72,6 +73,7 @@ class AccountController extends Controller
             $data['next_sync_at'] = $active && $account->sync_status !== 'auth_failed' ? now() : null;
         }
         DB::transaction(function () use ($account, $data, $request) {
+            app(OrganizationService::class)->lockVersion((int) $request->user()->id);
             if (array_key_exists('write_back_seen', $data)) {
                 app(OrganizationService::class)->setSeenMirroring((int) $request->user()->id, $account->id, (bool) $data['write_back_seen']);
                 unset($data['write_back_seen']);
@@ -88,6 +90,7 @@ class AccountController extends Controller
         $request->validate(['current_password' => ['required', 'string']]);
         abort_unless(Hash::check($request->input('current_password'), $request->user()->password), 422, 'Current password is incorrect.');
         DB::transaction(function () use ($account) {
+            app(OrganizationService::class)->lockVersion($account->user_id);
             $account->update(['enabled' => false, 'sync_enabled' => false, 'next_sync_at' => null]);
             $account->credentials()->delete(); // the secret is not kept for a removed account
             $account->delete();

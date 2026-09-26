@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { usePaneWidths } from './usePaneWidths';
 import SyncStatus from '../accounts/SyncStatus.vue';
-import MessageReader from '../messages/MessageReader.vue';
+import ConversationReader from '../messages/ConversationReader.vue';
 import MessageList from '../messages/MessageList.vue';
 import type { MailboxCounts, MailboxView, ReadChange } from '../../api/messages';
 import type { AccountSummary } from '../../api/accounts';
@@ -37,6 +37,8 @@ const navigation: { view: MailboxView; label: string }[] = [
     { view: 'all', label: 'All Mail' },
     { view: 'inbox', label: 'Inbox' },
     { view: 'unread', label: 'Unread' },
+    { view: 'sent', label: 'Sent' },
+    { view: 'archive', label: 'Archive' },
 ];
 const panes = usePaneWidths();
 const automaticAccounts = computed(() =>
@@ -267,9 +269,10 @@ const selectedAccount = computed(() =>
                 aria-label="Message viewer"
                 data-testid="right-pane"
             >
-                <MessageReader
+                <ConversationReader
                     @read-changed="$emit('readChanged', $event)"
                     :message-id="selectedMessageId ?? null"
+                    :refresh-version="refreshVersion"
                     :accounts="accounts"
                     @close="$emit('select', null)"
                 />

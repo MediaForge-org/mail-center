@@ -1,6 +1,6 @@
 import { request } from './http';
 
-export type MailboxView = 'all' | 'inbox' | 'unread';
+export type MailboxView = 'all' | 'inbox' | 'unread' | 'sent' | 'archive';
 export type MessageListItem = {
     id: number;
     mail_account_id: number;
@@ -109,4 +109,28 @@ export async function revokeRemoteImageConsent(grant: string) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ grant }),
     }).catch(() => {});
+}
+
+export type ConversationItem = Pick<
+    MessageListItem,
+    'id' | 'subject' | 'from_name' | 'from_address' | 'sort_date' | 'is_read'
+> & { remote_status: string };
+export async function getConversation(
+    id: number,
+    cursor: string | null,
+    signal: AbortSignal,
+): Promise<{ data: ConversationItem[]; next_cursor: string | null }> {
+    const response = await request(
+        `/api/messages/${id}/conversation${cursor ? '?cursor=' + encodeURIComponent(cursor) : ''}`,
+        { signal },
+    );
+    if (!response.ok) throw new MessageDetailError(response.status === 404);
+    return response.json();
+}
+export async function getMailboxVersion(
+    since: string,
+): Promise<{ version: string; invalidate: boolean }> {
+    const response = await request(`/api/changes?since=${encodeURIComponent(since)}`);
+    if (!response.ok) throw new Error('Freshness unavailable.');
+    return response.json();
 }

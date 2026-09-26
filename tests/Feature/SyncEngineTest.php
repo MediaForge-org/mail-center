@@ -3,6 +3,7 @@
 use App\Connectors\Imap\ImapClient;
 use App\Connectors\Imap\ImapFailure;
 use App\Ingestion\MessageIngestor;
+use App\Jobs\SanitizeMaintenance;
 use App\Jobs\SanitizeMessageHtml;
 use App\Messages\EmailHtml;
 use App\Models\MailAccount;
@@ -410,7 +411,8 @@ it('persists sanitized HTML during ingestion and rebuilds stale output in a queu
         ->update(['html_sanitized' => null, 'sanitizer_version' => 0]);
     Queue::fake();
     $this->artisan('messages:sanitize-html')->assertSuccessful();
-    Queue::assertPushed(SanitizeMessageHtml::class, fn ($job) => $job->messageId === $body->message_id);
+    Queue::assertPushed(SanitizeMaintenance::class);
+    (new SanitizeMaintenance(DB::table('maintenance_runs')->value('id')))->handle(new EmailHtml);
     $job = new SanitizeMessageHtml($body->message_id);
     $job->handle(new EmailHtml);
     $job->handle(new EmailHtml);
