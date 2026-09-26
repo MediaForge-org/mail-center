@@ -14,6 +14,13 @@ const account = computed(() =>
 const date = computed(() => detail.value?.date_header || detail.value?.received_at);
 let controller: AbortController | undefined;
 
+function sizeLabel(bytes: number): string {
+    if (bytes < 1024) return bytes.toLocaleString() + ' B';
+    if (bytes < 1024 * 1024)
+        return (bytes / 1024).toLocaleString(undefined, { maximumFractionDigits: 1 }) + ' KB';
+    return (bytes / (1024 * 1024)).toLocaleString(undefined, { maximumFractionDigits: 1 }) + ' MB';
+}
+
 async function load() {
     controller?.abort();
     const active = new AbortController();
@@ -113,6 +120,38 @@ onBeforeUnmount(() => controller?.abort());
                     <span v-if="detail.has_attachments">⌁ Has attachments</span>
                 </div>
             </header>
+            <section
+                v-if="detail.attachments?.length"
+                class="reader-attachments"
+                aria-label="Attachments"
+            >
+                <h3>Attachments</h3>
+                <ul>
+                    <li v-for="attachment in detail.attachments" :key="attachment.id">
+                        <div class="attachment-description">
+                            <span class="attachment-name" :title="attachment.filename">{{
+                                attachment.filename
+                            }}</span>
+                            <span class="attachment-info"
+                                >{{ sizeLabel(attachment.size_bytes) }} ·
+                                {{
+                                    attachment.content_type === 'application/octet-stream'
+                                        ? 'File'
+                                        : attachment.content_type
+                                }}<template v-if="attachment.inline"> · Inline part</template></span
+                            >
+                        </div>
+                        <a
+                            v-if="attachment.downloadable"
+                            :href="`/api/messages/${detail.id}/attachments/${attachment.id}`"
+                            download
+                            referrerpolicy="no-referrer"
+                            :aria-label="`Download ${attachment.filename}`"
+                            >Download</a
+                        >
+                    </li>
+                </ul>
+            </section>
             <div v-if="detail.html_available" class="reader-format">
                 <button type="button" class="text-button" @click="plainMode = !plainMode">
                     {{ plainMode ? 'Show HTML' : 'Show plain text' }}

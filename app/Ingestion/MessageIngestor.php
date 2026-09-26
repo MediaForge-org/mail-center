@@ -66,6 +66,11 @@ class MessageIngestor
                     'last_seen_at' => $now, 'removed_at' => null, 'removed_reason' => null]
             );
             $this->refreshRemoteSummary($messageId);
+            try {
+                app(AttachmentExtractor::class)->extract($messageId, $raw);
+            } catch (Throwable) {
+                // Keep the raw message and leave extraction retryable; no parser details in logs.
+            }
 
             return $messageId;
         });

@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MessageDetail;
 use App\Http\Resources\MessageListItem;
+use App\Messages\AttachmentMetadata;
 use App\Messages\EmailHtml;
 use App\Messages\MessageView;
+use App\Storage\BlobStore;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Query\Builder;
@@ -17,6 +19,8 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class MessageController extends Controller
 {
@@ -88,7 +92,33 @@ class MessageController extends Controller
             ])->first();
         abort_if($row === null, 404);
 
-        return response()->json(['data' => MessageDetail::fromRow($row)]);
+        $data = MessageDetail::fromRow($row);
+        $data['attachments'] = DB::table('attachments')->where('message_id', $id)
+            ->orderBy('part_order')->orderBy('id')
+            ->get(['id', 'filename', 'content_type', 'size_bytes', 'disposition'])
+            ->map(fn ($attachment) => AttachmentMetadata::fromRow($attachment))->all();
+
+        return response()->json(['data' => $data]);
+    }
+
+    public function downloadAttachment(Request $request, int $id, int $attachment, BlobStore $blobs): BinaryFileResponse
+    {
+        abort_unless($this->readableMessage($request, $id)->exists(), 404);
+        $row = DB::table('attachments')->where('message_id', $id)->where('id', $attachment)->first();
+        abort_if($row === null, 404);
+        $path = $blobs->verifiedPath($row->blob_sha256);
+        abort_if($path === null || filesize($path) !== (int) $row->size_bytes, 404);
+
+        $response = new BinaryFileResponse($path, 200, [
+            'Content-Type' => AttachmentMetadata::contentType($row->content_type),
+            'Content-Length' => (string) $row->size_bytes,
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control' => 'private, no-store',
+            'Referrer-Policy' => 'no-referrer',
+        ], false);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, AttachmentMetadata::filename($row->filename), 'attachment');
+
+        return $response;
     }
 
     private function readableMessage(Request $request, int $id): Builder

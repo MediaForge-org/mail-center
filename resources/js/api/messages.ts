@@ -32,12 +32,21 @@ export async function listMessages(
     return (await response.json()) as MessagePage;
 }
 
+export type Attachment = {
+    id: number;
+    filename: string;
+    content_type: string;
+    size_bytes: number;
+    inline: boolean;
+    downloadable: boolean;
+};
 export type MessageDetail = Omit<MessageListItem, 'snippet' | 'sort_date'> & {
     cc: MessageListItem['to'];
     bcc: MessageListItem['to'];
     reply_to: MessageListItem['to'];
     date_header: string | null;
     remote_status: 'present' | 'missing' | 'removed';
+    attachments: Attachment[];
     html_available: boolean;
     remote_content_count: number;
     body_status: 'available' | 'unavailable';

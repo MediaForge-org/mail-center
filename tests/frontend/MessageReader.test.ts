@@ -173,3 +173,56 @@ it('uses only a same-origin sandboxed iframe for HTML and keeps plain text avail
     expect(wrapper.find('iframe').exists()).toBe(false);
     expect(wrapper.find('.reader-body').exists()).toBe(true);
 });
+
+it('shows compact attachment downloads for the selected message and clears stale files', async () => {
+    const filename = '非常に長いrésumé-'.repeat(20) + '.pdf';
+    const attachments = [
+        {
+            id: 7,
+            filename,
+            content_type: 'application/pdf',
+            size_bytes: 2048,
+            inline: false,
+            downloadable: true,
+        },
+        {
+            id: 8,
+            filename,
+            content_type: 'application/octet-stream',
+            size_bytes: 0,
+            inline: false,
+            downloadable: true,
+        },
+    ];
+    let finish!: (response: Response) => void;
+    const fetchMock = vi
+        .fn()
+        .mockResolvedValueOnce(response({ ...message(1), attachments }))
+        .mockImplementationOnce(
+            () =>
+                new Promise<Response>((resolve) => {
+                    finish = resolve;
+                }),
+        )
+        .mockResolvedValueOnce(response({ ...message(3), attachments: [] }));
+    vi.stubGlobal('fetch', fetchMock);
+    const wrapper = mount(MessageReader, { props: { messageId: 1, accounts: [] } });
+    wrappers.push(wrapper);
+    await flushPromises();
+    expect(wrapper.findAll('.reader-attachments li')).toHaveLength(2);
+    expect(wrapper.find('.attachment-name').text()).toBe(filename);
+    expect(wrapper.find('.attachment-info').text()).toContain('2 KB');
+    expect(wrapper.findAll('.attachment-info')[1].text()).toContain('0 B');
+    expect(wrapper.findAll('.reader-attachments a').map((a) => a.attributes('href'))).toEqual([
+        '/api/messages/1/attachments/7',
+        '/api/messages/1/attachments/8',
+    ]);
+    await wrapper.setProps({ messageId: 2 });
+    expect(wrapper.find('.reader-attachments').exists()).toBe(false);
+    await wrapper.setProps({ messageId: 3 });
+    await flushPromises();
+    finish(response({ ...message(2), attachments }));
+    await flushPromises();
+    expect(wrapper.find('.reader-attachments').exists()).toBe(false);
+    expect(wrapper.text()).toContain('Real subject 3');
+});

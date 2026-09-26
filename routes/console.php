@@ -1,5 +1,6 @@
 <?php
 
+use App\Jobs\ExtractMessageAttachments;
 use App\Jobs\SanitizeMessageHtml;
 use App\Messages\EmailHtml;
 use Illuminate\Foundation\Inspiring;
@@ -24,3 +25,13 @@ Artisan::command('messages:sanitize-html', function () {
         }, 'message_id');
     $this->info('Queued stale message bodies for HTML sanitization.');
 })->purpose('Queue versioned HTML sanitization from retained raw blobs');
+
+Artisan::command('messages:extract-attachments', function () {
+    DB::table('messages')->whereNull('attachments_extracted_at')
+        ->select('id')->orderBy('id')->chunkById(200, function ($rows) {
+            foreach ($rows as $row) {
+                ExtractMessageAttachments::dispatch($row->id);
+            }
+        });
+    $this->info('Queued pending attachment extraction.');
+})->purpose('Extract attachment metadata and blobs from verified retained messages');

@@ -775,3 +775,49 @@ button {
     border: 0;
     background: white;
 }
+
+.reader-attachments {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+}
+.reader-attachments h3 {
+    margin: 0 0 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+.reader-attachments ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.reader-attachments li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 7px 0;
+    font-size: 12px;
+}
+.attachment-description {
+    min-width: 0;
+    flex: 1;
+}
+.attachment-name {
+    display: block;
+    overflow-wrap: anywhere;
+}
+.attachment-info {
+    display: block;
+    color: var(--text-muted);
+    overflow-wrap: anywhere;
+    margin-top: 3px;
+}
+.reader-attachments a {
+    flex-shrink: 0;
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+.reader-attachments a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}

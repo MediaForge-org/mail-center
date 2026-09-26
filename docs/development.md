@@ -254,3 +254,67 @@ in a temporary localhost harness, and checks framed/direct rendering without
 automatic resource requests or active content. It is not an authenticated
 end-to-end deployment test. Attachment/CID rendering and remote-image loading
 remain out of scope.
+
+## M3.7 attachment listing and downloads
+
+The additive attachment migration must be applied through the normal deployment
+migration process before using this code. It was applied only to the isolated test
+database during implementation; development data was not migrated or reprocessed.
+
+The `attachments` table stores the message reference, content-addressed blob
+reference, sanitized filename, validated download MIME type, decoded byte size,
+disposition, optional Content-ID, stable MIME tree path and part order. The unique
+`(message_id, mime_part_path)` index also supports message-scoped lookup. Filename
+trigram indexing is deferred with search. `messages.attachments_extracted_at`
+marks completed extraction, including messages with no files.
+
+Ingestion extracts files in a transaction, preserving decoded binary bytes without
+charset conversion. Blobs use the existing SHA-256 store and are deduplicated.
+Extraction is bounded by the configured message byte limit (also the total decoded
+attachment limit), 500 visited parts and MIME depth 20. A failed extraction leaves
+the raw message intact and its extraction marker unset for an operator retry.
+Only non-inline attachments set `has_attachments`; stored inline parts are still
+listed as downloadable files. Attached messages are single downloads, not expanded
+into duplicated nested attachments.
+
+After normal migrations and restarting queue workers, an operator can explicitly run:
+
+```sh
+docker compose exec app php artisan messages:extract-attachments
+```
+
+This scans pending messages in batches of 200 and queues ID-only jobs. Jobs verify
+the raw blob SHA-256 and size before parsing. Completed messages are skipped;
+row locking and a transaction make repeated or concurrent jobs safe. Missing or
+corrupt raw blobs remain pending. This command was **not** run on development mail.
+There is no MIME parsing in detail or download HTTP requests.
+
+Message detail adds `attachments: [{id, filename, content_type, size_bytes, inline,
+downloadable}]`, ordered by MIME part order. No blob hashes, paths, Content-IDs or
+parser identifiers are exposed. The reader omits an empty attachment section and
+uses normal download links to:
+
+```text
+GET /api/messages/{message}/attachments/{attachment}
+```
+
+Downloads require the current authenticated owner of both the message and account;
+local deletion, deleted/disabled accounts, foreign ownership, and cross-message
+attachment substitution return 404. Sync-paused accounts remain readable.
+Storage paths are derived only from verified internal SHA-256 references, never
+filenames or request paths. Missing/corrupt files return 404.
+
+Responses use a streamed binary file response, verified byte length, attachment
+disposition with encoded Unicode filename, `nosniff`, `private, no-store` and
+`no-referrer`. Active types (HTML, SVG, JavaScript, XML) and unknown types use
+`application/octet-stream`. This is MIME policy validation, not a malware verdict.
+Control characters and path separators are removed from filenames, names are
+bounded to 240 UTF-8 bytes, and missing names become `attachment`. Duplicate names
+remain separate records. Zero-byte files are valid.
+
+Antivirus scanning is not implemented. There are no previews, CID render routes,
+inline embedding or remote-image loading. The download path verifies the full
+blob hash before streaming, so very large files incur a sequential integrity read.
+Background parsing reads a bounded raw message into memory; downloads do not load
+the complete file into PHP memory. Attachment metadata currently shares the detail
+request rather than having a separate loading/error state.
