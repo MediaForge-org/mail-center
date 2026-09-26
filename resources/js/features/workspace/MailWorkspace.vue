@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import MessageList from '../messages/MessageList.vue';
 import type { MailboxView } from '../../api/messages';
 import type { AccountSummary } from '../../api/accounts';
 import { statusLabels, statusTone } from '../accounts/statusLabel';
@@ -9,9 +10,8 @@ withDefaults(
         accounts?: AccountSummary[];
         section?: 'mail' | 'accounts';
         view?: MailboxView;
-        mailboxState?: 'loading' | 'ready' | 'empty' | 'error';
     }>(),
-    { accounts: () => [], section: 'mail', view: 'all', mailboxState: 'ready' },
+    { accounts: () => [], section: 'mail', view: 'all' },
 );
 defineEmits<{ signOut: []; navigate: [section: MailboxView | 'accounts'] }>();
 
@@ -128,20 +128,7 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
                         <h1>{{ navigation.find((item) => item.view === view)?.label }}</h1>
                     </div>
                 </div>
-                <div class="list-placeholder">
-                    <div class="placeholder-icon" aria-hidden="true">✉</div>
-                    <div aria-live="polite">
-                        <p v-if="mailboxState === 'loading'">Loading mailbox…</p>
-                        <p v-else-if="mailboxState === 'error'" role="alert">
-                            Unable to load this mailbox. Try another view or return here to retry.
-                        </p>
-                        <p v-else-if="mailboxState === 'empty'">No messages in this view.</p>
-                        <template v-else
-                            ><h2>Your messages will appear here</h2>
-                            <p>Mailbox connected. Message display is coming next.</p></template
-                        >
-                    </div>
-                </div>
+                <MessageList :view="view" :accounts="accounts" />
             </section>
 
             <section

@@ -53,7 +53,7 @@ describe('mailbox navigation', () => {
         expect(wrapper.find('[aria-current="page"]').text()).toContain('Unread');
         for (const view of ['all', 'inbox', 'unread'])
             expect(fetchMock).toHaveBeenCalledWith(
-                `/api/messages?view=${view}&limit=1`,
+                `/api/messages?view=${view}&limit=50`,
                 expect.anything(),
             );
         await click('Manage accounts');
@@ -100,7 +100,7 @@ describe('mailbox navigation', () => {
         finish(new Response(JSON.stringify({ data: [{ id: 1 }], next_cursor: null })));
         await flushPromises();
         expect(wrapper.find('[aria-current="page"]').text()).toContain('Unread');
-        expect(wrapper.text()).toContain('No messages in this view');
+        expect(wrapper.text()).toContain('No unread messages');
     });
 
     it('keeps navigation usable after a mailbox API failure', async () => {
@@ -109,6 +109,6 @@ describe('mailbox navigation', () => {
         await click('Unread');
         expect(router.currentRoute.value.path).toBe('/mail/unread');
         expect(wrapper.find('[role="alert"]').exists()).toBe(false);
-        expect(wrapper.text()).toContain('No messages in this view');
+        expect(wrapper.text()).toContain('No unread messages');
     });
 });

@@ -579,3 +579,121 @@ button {
     font-size: 10px;
     font-weight: 400;
 }
+
+.message-feed {
+    min-width: 0;
+}
+.message-rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.message-row {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    padding: 14px 22px;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    background: transparent;
+    text-align: left;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+.message-row:hover {
+    background: var(--surface-soft);
+}
+.message-row:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -3px;
+}
+.message-row.message-selected {
+    background: var(--surface-accent);
+    box-shadow: inset 3px 0 var(--accent);
+}
+.message-topline {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    min-width: 0;
+}
+.message-sender {
+    flex: 1;
+    font-size: 12px;
+}
+.message-topline time {
+    flex-shrink: 0;
+    font-size: 10px;
+    color: var(--text-soft);
+}
+.message-sender,
+.message-subject,
+.message-snippet {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+.message-subject {
+    margin-top: 5px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+.message-unread .message-sender,
+.message-unread .message-subject {
+    font-weight: 750;
+    color: var(--text);
+}
+.message-snippet {
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-soft);
+}
+.message-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px 9px;
+    margin-top: 9px;
+    font-size: 9px;
+    color: var(--text-soft);
+}
+.message-account {
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--surface-accent);
+    color: var(--accent);
+    font-weight: 650;
+}
+.message-status {
+    white-space: nowrap;
+}
+.message-feed-footer {
+    padding: 24px 18px;
+    text-align: center;
+    color: var(--text-soft);
+    font-size: 12px;
+}
+.message-feed-footer p {
+    margin: 0 0 10px;
+}
+.message-list-pane {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    height: calc(100dvh - 56px);
+}
+.message-list-pane .pane-toolbar {
+    flex-shrink: 0;
+}
+.message-feed {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
