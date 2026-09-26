@@ -13,4 +13,7 @@ $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 if (is_string($path) && str_starts_with($path, '/build/') && is_file(__DIR__.'/../../public'.$path)) {
     return false;
 }
+if (getenv('MAILCENTER_REMOTE_BROWSER_TEST') === '1') {
+    require __DIR__.'/remote-image-bindings.php';
+}
 $app->handleRequest(Request::capture());

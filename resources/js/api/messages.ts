@@ -52,6 +52,7 @@ export type MessageDetail = Omit<MessageListItem, 'snippet' | 'sort_date'> & {
     attachments: Attachment[];
     html_available: boolean;
     remote_content_count: number;
+    remote_images_always?: boolean;
     body_status: 'available' | 'unavailable';
     text_plain: string | null;
 };
@@ -91,4 +92,21 @@ export async function setMessageRead(id: number, is_read: boolean): Promise<Read
     });
     if (!response.ok) throw new Error('Unable to change read state. Please try again.');
     return ((await response.json()) as { data: ReadChange }).data;
+}
+
+export async function remoteImageConsent(id: number, mode: 'once' | 'always' | 'block') {
+    const response = await request(`/api/messages/${id}/remote-images`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode }),
+    });
+    if (!response.ok) throw new Error('Unable to update image preference.');
+    return (await response.json()) as { grant: string | null; always: boolean };
+}
+export async function revokeRemoteImageConsent(grant: string) {
+    await request('/api/remote-image-consent', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ grant }),
+    }).catch(() => {});
 }

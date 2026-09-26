@@ -10,9 +10,11 @@ use App\Messages\EmailHtml;
 use App\Messages\InlineImages;
 use App\Messages\MessageFilter;
 use App\Messages\MessageView;
+use App\Messages\RemoteImages\Consent;
 use App\Organization\OrganizationService;
 use App\Storage\BlobStore;
 use Carbon\CarbonImmutable;
+use Dom\HTMLDocument;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
@@ -122,6 +124,7 @@ class MessageController extends Controller
         abort_if($row === null, 404);
 
         $data = MessageDetail::fromRow($row);
+        $data['remote_images_always'] = app(Consent::class)->allowlisted((int) $request->user()->id, $row->from_address);
         $data['read_writeback'] = DB::table('remote_flag_changes')->where('message_id', $id)->where('flag', '\\Seen')
             ->whereIn('status', ['pending', 'processing', 'failed'])->orderByDesc('generation')->value('status');
         $data['attachments'] = DB::table('attachments')->where('message_id', $id)
@@ -177,7 +180,7 @@ class MessageController extends Controller
         ], false);
     }
 
-    private function readableMessage(Request $request, int $id): Builder
+    public static function readableMessage(Request $request, int $id): Builder
     {
         $userId = (int) $request->user()->getAuthIdentifier();
 
@@ -198,14 +201,31 @@ class MessageController extends Controller
             ->where('messages.parse_status', '<>', 'failed')
             ->whereNotNull('message_bodies.html_sanitized')
             ->where('message_bodies.html_sanitized', '<>', '')
-            ->select('message_bodies.html_sanitized')->first();
+            ->select('messages.id', 'messages.from_address', 'message_bodies.html_sanitized', 'message_bodies.remote_resources')->first();
         abort_if($row === null, 404);
+
+        $input = $request->validate(['images' => ['sometimes', 'in:blocked,allowed'], 'grant' => ['sometimes', 'string', 'size:64']]);
+        $allowed = ($input['images'] ?? 'blocked') === 'allowed';
+        $consent = app(Consent::class);
+        $grant = $input['grant'] ?? null;
+        abort_if($allowed && ! $consent->permits($request, $row, $grant), 403);
 
         // Only versioned sanitizer output enters this standalone document.
         $html = $images->resolve($row->html_sanitized, $id, DB::table('attachments')->where('message_id', $id)->get());
+        $document = HTMLDocument::createFromString($html, LIBXML_NOERROR, 'UTF-8');
+        $resources = json_decode($row->remote_resources, true);
+        foreach ($document->getElementsByTagName('img') as $image) {
+            $key = (string) $image->getAttribute('data-mc-remote');
+            $image->removeAttribute('data-mc-remote');
+            if ($allowed && isset($resources[$key]) && hash('sha256', $resources[$key]) === $key) {
+                $token = $consent->token((int) $request->user()->id, $id, $key, $grant);
+                $image->setAttribute('src', '/api/image-proxy?token='.rawurlencode($token));
+            }
+        }
+        $html = $document->body->innerHTML;
 
         return response('<!doctype html><html><head><meta charset="utf-8"><title>Message</title>'
-            .'<style>body{font:14px/1.6 system-ui,sans-serif;margin:16px;overflow-wrap:anywhere}img{max-width:100%;height:auto}pre{white-space:pre-wrap}table{max-width:100%;border-collapse:collapse}td,th{padding:4px}a{color:#315acb}</style>'
+            .'<style>'.EmailHtml::RENDER_CSS.'</style>'
             .'</head><body>'.$html.'</body></html>', 200, [
                 'Content-Type' => 'text/html; charset=UTF-8',
                 'Content-Security-Policy' => EmailHtml::CSP,

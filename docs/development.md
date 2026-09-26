@@ -621,3 +621,149 @@ and 1440×900 layouts, and persisted divider widths. It writes a synthetic-mail 
 to `/tmp/mailcenter-repair-desktop.png`. The separate HTML smoke test continues asserting
 zero remote-image requests. Browser/server tests supplement rather than replace the
 isolated hostile-content and deletion-authorization backend tests.
+
+## M3.10b — remote email images
+
+Remote images remain blocked until the reader chooses **Load images** or **Always load from
+[address]**. Loading can notify a sender that the message was opened. The proxy hides browser
+IP/cookies/referrer, not the unique tracking URL. Exact, lowercased sender preferences are private
+to each user; they do not establish identity (From addresses can be spoofed). The reader can revoke
+the preference. There is no domain trust, prefetch, background fetching or shared image cache.
+
+Sanitizer **version 3** stores `data-mc-remote` SHA-256 markers and a private JSONB
+`message_bodies.remote_resources` mapping. Only the mapping contains original URLs. Neither JSON
+message detail nor render output exposes that mapping. Ingestion and the existing sanitizer job
+persist both atomically without network access. Old versions fall back to plain text.
+
+The schema migration adds the mapping and `remote_content_allowlist` (unique user/address).
+**Operator deployment steps, not automatically run by this implementation:**
+
+```sh
+docker compose build app
+# Deploy/restart app and workers with this image using the usual update procedure.
+docker compose exec app php artisan migrate --force
+docker compose exec app php artisan messages:sanitize-html
+```
+
+Keep the normal queue worker running to process the sanitizer jobs. Raw MIME is read only by the
+background sanitizer, never by render/proxy HTTP handlers. No attachment re-extraction is required.
+The image adds PHP GD with JPEG/WebP support; non-Docker PHP installations need GD, cURL, fileinfo,
+and the PHP CLI/Process support used for bounded DNS lookups. Composer package versions are unchanged.
+
+### Authorization and network boundary
+
+- CSRF-protected `POST /api/messages/{id}/remote-images` accepts `once`, `always`, or `block`.
+  No destination or sender override is accepted; the address comes from the authorized message.
+- Once grants are random, per opening, session-bound and message/user-bound, expire after ten
+  minutes, and are revoked on reader navigation/unmount. The frontend does not persist them.
+  Refresh requires consent again. A failed close request still leaves a bounded expiry.
+- `GET /api/messages/{id}/render` stays blocked by default, including for allowlisted senders.
+  The reader chooses `images=allowed` only after consent/preference. The server checks that choice.
+- `GET /api/image-proxy?token=...` uses the repaired `web`/`auth:web` session boundary.
+  Five-minute Laravel authenticated-encryption/HMAC tokens bind user, message, resource and grant;
+  they contain no URL or credentials. Every image request rechecks current ownership, deletion,
+  sanitizer version, mapping membership and consent/preference. Signatures alone grant no access.
+- DNS runs in a bounded PHP subprocess; every returned A/AAAA address must be public. The request
+  connects using cURL `CURLOPT_RESOLVE` to one validated address while preserving TLS hostname/SNI
+  verification. Each redirect repeats validation; at most three redirects, no loops. No proxy
+  environment, cookie jar, auth, referrer or client forwarding headers. Generic UA only.
+- HTTP/HTTPS, ports 80/443 only; private, local, metadata, multicast, reserved/documentation and
+  IPv6 transition/local ranges are refused. DNS failure, timeout and refusal fail closed.
+- One five-second network deadline spans DNS and redirect hops. Streaming stops above 10 MiB;
+  response headers are also bounded. Declared MIME, fileinfo, dimensions and GD decoding must agree:
+  PNG/JPEG/GIF/WebP, each axis <=8192, <=16 million pixels. Obvious active payloads are rejected.
+  Accepted pixels are re-encoded to PNG to strip metadata and trailing data. Animation is not
+  preserved; decoded/output size and processing memory remain bounded.
+- Only controlled response headers are returned: `Content-Type: image/png`, actual Content-Length,
+  `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`,
+  `Cache-Control: private, no-store`. Upstream cookies/location/headers are not forwarded.
+- Existing render CSP and sandbox are unchanged (`img-src 'self' data:`); CID and plain text remain
+  supported. No remote host is ever inserted into image sources or CSP.
+
+Failures return an empty generic 404 and leave the rest of the message usable; no automatic retry.
+Network exceptions are deliberately neither reported nor logged, because URLs contain tracking
+secrets. The bundled Caddy configuration does not enable access logging. If an operator enables
+access logs upstream, strip query strings (especially render grants and proxy tokens); do not log
+request/response bodies or upstream URLs. Never enable cURL verbose logging for this path.
+
+### Deterministic real-browser verification
+
+After the isolated backend suite has finished (do not share its refresh cycle concurrently), start:
+
+```sh
+docker compose run --rm --no-deps --name mailcenter-remote-browser-test \
+  -p 127.0.0.1:8072:8072 \
+  -e DB_CONNECTION=pgsql -e DB_PORT=5432 \
+  -e APP_URL=http://127.0.0.1:8072 -e SANCTUM_STATEFUL_DOMAINS=127.0.0.1:8072 \
+  -e SESSION_COOKIE=mailcenter_remote_browser_test -e SESSION_SECURE_COOKIE=false \
+  -e SESSION_DRIVER=file -e APP_DEBUG=false -e PHP_CLI_SERVER_WORKERS=4 \
+  -e MAILCENTER_REMOTE_BROWSER_TEST=1 test sh -c \
+  'php tests/browser/session-fixture.php && (php -S 127.0.0.1:8073 tests/browser/remote-image-source.php >/tmp/remote-source.log 2>&1 & exec php -S 0.0.0.0:8072 -t public tests/browser/session-router.php >/tmp/remote-browser.log 2>&1)'
+```
+
+In another terminal:
+
+```sh
+python3 tests/browser/remote-image-smoke.py
+python3 tests/browser/html-render-smoke.py
+docker stop mailcenter-remote-browser-test
+```
+
+The browser fixture router always runs the existing database safety bootstrap first. Test-only
+resolver/transport bindings simulate a public address then redirect the transport to a controlled
+loopback server; production has no private-network exception or testing switch. Production SSRF,
+rebinding, redirect and streaming behavior is independently tested with fake resolvers and local
+transport tests. Chromium instruments requests, verifies CID decode, checks default zero upstream
+requests, once and allowlist/reopen behavior, and proves upstream sees only the generic server
+client with no cookies, referrer, Authorization or forwarded client IP. No public internet is needed.
+
+## M3.10c — safe inline CSS fidelity
+
+Sanitizer version **4** adds `EmailCss`, using locked **sabberworm/php-css-parser 9.5.0**.
+The [upstream parser](https://github.com/MyIntervals/PHP-CSS-Parser) supplies strict parsing and
+structured declarations/values; it is not treated as a sanitizer by itself. Each inline attribute
+must parse as exactly one synthetic declaration block. We walk only approved value nodes, validate
+property-specific grammars, and reconstruct declarations without comments or `!important`.
+Regexes validate scalar grammars and resource bounds after parsing; they do not parse CSS.
+
+Supported: colors/background colors, local font families/sizes/weights/styles, line height,
+text/vertical alignment and decoration, margins/padding (including sides), widths/min/max widths,
+heights/max heights, borders (including side shorthands), radius, collapse/spacing, and a small
+block/inline/table display vocabulary. Common structural elements and table columns are preserved.
+Body presentation is retained on a neutral wrapper. Legacy width/height/bgcolor/color/face/align/
+valign become sanitized CSS; bounded cellpadding/cellspacing/rowspan/colspan and ltr/rtl survive.
+
+Rejected: resource URLs in every CSS property, imports/font-face, all functions except numeric
+colors, expression/behavior/bindings, variables/calc/gradients, vendor extensions, positioning,
+z-index, opacity/visibility tricks, negative/extreme lengths, escaped spellings, malformed CSS,
+and arbitrary HTML event attributes. Inline CSS is bounded to 8 KiB/100 declarations, function
+count and value-tree depth are bounded, lengths use only px/pt/em/rem/% with numeric caps.
+Scripts, frames, forms/inputs/buttons, SVG, MathML, meta/base and unapproved URL attributes remain
+blocked. This pass does not add stylesheet or selector processing: `<style>` blocks, classes,
+media queries, web fonts, flex/grid, CSS variables and Outlook-specific extensions remain unsupported.
+Malformed attributes fail closed; other content remains readable. This is practical fidelity,
+not full browser CSS or pixel-perfect email-client emulation.
+
+The standalone renderer no longer imposes table collapse, cell padding or link colors. It supplies
+only fallback typography, zero body margin, long-text/pre wrapping, and image/table width constraints.
+Wide tables can scroll within the iframe; they cannot widen the application. CSP, sandbox, session
+authentication, CID authorization, remote consent/proxy and plain-text behavior are unchanged.
+All CSS processing occurs during ingestion or the background sanitizer job, never from raw MIME
+in HTTP handlers. No schema change is needed for this package.
+
+After installing locked dependencies and deploying/restarting workers, the operator may run:
+
+```sh
+docker compose exec app php artisan messages:sanitize-html
+```
+
+Until reprocessed, older HTML falls back to plain text. This command was **not** run against
+persistent development mail during implementation.
+
+`tests/Fixtures/html/account-notification.html` is a synthetic transactional template. Run
+`python3 tests/browser/html-fidelity-smoke.py` for a three-way Chromium comparison (trusted source,
+former stripped presentation, v4). It checks eleven computed layout/style metrics, CID decode,
+narrow-pane containment and no external requests; screenshot: `/tmp/mailcenter-html-fidelity.png`.
+The database-free hostile smoke now includes CSS URL/position/expression/binding payloads.
+The guarded session/remote-image fixture also uses this styled email, exercising default blocking,
+consent, allowlisting/revocation and same-origin proxy fetching with a controlled upstream.

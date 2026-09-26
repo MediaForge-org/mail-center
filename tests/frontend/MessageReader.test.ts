@@ -350,3 +350,103 @@ it('sizes safe HTML to its content and handles an expired browser-resource sessi
     expect(wrapper.find('[role="alert"]').text()).toContain('session may have expired');
     expect(wrapper.find('.reader-body').text()).toBe(message().text_plain);
 });
+
+it('loads images only after consent, scopes once to this opening and supports exact sender preference revocation', async () => {
+    let always = false;
+    const fetchMock = vi.fn((url: string, init?: RequestInit) => {
+        if (url.endsWith('/remote-images')) {
+            const mode = JSON.parse(init?.body as string).mode;
+            if (mode !== 'once') always = mode === 'always';
+            return Promise.resolve(
+                new Response(
+                    JSON.stringify({ grant: mode === 'once' ? 'a'.repeat(64) : null, always }),
+                ),
+            );
+        }
+        if (url === '/api/remote-image-consent')
+            return Promise.resolve(new Response(null, { status: 204 }));
+        return Promise.resolve(
+            response({
+                ...message(Number(url.split('/').pop())),
+                html_available: true,
+                remote_content_count: 2,
+                remote_images_always: always,
+            }),
+        );
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const wrapper = mount(MessageReader, { props: { messageId: 1, accounts: [] } });
+    wrappers.push(wrapper);
+    await flushPromises();
+    const button = (text: string) =>
+        wrapper.findAll('button').find((b) => b.text().includes(text))!;
+    expect(wrapper.find('iframe').attributes('src')).toBe('/api/messages/1/render');
+    expect(fetchMock.mock.calls).toHaveLength(1);
+    expect(wrapper.text()).toContain('notify the sender');
+    await button('Load images').trigger('click');
+    await flushPromises();
+    expect(wrapper.find('iframe').attributes('src')).toContain(
+        '/api/messages/1/render?images=allowed&grant=',
+    );
+    expect(wrapper.text()).toContain('Remote images allowed');
+    await wrapper.setProps({ messageId: 2 });
+    await flushPromises();
+    expect(wrapper.find('iframe').attributes('src')).toBe('/api/messages/2/render');
+    expect(
+        fetchMock.mock.calls.some(
+            ([url, init]) => url === '/api/remote-image-consent' && init?.method === 'DELETE',
+        ),
+    ).toBe(true);
+    await button('Always load').trigger('click');
+    await flushPromises();
+    expect(wrapper.find('iframe').attributes('src')).toBe('/api/messages/2/render?images=allowed');
+    await wrapper.setProps({ messageId: 1 });
+    await flushPromises();
+    expect(wrapper.find('iframe').attributes('src')).toBe('/api/messages/1/render?images=allowed');
+    await button('Stop always').trigger('click');
+    await flushPromises();
+    expect(wrapper.find('iframe').attributes('src')).toBe('/api/messages/1/render');
+    expect(wrapper.find('iframe').attributes('sandbox')).not.toMatch(
+        /allow-scripts|allow-forms|allow-top-navigation/,
+    );
+});
+
+it('keeps consent errors local and ignores a stale permission response after navigation', async () => {
+    let finish!: (value: Response) => void;
+    let fail = true;
+    vi.stubGlobal(
+        'fetch',
+        vi.fn((url: string) => {
+            if (url.endsWith('/remote-images')) {
+                if (fail) return Promise.resolve(new Response('{}', { status: 500 }));
+                return new Promise<Response>((resolve) => {
+                    finish = resolve;
+                });
+            }
+            if (url === '/api/remote-image-consent')
+                return Promise.resolve(new Response(null, { status: 204 }));
+            return Promise.resolve(
+                response({
+                    ...message(Number(url.split('/').pop())),
+                    html_available: true,
+                    remote_content_count: 1,
+                }),
+            );
+        }),
+    );
+    const wrapper = mount(MessageReader, { props: { messageId: 1, accounts: [] } });
+    wrappers.push(wrapper);
+    await flushPromises();
+    const load = () => wrapper.findAll('button').find((b) => b.text() === 'Load images')!;
+    await load().trigger('click');
+    await flushPromises();
+    expect(wrapper.text()).toContain('Unable to update image preference');
+    expect(wrapper.find('iframe').attributes('src')).toBe('/api/messages/1/render');
+    fail = false;
+    await load().trigger('click');
+    await wrapper.setProps({ messageId: 2 });
+    await flushPromises();
+    finish(new Response(JSON.stringify({ grant: 'b'.repeat(64), always: false })));
+    await flushPromises();
+    expect(wrapper.find('iframe').attributes('src')).toBe('/api/messages/2/render');
+});

@@ -68,19 +68,25 @@ Defense in depth — every layer assumes the others might fail.
 
 ### 4.1 Server-side sanitization (at ingestion, versioned)
 `symfony/html-sanitizer` with an explicit allowlist:
-- Allowed: common text/layout/table elements, `img`, `a`. Strip `style`, `class`, and IDs in v1;
-  use trusted renderer styles. CSS support needs a separately reviewed parser/sanitizer (OD-9).
+- Allowed: common text/layout/table elements, `img`, `a`. M3.10c sanitizer version 4 retains
+  inline styles only after strict Sabberworm CSS parsing, AST validation and property/value
+  allowlists. Classes and IDs remain stripped. Common legacy table presentation attributes
+  become sanitized CSS; bounded cell spacing/spans survive. Renderer CSS is minimal normalization.
+  Selectors, style blocks, media queries and external fonts remain outside this scope (OD-9).
 - Removed: `script`, `iframe`, `object`, `embed`, `form`, `input`, `button`, `meta`, `link`,
   `base`, `svg`, `math`, event-handler attributes, `javascript:`/`data:` URLs in links,
-  `srcset`, `<style>` blocks (M3 keeps them removed; revisit with a CSS sanitizer if rendering
-  fidelity suffers — see OD-9).
+  `srcset`, `<style>` blocks. CSS URL/function values (except numeric colors), at-rules,
+  variables, positioning, z-index, vendor properties and escaped spellings are rejected.
+  Email CSS cannot make network requests; the iframe CSP is unchanged.
 - Links: rewritten to `target="_blank" rel="noopener noreferrer nofollow"`; only `http`, `https`,
   `mailto` schemes.
 - Images:
   - `cid:` → an authorized attachment route only for a unique matching MIME part; never a path
     supplied by the sender. Inline raster images must pass type and dimension validation.
-  - Remote `http(s)` → moved to `data-remote-src`, `src` replaced by a placeholder;
-    `remote_content_count` records how many were blocked.
+  - Remote `http(s)` → neutral `data-mc-remote` fingerprint with no `src`; the private
+    `message_bodies.remote_resources` mapping retains the URL server-side.
+    `remote_content_count` records blocked image occurrences, including repeated references.
+    M3.10b sanitizer version 3 never persists session grants or proxy tokens in HTML.
   - `data:` images allowed only for raster types (png, jpeg, gif, webp) under a size cap.
 - Remove all unapproved URL-bearing attributes, including background, poster, ping, srcset,
   SVG references and relative URLs. Only server-issued inline/proxy routes become image sources.
@@ -122,7 +128,8 @@ Defense in depth — every layer assumes the others might fail.
     redirects to disallowed IPs (max 3 redirects, each re-checked).
   - Limits: 5 s timeout, 10 MB max, `Content-Type` must be a raster image type (no SVG),
     sniff/decode raster bytes, enforce pixel/dimension caps and reject mismatched MIME or polyglots;
-    response re-served with `nosniff` and a fixed content type; no cookies, auth or referrer forwarded;
+    decoded pixels re-encoded to PNG (animation is not preserved), then re-served with `nosniff`
+    and a fixed content type; no cookies, auth or referrer forwarded;
     generic User-Agent.
   - This hides the user's IP and cookies from senders; it does not hide the *fact* that the mail
     was opened (tracking pixels still fire when the user chooses to load images). That is why

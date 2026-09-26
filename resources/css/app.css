@@ -1156,3 +1156,15 @@ button {
     font-size: 10px;
     gap: 3px 8px;
 }
+
+.remote-image-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 12px;
+}
+.remote-image-controls small {
+    flex-basis: 100%;
+    color: var(--text-muted, #64748b);
+    font-size: 11px;
+}

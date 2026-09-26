@@ -2,6 +2,8 @@
 import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue';
 import {
     getMessage,
+    remoteImageConsent,
+    revokeRemoteImageConsent,
     setMessageRead,
     MessageDetailError,
     type MessageDetail,
@@ -15,12 +17,49 @@ const savingRead = ref(false);
 const readError = ref('');
 const detail = shallowRef<MessageDetail | null>(null);
 const plainMode = ref(false);
+const imageGrant = ref<string | null>(null);
+const imageBusy = ref(false);
+const imageError = ref('');
+const imagesAllowed = computed(() => !!imageGrant.value || !!detail.value?.remote_images_always);
+const renderUrl = computed(() => {
+    const base = `/api/messages/${detail.value?.id}/render`;
+    return imagesAllowed.value
+        ? base + '?images=allowed' + (imageGrant.value ? '&grant=' + imageGrant.value : '')
+        : base;
+});
+function revokeGrant() {
+    if (imageGrant.value) void revokeRemoteImageConsent(imageGrant.value);
+    imageGrant.value = null;
+}
+async function changeImages(mode: 'once' | 'always' | 'block') {
+    if (!detail.value || imageBusy.value) return;
+    const id = detail.value.id;
+    const active = controller;
+    imageBusy.value = true;
+    imageError.value = '';
+    try {
+        const result = await remoteImageConsent(id, mode);
+        if (active !== controller || detail.value?.id !== id) {
+            if (result.grant) void revokeRemoteImageConsent(result.grant);
+            return;
+        }
+        revokeGrant();
+        imageGrant.value = result.grant;
+        detail.value = { ...detail.value, remote_images_always: result.always };
+        resourceError.value = false;
+    } catch {
+        if (active === controller)
+            imageError.value = 'Unable to update image preference. Please try again.';
+    } finally {
+        if (active === controller) imageBusy.value = false;
+    }
+}
 const resourceError = ref(false);
 const frameHeight = ref(240);
 let frameObserver: ResizeObserver | undefined;
 function frameLoaded(event: Event) {
     const frame = event.target as HTMLIFrameElement;
-    if (frame.getAttribute('src') !== `/api/messages/${detail.value?.id}/render`) return;
+    if (frame.getAttribute('src') !== renderUrl.value) return;
     const document = frame.contentDocument;
     resourceError.value = !!document && document.contentType !== 'text/html';
     frameObserver?.disconnect();
@@ -71,6 +110,9 @@ function sizeLabel(bytes: number): string {
 }
 
 async function load() {
+    revokeGrant();
+    imageBusy.value = false;
+    imageError.value = '';
     frameObserver?.disconnect();
     frameHeight.value = 240;
     controller?.abort();
@@ -99,6 +141,7 @@ async function load() {
 }
 watch(() => props.messageId, load, { immediate: true });
 onBeforeUnmount(() => {
+    revokeGrant();
     controller?.abort();
     frameObserver?.disconnect();
 });
@@ -227,9 +270,45 @@ onBeforeUnmount(() => {
                 <button type="button" class="text-button" @click="plainMode = !plainMode">
                     {{ plainMode ? 'Show HTML' : 'Show plain text' }}
                 </button>
-                <span v-if="detail.remote_content_count"
-                    >{{ detail.remote_content_count }} remote images blocked</span
-                >
+                <div v-if="detail.remote_content_count && !plainMode" class="remote-image-controls">
+                    <span>{{
+                        imagesAllowed
+                            ? 'Remote images allowed'
+                            : `${detail.remote_content_count} remote images blocked`
+                    }}</span>
+                    <button
+                        v-if="!imagesAllowed"
+                        type="button"
+                        class="text-button"
+                        :disabled="imageBusy"
+                        @click="changeImages('once')"
+                    >
+                        Load images
+                    </button>
+                    <button
+                        v-if="!detail.remote_images_always && detail.from_address"
+                        type="button"
+                        class="text-button"
+                        :disabled="imageBusy"
+                        @click="changeImages('always')"
+                    >
+                        Always load from {{ detail.from_address }}
+                    </button>
+                    <button
+                        v-if="detail.remote_images_always"
+                        type="button"
+                        class="text-button"
+                        :disabled="imageBusy"
+                        @click="changeImages('block')"
+                    >
+                        Stop always loading from this sender
+                    </button>
+                    <small
+                        >Remote images can notify the sender that you opened this email. Sender
+                        addresses can be spoofed; this preference does not verify identity.</small
+                    >
+                    <p v-if="imageError" role="alert" class="form-error">{{ imageError }}</p>
+                </div>
             </div>
             <p v-if="resourceError && !plainMode" class="form-error" role="alert">
                 Unable to open HTML content. Your session may have expired. Reopen the message or
@@ -238,10 +317,10 @@ onBeforeUnmount(() => {
             <iframe
                 v-if="detail.html_available && !plainMode && !resourceError"
                 @load="frameLoaded"
-                :key="detail.id"
+                :key="renderUrl"
                 class="reader-html"
                 :style="{ height: `${frameHeight}px` }"
-                :src="`/api/messages/${detail.id}/render`"
+                :src="renderUrl"
                 title="Email content"
                 sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
                 referrerpolicy="no-referrer"

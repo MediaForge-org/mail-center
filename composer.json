@@ -13,6 +13,7 @@
         "laravel/horizon": "^5.50",
         "laravel/sanctum": "^4.3",
         "laravel/tinker": "^3.0",
+        "sabberworm/php-css-parser": "^9.5",
         "symfony/html-sanitizer": "^8.0"
     },
     "require-dev": {
