@@ -118,7 +118,7 @@ class MessageIngestor
             }
             $data['date'] = $message->getHeaderValue('Date');
             $data['text'] = mb_substr((string) $message->getTextContent(), 0, 1024 * 1024);
-            $data['html'] = (new EmailHtml)->sanitize($message->getHtmlContent());
+            $data['html'] = (new EmailHtml)->sanitizeMessage($message);
             $data['attachments'] = $message->getAttachmentCount() > 0;
             $data['status'] = 'ok';
         } catch (Throwable) {

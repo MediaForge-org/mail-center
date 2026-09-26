@@ -15,6 +15,28 @@ const savingRead = ref(false);
 const readError = ref('');
 const detail = shallowRef<MessageDetail | null>(null);
 const plainMode = ref(false);
+const resourceError = ref(false);
+const frameHeight = ref(240);
+let frameObserver: ResizeObserver | undefined;
+function frameLoaded(event: Event) {
+    const frame = event.target as HTMLIFrameElement;
+    if (frame.getAttribute('src') !== `/api/messages/${detail.value?.id}/render`) return;
+    const document = frame.contentDocument;
+    resourceError.value = !!document && document.contentType !== 'text/html';
+    frameObserver?.disconnect();
+    if (resourceError.value || !document?.body) return;
+    const measure = () => {
+        frameHeight.value = Math.max(
+            100,
+            Math.min(2000, Math.ceil(document.body.getBoundingClientRect().height + 32)),
+        );
+    };
+    measure();
+    if (typeof ResizeObserver !== 'undefined') {
+        frameObserver = new ResizeObserver(measure);
+        frameObserver.observe(document.body);
+    }
+}
 const state = ref<'idle' | 'loading' | 'ready' | 'missing' | 'error'>('idle');
 const account = computed(() =>
     props.accounts.find((item) => item.id === detail.value?.mail_account_id),
@@ -49,6 +71,8 @@ function sizeLabel(bytes: number): string {
 }
 
 async function load() {
+    frameObserver?.disconnect();
+    frameHeight.value = 240;
     controller?.abort();
     const active = new AbortController();
     controller = active;
@@ -56,6 +80,7 @@ async function load() {
     savingRead.value = false;
     readError.value = '';
     plainMode.value = false;
+    resourceError.value = false;
     if (props.messageId === null) {
         state.value = 'idle';
         return;
@@ -73,7 +98,10 @@ async function load() {
     }
 }
 watch(() => props.messageId, load, { immediate: true });
-onBeforeUnmount(() => controller?.abort());
+onBeforeUnmount(() => {
+    controller?.abort();
+    frameObserver?.disconnect();
+});
 </script>
 
 <template>
@@ -103,45 +131,62 @@ onBeforeUnmount(() => controller?.abort());
         </div>
         <article v-else-if="detail" class="message-detail">
             <header class="message-detail-header">
-                <span class="message-account" :title="account?.email_address">{{
-                    account?.display_name || 'Mail account'
-                }}</span>
                 <h2>{{ detail.subject || '(No subject)' }}</h2>
                 <p class="reader-sender">
                     <strong>{{
                         detail.from_name || detail.from_address || 'Unknown sender'
                     }}</strong>
-                    <span v-if="detail.from_name && detail.from_address">
-                        &lt;{{ detail.from_address }}&gt;</span
+                    <span v-if="detail.from_name && detail.from_address"
+                        >&lt;{{ detail.from_address }}&gt;</span
+                    >
+                    <span class="reader-to">
+                        →
+                        {{
+                            detail.to.map((person) => person.name || person.address).join(', ') ||
+                            'Undisclosed recipients'
+                        }}</span
                     >
                 </p>
-                <time v-if="date" :datetime="date">{{ new Date(date).toLocaleString() }}</time>
-                <dl class="reader-recipients">
-                    <template
-                        v-for="field in ['to', 'cc', 'bcc', 'reply_to'] as const"
-                        :key="field"
-                    >
-                        <template v-if="detail[field].length">
-                            <dt>
-                                {{
-                                    { to: 'To', cc: 'Cc', bcc: 'Bcc', reply_to: 'Reply to' }[field]
-                                }}
-                            </dt>
-                            <dd>
-                                {{
-                                    detail[field]
-                                        .map((person) =>
-                                            person.name
-                                                ? person.name + ' <' + person.address + '>'
-                                                : person.address,
-                                        )
-                                        .join(', ')
-                                }}
-                            </dd>
+                <details class="recipient-details">
+                    <summary>Recipient details</summary>
+                    <dl class="reader-recipients">
+                        <template
+                            v-for="field in ['to', 'cc', 'bcc', 'reply_to'] as const"
+                            :key="field"
+                        >
+                            <template v-if="detail[field].length">
+                                <dt>
+                                    {{
+                                        { to: 'To', cc: 'Cc', bcc: 'Bcc', reply_to: 'Reply to' }[
+                                            field
+                                        ]
+                                    }}
+                                </dt>
+                                <dd>
+                                    {{
+                                        detail[field]
+                                            .map((person) =>
+                                                person.name
+                                                    ? person.name + ' <' + person.address + '>'
+                                                    : person.address,
+                                            )
+                                            .join(', ')
+                                    }}
+                                </dd>
+                            </template>
                         </template>
-                    </template>
-                </dl>
+                    </dl>
+                </details>
+                <div class="reader-header-meta">
+                    <time v-if="date" :datetime="date">{{ new Date(date).toLocaleString() }}</time
+                    ><span class="message-account" :title="account?.email_address">{{
+                        account?.display_name || 'Mail account'
+                    }}</span>
+                </div>
                 <div class="reader-read-action">
+                    <span class="reader-current-state">{{
+                        detail.is_read ? 'Read' : 'Unread'
+                    }}</span>
                     <button
                         class="small-button"
                         type="button"
@@ -172,13 +217,41 @@ onBeforeUnmount(() => controller?.abort());
                     <p v-if="readError" role="alert" class="form-error">{{ readError }}</p>
                 </div>
                 <div class="reader-status">
-                    <span>{{ detail.is_read ? 'Read' : 'Unread' }}</span>
                     <span v-if="detail.is_starred">★ Starred</span>
                     <span v-if="detail.is_important">! Important</span>
                     <span v-if="detail.is_done">✓ Done</span>
                     <span v-if="detail.has_attachments">⌁ Has attachments</span>
                 </div>
             </header>
+            <div v-if="detail.html_available" class="reader-format">
+                <button type="button" class="text-button" @click="plainMode = !plainMode">
+                    {{ plainMode ? 'Show HTML' : 'Show plain text' }}
+                </button>
+                <span v-if="detail.remote_content_count"
+                    >{{ detail.remote_content_count }} remote images blocked</span
+                >
+            </div>
+            <p v-if="resourceError && !plainMode" class="form-error" role="alert">
+                Unable to open HTML content. Your session may have expired. Reopen the message or
+                use plain text.
+            </p>
+            <iframe
+                v-if="detail.html_available && !plainMode && !resourceError"
+                @load="frameLoaded"
+                :key="detail.id"
+                class="reader-html"
+                :style="{ height: `${frameHeight}px` }"
+                :src="`/api/messages/${detail.id}/render`"
+                title="Email content"
+                sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+                referrerpolicy="no-referrer"
+            ></iframe>
+            <div v-else-if="detail.body_status === 'available'" class="reader-body">
+                {{ detail.text_plain }}
+            </div>
+            <p v-else class="reader-body-unavailable">
+                Plain-text content is unavailable for this message.
+            </p>
             <section
                 v-if="detail.attachments?.length"
                 class="reader-attachments"
@@ -203,7 +276,8 @@ onBeforeUnmount(() => controller?.abort());
                         <a
                             v-if="attachment.downloadable"
                             :href="`/api/messages/${detail.id}/attachments/${attachment.id}`"
-                            download
+                            target="_blank"
+                            rel="noopener noreferrer"
                             referrerpolicy="no-referrer"
                             :aria-label="`Download ${attachment.filename}`"
                             >Download</a
@@ -211,29 +285,6 @@ onBeforeUnmount(() => controller?.abort());
                     </li>
                 </ul>
             </section>
-            <div v-if="detail.html_available" class="reader-format">
-                <button type="button" class="text-button" @click="plainMode = !plainMode">
-                    {{ plainMode ? 'Show HTML' : 'Show plain text' }}
-                </button>
-                <span v-if="detail.remote_content_count"
-                    >{{ detail.remote_content_count }} remote images blocked</span
-                >
-            </div>
-            <iframe
-                v-if="detail.html_available && !plainMode"
-                :key="detail.id"
-                class="reader-html"
-                :src="`/api/messages/${detail.id}/render`"
-                title="Email content"
-                sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
-                referrerpolicy="no-referrer"
-            ></iframe>
-            <div v-else-if="detail.body_status === 'available'" class="reader-body">
-                {{ detail.text_plain }}
-            </div>
-            <p v-else class="reader-body-unavailable">
-                Plain-text content is unavailable for this message.
-            </p>
         </article>
     </div>
 </template>

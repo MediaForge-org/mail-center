@@ -460,3 +460,164 @@ Crash recovery can wait for the shared overlap lock to expire. This package adds
 organization change-version seam, not the future general `/changes` API or migration
 of every earlier mutation to that protocol. Starred/Flagged and all other organization
 mutations remain unimplemented.
+
+## M3.10a CID / inline raster images
+
+Sanitizer version **2** retains CID images as neutral `data-mc-resource` fingerprints,
+not paths or URLs. The existing Symfony allowlist is retained; sender-supplied markers
+are removed before trusted markers are created. Content-IDs are case-sensitive opaque
+tokens: surrounding header brackets/space are normalized, URI percent escapes decoded
+once, and controls, whitespace, URL/path delimiters and overlong identities rejected.
+Unusual IDs outside the conservative token subset remain blocked. Duplicate IDs are
+blocked across the bounded MIME tree, including body parts not listed as attachments.
+The render step also rejects duplicate attachment identities and only matches parts
+belonging to the authorized message. A hash is only an internal lookup key, never an
+authorization credential or filesystem/blob reference.
+
+The render response resolves a unique referenced inline raster to
+`GET /api/messages/{message}/inline/{attachment}`. This endpoint repeats owner,
+message/account deletion and exact attachment membership checks. Disabled owned
+accounts retain access. The resource must be referenced by current-version sanitized
+HTML and have an unambiguous Content-ID; stale, missing or inaccessible resources
+return 404. No request parses raw MIME, and JSON detail responses still omit HTML.
+
+Only `image/png`, `image/jpeg`, `image/gif` and `image/webp` are eligible. Stored type
+must agree with both PHP image-header detection and fileinfo byte sniffing. Blob hash,
+actual length, positive dimensions, maximum 8192 pixels per axis, 16 million pixels
+and 10 MiB are checked. These are signature/dimension checks, not a full image decoder
+or antivirus scan. SVG, HTML, XML, PDF, unknown types, mismatches and corrupt blobs
+remain blocked. Existing attachment downloads are unchanged.
+
+Inline responses stream the validated blob with its raster Content-Type,
+Content-Length, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, and
+`Cache-Control: private, no-store`; there is no attachment Content-Disposition.
+The existing render CSP and iframe sandbox are unchanged. Trusted renderer CSS caps
+image width to the reader. Plain-text fallback and the reader's format toggle remain.
+No data-image support or HTTP/HTTPS image loading/proxying was added.
+
+### Existing messages
+
+No schema migration or automatic reprocessing is needed. Old sanitizer versions fall
+back to plain text until the operator chooses to enqueue the existing background jobs:
+
+```sh
+docker compose exec app php artisan messages:sanitize-html
+docker compose exec app php artisan messages:extract-attachments
+```
+
+The second command is only necessary when extraction is still pending. The jobs use
+verified retained raw blobs; either order is safe. Missing attachments leave markers
+unresolved until extraction completes. Commands were **not** run on persistent
+`mailcenter` during implementation. A queue worker must be running to process them.
+
+`python3 tests/browser/html-render-smoke.py` uses production sanitizer/resolver code
+with generated local raster fixtures, without booting Laravel or connecting to a DB.
+Chromium verifies actual PNG/JPEG decoding inside the sandboxed iframe and zero
+requests to a separate local remote-image trap, including a CSP-only bypass probe.
+Endpoint session/ownership authorization is tested separately by the isolated backend
+suite; this database-free browser fixture is not a live-account end-to-end test.
+
+## Browser-resource authentication and workspace repair
+
+### Session boundary
+
+The reported 401 was reproduced in Chromium with a real login: JSON fetches worked,
+while no-referrer HTML, attachment and CID requests returned 401 with the same cookie.
+Sanctum's SPA middleware starts a session only after an Origin/Referer match. The
+reader iframe/downloads deliberately use `no-referrer`, and the render document has
+that policy too, so those browser resources do not reliably enter Sanctum's stateful
+API middleware.
+
+The three GET URLs remain unchanged, but are registered in `routes/web.php` with
+`web` session middleware, `auth:web` and the existing API throttle. JSON APIs retain
+`auth:sanctum`. Ownership, deleted-message/account checks, exact attachment membership,
+CSP, no-referrer and sandbox permissions are unchanged. Guests receive 401. No bearer
+URL tokens, public resources or CSRF exemptions were added. Attachment links rely on
+the server's Content-Disposition instead of forcing browser download of any response;
+an expired-session JSON error is no longer saved as an attachment. The reader detects
+non-HTML iframe responses and offers a restrained error/plain-text fallback.
+
+### Scopes and layout
+
+- Global `/mail/all`, `/mail/inbox`, `/mail/unread` combine enabled owned accounts.
+- Explicit `/mail/account/{id}/all|inbox|unread` uses the same MessageFilter, includes
+  disabled owned accounts, excludes deleted messages/accounts and applies the same
+  view predicates. Old `/mail/account/{id}` links redirect to `/all`.
+- Signed cursors remain bound to user, account and view. Scope navigation clears the
+  selected-message query parameter; history and direct links restore it.
+- Global navigation and account navigation are separately labelled. Account view tabs
+  appear only in the selected account's header. Future views and example folders are
+  hidden; no organization functionality was added.
+- Rows use two compact lines with sender, subject, preview, date and subtle account/status
+  indicators. The reader uses a compact subject/sender/action header and collapsible
+  recipient details. Attachments follow the body. Parent-side measurement sizes the
+  same-origin sandboxed HTML iframe to its content (100–2000px), with no email scripts.
+- Two pointer/keyboard dividers resize sidebar/list; the reader fills remaining width.
+  Arrow keys move 20px (Shift:60px), Home/End reach bounds. Local browser preferences
+  survive reload. Minimum widths: sidebar 180 / list 320 / reader 360 px; sidebar max 360 / list
+  max1100, also constrained by viewport. Below 900 px, horizontal overflow is intentional.
+
+### Automatic synchronization and measurements
+
+The scheduler checks every minute; the live account's interval is 180 seconds, matching
+its default. Sync status uses authoritative account fields already exposed by the API.
+Account management and account mailboxes show interval, last success, next scheduled
+attempt, running, paused and backoff/authentication states. Due timestamps are labelled
+as awaiting the scheduler, not promised start times. "Refresh view" reloads local API
+state; "Sync now" remains the explicit remote action.
+
+Visible workspaces observe account status every 30s (5s while a known sync runs), pause
+background-tab polling, and refresh on tab return. A changed last-success timestamp
+refreshes message data and authoritative counts. The former idle-state polling gap
+could leave new synchronized mail invisible until navigation/manual refresh.
+
+Read-only production diagnostics on 2026-09-26: Gmail, 23 synchronized messages, one
+enabled folder. Six recent successful incremental runs had 0–1s durations at the DB's
+one-second timestamp precision, with approximately 3–4 min between starts. A read-only
+protocol profile under the existing Redis/advisory account locks measured:
+
+| Stage | Milliseconds |
+|---|---:|
+| Connect/TLS/authenticate |752.6|
+| LIST |102.8|
+| EXAMINE |204.8|
+| Membership SEARCH |41.2|
+| Flags FETCH |103.2|
+| Disconnect |1.6|
+| Total, including local overhead |1219.2|
+
+This profile fetched no bodies and changed no flags/settings/message rows. It is one
+sample, not a provider performance guarantee. The complete stored runs had no new mail;
+therefore ingestion, HTML sanitization and extraction did not run. The inspected driver
+returns when work finishes; 240s is a ceiling, not a minimum delay. A completed one-folder
+incremental pass does not need repeated folder passes. No sync optimization, checkpoint,
+retry, locking, UIDVALIDITY or memory-limit change was justified by this measurement.
+
+### Repeatable browser verification
+
+Run after backend tests, never concurrently with a suite that resets the test DB.
+This fixture uses the existing strict `tests/bootstrap.php` guard, migrates **only**
+`postgres-test/mailcenter_test`, and creates synthetic users/mail in the test container.
+It never loads real mailbox credentials or reprocesses development mail.
+
+```sh
+docker compose run --rm --no-deps --name mailcenter-browser-test \
+  -p 127.0.0.1:8072:8072 \
+  -e DB_CONNECTION=pgsql -e DB_PORT=5432 \
+  -e APP_URL=http://127.0.0.1:8072 \
+  -e SANCTUM_STATEFUL_DOMAINS=127.0.0.1:8072 \
+  -e SESSION_COOKIE=mailcenter_browser_test -e SESSION_SECURE_COOKIE=false \
+  -e SESSION_DRIVER=file -e APP_DEBUG=false -e PHP_CLI_SERVER_WORKERS=4 \
+  test sh -c 'php tests/browser/session-fixture.php && php -S 0.0.0.0:8072 -t public tests/browser/session-router.php'
+# In another terminal (requires google-chrome and Python websockets):
+python3 tests/browser/session-resource-smoke.py
+# Stop only this disposable browser-test container afterward:
+docker stop mailcenter-browser-test
+```
+
+The script tests no-referrer session resources, real attachment download bytes, real
+reader iframe/CID decoding, foreign/substituted resources, logout revocation, 2560×1600
+and 1440×900 layouts, and persisted divider widths. It writes a synthetic-mail screenshot
+to `/tmp/mailcenter-repair-desktop.png`. The separate HTML smoke test continues asserting
+zero remote-image requests. Browser/server tests supplement rather than replace the
+isolated hostile-content and deletion-authorization backend tests.

@@ -7,6 +7,7 @@ use App\Http\Resources\MessageDetail;
 use App\Http\Resources\MessageListItem;
 use App\Messages\AttachmentMetadata;
 use App\Messages\EmailHtml;
+use App\Messages\InlineImages;
 use App\Messages\MessageFilter;
 use App\Messages\MessageView;
 use App\Organization\OrganizationService;
@@ -39,9 +40,6 @@ class MessageController extends Controller
         ]);
         $view = MessageView::from($input['view'] ?? 'all');
         $accountId = isset($input['account_id']) ? (int) $input['account_id'] : null;
-        if ($accountId !== null && $view !== MessageView::All) {
-            throw ValidationException::withMessages(['account_id' => 'Account mailboxes use the all view.']);
-        }
         $filter = new MessageFilter($view, $accountId);
         $limit = (int) ($input['limit'] ?? 50);
         $userId = (int) $request->user()->getAuthIdentifier();
@@ -154,6 +152,31 @@ class MessageController extends Controller
         return $response;
     }
 
+    public function inlineAttachment(Request $request, int $id, int $attachment, InlineImages $images): BinaryFileResponse
+    {
+        $body = $this->readableMessage($request, $id)
+            ->where('message_bodies.sanitizer_version', EmailHtml::VERSION)
+            ->where('messages.parse_status', '<>', 'failed')
+            ->whereNotNull('message_bodies.html_sanitized')->value('message_bodies.html_sanitized');
+        abort_if($body === null, 404);
+        $rows = DB::table('attachments')->where('message_id', $id)->get();
+        $row = $rows->firstWhere('id', $attachment);
+        abort_if($row === null, 404);
+        $identity = InlineImages::identity($row->content_id);
+        abort_if($identity === null || ($images->uniqueParts($rows)[$identity] ?? null) !== $row, 404);
+        abort_unless($images->hasReference($body, $identity), 404);
+        $path = $images->verifiedPath($row);
+        abort_if($path === null, 404);
+
+        return new BinaryFileResponse($path, 200, [
+            'Content-Type' => $row->content_type,
+            'Content-Length' => (string) $row->size_bytes,
+            'X-Content-Type-Options' => 'nosniff',
+            'Referrer-Policy' => 'no-referrer',
+            'Cache-Control' => 'private, no-store',
+        ], false);
+    }
+
     private function readableMessage(Request $request, int $id): Builder
     {
         $userId = (int) $request->user()->getAuthIdentifier();
@@ -168,7 +191,7 @@ class MessageController extends Controller
             ->whereNull('messages.deleted_at');
     }
 
-    public function render(Request $request, int $id): Response
+    public function render(Request $request, int $id, InlineImages $images): Response
     {
         $row = $this->readableMessage($request, $id)
             ->where('message_bodies.sanitizer_version', EmailHtml::VERSION)
@@ -179,9 +202,11 @@ class MessageController extends Controller
         abort_if($row === null, 404);
 
         // Only versioned sanitizer output enters this standalone document.
+        $html = $images->resolve($row->html_sanitized, $id, DB::table('attachments')->where('message_id', $id)->get());
+
         return response('<!doctype html><html><head><meta charset="utf-8"><title>Message</title>'
-            .'<style>body{font:14px/1.6 system-ui,sans-serif;margin:16px;overflow-wrap:anywhere}pre{white-space:pre-wrap}table{max-width:100%;border-collapse:collapse}td,th{padding:4px}a{color:#315acb}</style>'
-            .'</head><body>'.$row->html_sanitized.'</body></html>', 200, [
+            .'<style>body{font:14px/1.6 system-ui,sans-serif;margin:16px;overflow-wrap:anywhere}img{max-width:100%;height:auto}pre{white-space:pre-wrap}table{max-width:100%;border-collapse:collapse}td,th{padding:4px}a{color:#315acb}</style>'
+            .'</head><body>'.$html.'</body></html>', 200, [
                 'Content-Type' => 'text/html; charset=UTF-8',
                 'Content-Security-Policy' => EmailHtml::CSP,
                 'X-Content-Type-Options' => 'nosniff',

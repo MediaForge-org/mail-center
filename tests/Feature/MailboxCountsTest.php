@@ -31,7 +31,7 @@ it('scopes explicit account mail and binds cursors to that account', function ()
     foreach ([$foreign->id, $deleted->id, 999999] as $id) {
         $this->getJson("/api/messages?account_id=$id")->assertNotFound();
     }
-    $this->getJson("/api/messages?account_id=$a->id&view=inbox")->assertUnprocessable();
+    $this->getJson("/api/messages?account_id=$a->id&view=inbox")->assertOk()->assertJsonCount(0, 'data');
     $this->getJson('/api/messages?account_id=invalid')->assertUnprocessable();
 });
 
@@ -86,4 +86,29 @@ it('counts messages with identical list predicates and a bounded query count', f
     $this->getJson('/api/mailbox-counts')->assertOk();
     expect(count(DB::getQueryLog()))->toBe($queryCount)->toBeLessThanOrEqual(8);
     DB::disableQueryLog();
+});
+
+it('intersects account scope with shared Inbox and Unread predicates and scopes their cursors', function () {
+    $user = User::factory()->create();
+    $a = makeAccount($user, ['enabled' => false]);
+    $b = makeAccount($user);
+    $inbox = SystemFolders::idFor($user->id, 'inbox');
+    $archive = SystemFolders::idFor($user->id, 'archive');
+    $ids = [];
+    foreach ([[], ['is_read' => true], ['is_done' => true], ['remote_status' => 'removed'], ['folder_id' => $archive], ['deleted_at' => now()]] as $index => $changes) {
+        $ids[] = listMessage($user, $a->id, "A$index", '2026-01-01', [...['folder_id' => $inbox], ...$changes]);
+    }
+    listMessage($user, $b->id, 'B', '2026-01-01', ['folder_id' => $inbox]);
+    $this->actingAs($user);
+    expect($this->getJson("/api/messages?account_id=$a->id&view=all")->assertOk()->json('data.*.id'))->toEqual(array_reverse(array_slice($ids, 0, 5)));
+    expect($this->getJson("/api/messages?account_id=$a->id&view=inbox")->assertOk()->json('data.*.id'))->toEqual([$ids[1], $ids[0]]);
+    expect($this->getJson("/api/messages?account_id=$a->id&view=unread")->assertOk()->json('data.*.id'))->toEqual([$ids[4], $ids[2], $ids[0]]);
+    $cursor = urlencode($this->getJson("/api/messages?account_id=$a->id&view=inbox&limit=1")->json('next_cursor'));
+    $this->getJson("/api/messages?account_id=$a->id&view=inbox&cursor=$cursor")->assertOk()->assertJsonPath('data.0.id', $ids[0]);
+    foreach (["account_id=$a->id&view=unread", "account_id=$a->id&view=all", "account_id=$b->id&view=inbox", 'view=inbox'] as $filter) {
+        $this->getJson("/api/messages?$filter&cursor=$cursor")->assertUnprocessable();
+    }
+    $this->actingAs(User::factory()->create())->getJson("/api/messages?account_id=$a->id&view=inbox")->assertNotFound();
+    $a->delete();
+    $this->actingAs($user)->getJson("/api/messages?account_id=$a->id&view=unread")->assertNotFound();
 });

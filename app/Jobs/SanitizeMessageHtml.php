@@ -36,7 +36,7 @@ class SanitizeMessageHtml implements ShouldQueue
             return;
         }
         try {
-            $result = $sanitizer->sanitize(Message::from($raw, true)->getHtmlContent());
+            $result = $sanitizer->sanitizeMessage(Message::from($raw, true));
         } catch (\Throwable) {
             // Keep old output stale; do not leak MIME/parser errors into queue logs.
             return;

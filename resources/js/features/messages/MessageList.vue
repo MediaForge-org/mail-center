@@ -118,37 +118,47 @@ function dateLabel(value: string): string {
                     :aria-pressed="selectedMessageId === message.id"
                     @click="$emit('select', message.id)"
                 >
-                    <span class="message-topline">
-                        <span class="message-sender" :title="message.from_address">{{
-                            message.from_name || message.from_address || 'Unknown sender'
-                        }}</span>
-                        <time
-                            :datetime="message.sort_date"
-                            :title="new Date(message.sort_date).toLocaleString()"
-                            >{{ dateLabel(message.sort_date) }}</time
-                        >
-                    </span>
+                    <span class="message-sender" :title="message.from_address">{{
+                        message.from_name || message.from_address || 'Unknown sender'
+                    }}</span>
                     <span class="message-subject">{{ message.subject || '(No subject)' }}</span>
+                    <time
+                        class="message-time"
+                        :datetime="message.sort_date"
+                        :title="new Date(message.sort_date).toLocaleString()"
+                        >{{ dateLabel(message.sort_date) }}</time
+                    >
+                    <span
+                        class="message-account"
+                        :title="`${accountMap.get(message.mail_account_id)?.display_name || 'Mail account'} · ${accountMap.get(message.mail_account_id)?.email_address || ''}`"
+                    >
+                        <span class="account-marker" aria-hidden="true"></span
+                        >{{
+                            accountMap.get(message.mail_account_id)?.short_label ||
+                            accountMap.get(message.mail_account_id)?.display_name ||
+                            'Mail'
+                        }}
+                    </span>
                     <span class="message-snippet">{{ message.snippet }}</span>
                     <span class="message-meta">
-                        <span
-                            class="message-account"
-                            :title="accountMap.get(message.mail_account_id)?.email_address"
-                            >{{
-                                accountMap.get(message.mail_account_id)?.display_name ||
-                                'Mail account'
-                            }}</span
+                        <span v-if="!message.is_read" class="unread-dot" aria-label="Unread"
+                            ><span class="sr-only">Unread</span></span
                         >
-                        <span v-if="!message.is_read" class="message-status">Unread</span>
                         <span
                             v-if="message.has_attachments"
-                            class="message-status"
                             aria-label="Has attachments"
-                            >⌁ Attachment</span
+                            title="Attachments"
+                            >⌁</span
                         >
-                        <span v-if="message.is_starred" class="message-status">★ Starred</span>
-                        <span v-if="message.is_important" class="message-status">! Important</span>
-                        <span v-if="message.is_done" class="message-status">✓ Done</span>
+                        <span v-if="message.is_starred" title="Starred"
+                            >★<span class="sr-only">Starred</span></span
+                        >
+                        <span v-if="message.is_important" title="Important"
+                            >!<span class="sr-only">Important</span></span
+                        >
+                        <span v-if="message.is_done" title="Done"
+                            >✓<span class="sr-only">Done</span></span
+                        >
                     </span>
                 </button>
             </li>

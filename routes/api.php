@@ -21,8 +21,6 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::get('/messages', [MessageController::class, 'index']);
     Route::patch('/messages/{id}/read', [MessageController::class, 'setRead'])->whereNumber('id');
     Route::get('/messages/{id}', [MessageController::class, 'show'])->whereNumber('id');
-    Route::get('/messages/{id}/attachments/{attachment}', [MessageController::class, 'downloadAttachment'])->whereNumber(['id', 'attachment']);
-    Route::get('/messages/{id}/render', [MessageController::class, 'render'])->whereNumber('id');
     Route::post('/accounts', [AccountController::class, 'store']);
     Route::post('/accounts/test-connection', [ConnectionTestController::class, 'store'])->middleware('throttle:connection-test');
     Route::get('/connection-tests/{id}', [ConnectionTestController::class, 'show'])->whereNumber('id');

@@ -9,6 +9,7 @@ afterEach(() => {
     wrappers.forEach((w) => w.unmount());
     wrappers.length = 0;
     vi.unstubAllGlobals();
+    vi.useRealTimers();
 });
 const counts = {
     views: {
@@ -40,6 +41,9 @@ async function open(path: string, failCounts = false) {
                         display_name: 'Work',
                         enabled: true,
                         sync_status: 'idle',
+                        sync_enabled: true,
+                        sync_interval_seconds: 180,
+                        last_successful_sync_at: '2026-01-01T00:00:00Z',
                         incoming: { host: 'imap.example.test', port: 993, security: 'tls' },
                     },
                     {
@@ -47,6 +51,9 @@ async function open(path: string, failCounts = false) {
                         display_name: 'Old mail',
                         enabled: false,
                         sync_status: 'idle',
+                        sync_enabled: true,
+                        sync_interval_seconds: 180,
+                        last_successful_sync_at: '2026-01-01T00:00:00Z',
                         incoming: { host: 'imap.example.test', port: 993, security: 'tls' },
                     },
                 ],
@@ -64,7 +71,12 @@ async function open(path: string, failCounts = false) {
             };
         return Promise.resolve(
             new Response(JSON.stringify(body), {
-                status: failCounts && url === '/api/mailbox-counts' ? 500 : 200,
+                status:
+                    url === '/api/messages/999'
+                        ? 404
+                        : failCounts && url === '/api/mailbox-counts'
+                          ? 500
+                          : 200,
             }),
         );
     });
@@ -90,14 +102,14 @@ it('navigates account mail, restores deep links/history and displays authoritati
     );
     await wrapper.findAll('.account-nav-row')[0].trigger('click');
     await flushPromises();
-    expect(router.currentRoute.value.path).toBe('/mail/account/1');
+    expect(router.currentRoute.value.path).toBe('/mail/account/1/all');
     expect(wrapper.find('.account-nav-row[aria-current="page"]').text()).toContain('Work');
     router.back();
     await flushPromises();
-    expect(router.currentRoute.value.path).toBe('/mail/account/2');
+    expect(router.currentRoute.value.path).toBe('/mail/account/2/all');
     router.forward();
     await flushPromises();
-    expect(router.currentRoute.value.path).toBe('/mail/account/1');
+    expect(router.currentRoute.value.path).toBe('/mail/account/1/all');
     await wrapper.find('.message-feed-footer button').trigger('click');
     await flushPromises();
     expect(fetchMock).toHaveBeenCalledWith(
@@ -140,7 +152,73 @@ it('hides unavailable counts and ignores stale account pages while navigation st
     await flushPromises();
     finish(new Response(JSON.stringify({ data: [message(99, 1)], next_cursor: 'stale' })));
     await flushPromises();
-    expect(router.currentRoute.value.path).toBe('/mail/account/2');
+    expect(router.currentRoute.value.path).toBe('/mail/account/2/all');
     expect(wrapper.findAll('.message-subject').map((e) => e.text())).toEqual(['Mail 2']);
     expect(wrapper.find('.mailbox-count').exists()).toBe(false);
+});
+
+it('shows the account scope and switches all/inbox/unread without retaining selection or pagination', async () => {
+    const { wrapper, router, fetchMock } = await open('/mail/account/1/inbox');
+    expect(wrapper.find('.pane-toolbar').text()).toContain('ACCOUNT MAILBOX');
+    expect(wrapper.find('.pane-toolbar').text()).toContain('Work');
+    expect(wrapper.find('.account-view-tabs [aria-current="page"]').text()).toBe('Inbox');
+    await router.push('/mail/account/1/inbox?message=999');
+    await flushPromises();
+    await wrapper.findAll('.account-view-tabs button')[2].trigger('click');
+    await flushPromises();
+    expect(router.currentRoute.value.fullPath).toBe('/mail/account/1/unread');
+    expect(fetchMock).toHaveBeenCalledWith(
+        '/api/messages?view=unread&limit=50&account_id=1',
+        expect.anything(),
+    );
+    await wrapper.findAll('.account-view-tabs button')[0].trigger('click');
+    await flushPromises();
+    expect(router.currentRoute.value.path).toBe('/mail/account/1/all');
+    router.back();
+    await flushPromises();
+    expect(router.currentRoute.value.path).toBe('/mail/account/1/unread');
+    await wrapper
+        .findAll('.nav-button')
+        .find((b) => b.text().includes('Inbox'))!
+        .trigger('click');
+    await flushPromises();
+    expect(router.currentRoute.value.fullPath).toBe('/mail/inbox');
+    expect(wrapper.find('.pane-toolbar').text()).toContain('GLOBAL WORKSPACE');
+    expect(wrapper.find('.account-view-tabs').exists()).toBe(false);
+});
+
+it('notices completed automatic sync and refreshes local messages and authoritative counts', async () => {
+    vi.useFakeTimers();
+    const { fetchMock, wrapper } = await open('/mail/all');
+    const original = fetchMock.getMockImplementation()!;
+    const messagesBefore = fetchMock.mock.calls.filter(([url]) =>
+        url.startsWith('/api/messages?'),
+    ).length;
+    fetchMock.mockImplementation((url: string) =>
+        url === '/api/accounts'
+            ? Promise.resolve(
+                  new Response(
+                      JSON.stringify({
+                          data: [
+                              {
+                                  id: 1,
+                                  display_name: 'Work',
+                                  enabled: true,
+                                  sync_enabled: true,
+                                  sync_status: 'idle',
+                                  sync_interval_seconds: 180,
+                                  last_successful_sync_at: '2026-01-01T00:03:00Z',
+                              },
+                          ],
+                      }),
+                  ),
+              )
+            : original(url),
+    );
+    await vi.advanceTimersByTimeAsync(30000);
+    await flushPromises();
+    expect(
+        fetchMock.mock.calls.filter(([url]) => url.startsWith('/api/messages?')).length,
+    ).toBeGreaterThan(messagesBefore);
+    expect(wrapper.text()).toContain('sync automatically');
 });

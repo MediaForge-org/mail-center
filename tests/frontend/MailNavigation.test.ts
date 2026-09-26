@@ -74,14 +74,20 @@ describe('mailbox navigation', () => {
         expect(wrapper.find('[aria-current="page"]').exists()).toBe(true);
     });
 
-    it('redirects unknown routes and disables unsupported views', async () => {
+    it('redirects unknown routes and hides unsupported views', async () => {
         const { router, wrapper } = await open('/mail/unknown/nested');
         expect(router.currentRoute.value.path).toBe('/mail/all');
-        for (const label of ['Starred', 'Important', 'Completed']) {
-            const button = wrapper.findAll('button').find((item) => item.text().includes(label))!;
-            expect(button.attributes('disabled')).toBeDefined();
-            expect(button.text()).toContain('Coming later');
-        }
+        for (const label of [
+            'Starred',
+            'Important',
+            'Completed',
+            'Reloads',
+            'Support',
+            'Withdrawals',
+            'Verification',
+            'Done',
+        ])
+            expect(wrapper.text()).not.toContain(label);
         expect(wrapper.text()).not.toContain('0 messages');
     });
 

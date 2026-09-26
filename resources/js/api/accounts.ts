@@ -8,6 +8,8 @@ export type AccountSummary = {
     display_name: string;
     email_address: string;
     short_label: string;
+    color?: string | null;
+    sync_interval_seconds: number;
     incoming: { host: string; port: number; security: 'tls' | 'starttls'; username: string };
     enabled: boolean;
     sync_enabled: boolean;

@@ -67,6 +67,8 @@ it('renders plain text safely, protects against stale requests and supports clos
     expect(wrapper.text()).toContain('Alice');
     expect(wrapper.text()).toContain('bob@example.test');
     expect(wrapper.find('.reader-body').text()).toBe(message().text_plain);
+    expect(wrapper.find('.recipient-details').attributes('open')).toBeUndefined();
+    expect(wrapper.find('.reader-header-meta time').exists()).toBe(true);
     expect(wrapper.find('img, script, iframe').exists()).toBe(false);
     await wrapper.setProps({ messageId: 3 });
     await flushPromises();
@@ -323,4 +325,28 @@ it('shows a pending local action and ignores its detail result after selecting a
     await flushPromises();
     expect(wrapper.text()).toContain('Real subject 2');
     expect(wrapper.find('.reader-read-action .small-button').text()).toBe('Mark read');
+});
+
+it('sizes safe HTML to its content and handles an expired browser-resource session without JSON in the reader', async () => {
+    vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue(response({ ...message(1), html_available: true })),
+    );
+    const wrapper = mount(MessageReader, { props: { messageId: 1, accounts: [] } });
+    wrappers.push(wrapper);
+    await flushPromises();
+    const frame = wrapper.find('iframe');
+    const safe = document.implementation.createHTMLDocument('Email');
+    safe.body.getBoundingClientRect = () => ({ height: 40 }) as DOMRect;
+    Object.defineProperty(frame.element, 'contentDocument', { configurable: true, value: safe });
+    await frame.trigger('load');
+    expect(frame.attributes('style')).toContain('height: 100px');
+    Object.defineProperty(frame.element, 'contentDocument', {
+        configurable: true,
+        value: { contentType: 'application/json' },
+    });
+    await frame.trigger('load');
+    expect(wrapper.find('iframe').exists()).toBe(false);
+    expect(wrapper.find('[role="alert"]').text()).toContain('session may have expired');
+    expect(wrapper.find('.reader-body').text()).toBe(message().text_plain);
 });

@@ -9,7 +9,7 @@ import {
     updateAccount,
     type AccountSummary,
 } from '../../api/accounts';
-import { statusLabels, statusTone } from './statusLabel';
+import SyncStatus from './SyncStatus.vue';
 
 defineProps<{ accounts: AccountSummary[] }>();
 const emit = defineEmits<{ changed: [] }>();
@@ -209,19 +209,15 @@ async function submitSecret(account: AccountSummary) {
                             }}
                         </span>
                     </div>
-                    <span class="status-pill" :class="`tone-${statusTone(account.sync_status)}`">
-                        {{ account.sync_enabled ? statusLabels[account.sync_status] : 'Sync off' }}
-                    </span>
                 </div>
+                <SyncStatus :account="account" />
                 <p class="muted">
-                    {{ account.synced_message_count }} messages stored
-                    <template v-if="account.last_successful_sync_at">
-                        · last synced
-                        {{ new Date(account.last_successful_sync_at).toLocaleString() }}
-                    </template>
-                    <template v-if="account.quarantined_message_count > 0">
-                        · {{ account.quarantined_message_count }} message(s) could not be stored
-                    </template>
+                    {{ account.synced_message_count }} messages stored<span
+                        v-if="account.quarantined_message_count > 0"
+                    >
+                        · {{ account.quarantined_message_count }} message(s) could not be
+                        stored</span
+                    >
                 </p>
                 <p v-if="account.last_error_message" class="form-error" role="alert">
                     {{ account.last_error_message }}

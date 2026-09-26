@@ -13,6 +13,7 @@ const account = (over: Partial<AccountSummary> = {}): AccountSummary => ({
     display_name: 'Work',
     email_address: 'me@example.test',
     short_label: 'WO',
+    sync_interval_seconds: 180,
     incoming: { host: 'imap.example.test', port: 993, security: 'tls', username: 'me' },
     enabled: true,
     sync_enabled: true,

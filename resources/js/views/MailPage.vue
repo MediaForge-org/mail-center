@@ -60,11 +60,24 @@ function selectMessage(id: number | null) {
     else query.message = String(id);
     void router.push({ path: route.path, query });
 }
-let timer: ReturnType<typeof setInterval> | undefined;
+let timer: ReturnType<typeof setTimeout> | undefined;
+let accountRequest = 0;
+let disposed = false;
 
 async function refreshAccounts() {
     try {
-        accounts.value = await listAccounts();
+        const request = ++accountRequest;
+        const updated = await listAccounts();
+        if (request !== accountRequest || disposed) return;
+        const synced = updated.some((account) => {
+            const previous = accounts.value.find((item) => item.id === account.id);
+            return previous && account.last_successful_sync_at !== previous.last_successful_sync_at;
+        });
+        accounts.value = updated;
+        if (synced) {
+            refreshVersion.value++;
+            void refreshCounts();
+        }
     } catch {
         // Keep the last known list; the next poll retries.
     }
@@ -83,12 +96,8 @@ onMounted(async () => {
         name.value = user.name;
         await refreshAccounts();
         void refreshCounts();
-        timer = setInterval(() => {
-            const busy = accounts.value.some((a) =>
-                ['syncing', 'never_synced'].includes(a.sync_status),
-            );
-            if (busy || section.value === 'accounts') void refreshAccounts();
-        }, 5000);
+        schedulePoll();
+        document.addEventListener('visibilitychange', onVisibility);
     } catch (cause) {
         error.value = cause instanceof Error ? cause.message : 'Unable to load the workspace.';
     } finally {
@@ -96,8 +105,26 @@ onMounted(async () => {
     }
 });
 
+function schedulePoll() {
+    const busy = accounts.value.some(
+        (a) => a.enabled && a.sync_enabled && a.sync_status === 'syncing',
+    );
+    timer = setTimeout(
+        async () => {
+            if (document.visibilityState !== 'hidden') await refreshAccounts();
+            if (!disposed) schedulePoll();
+        },
+        busy ? 5000 : 30000,
+    );
+}
+function onVisibility() {
+    if (document.visibilityState === 'visible') void refreshAccounts();
+}
 onBeforeUnmount(() => {
-    clearInterval(timer);
+    disposed = true;
+    accountRequest++;
+    document.removeEventListener('visibilitychange', onVisibility);
+    clearTimeout(timer);
     countsController?.abort();
 });
 
@@ -125,7 +152,8 @@ async function signOut() {
         :account-id="accountId"
         :counts="counts"
         :refresh-version="refreshVersion"
-        @open-account="(id) => router.push(`/mail/account/${id}`)"
+        @open-account="(id) => router.push(`/mail/account/${id}/all`)"
+        @account-view="(target) => router.push(`/mail/account/${accountId}/${target}`)"
         @mailbox-loaded="refreshCounts"
         @refresh-mailbox="refreshVersion++"
         :selected-message-id="selectedMessageId"

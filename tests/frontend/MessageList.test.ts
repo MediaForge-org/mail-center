@@ -57,6 +57,9 @@ it('renders safe message metadata and read state with account identity and local
     await flushPromises();
     const rows = wrapper.findAll('.message-row');
     expect(rows).toHaveLength(2);
+    expect(rows[0].find('.message-topline').exists()).toBe(false);
+    expect(rows[0].element.children).toHaveLength(6);
+    expect(rows[0].find('.message-meta').text()).toContain('Unread');
     expect(rows[0].text()).toContain('Alice');
     expect(rows[0].text()).toContain('A useful preview');
     expect(rows[0].find('.message-subject').text()).toBe(long.subject.trim());

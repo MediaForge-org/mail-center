@@ -1,11 +1,14 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+import { usePaneWidths } from './usePaneWidths';
+import SyncStatus from '../accounts/SyncStatus.vue';
 import MessageReader from '../messages/MessageReader.vue';
 import MessageList from '../messages/MessageList.vue';
 import type { MailboxCounts, MailboxView, ReadChange } from '../../api/messages';
 import type { AccountSummary } from '../../api/accounts';
 import { statusLabels, statusTone } from '../accounts/statusLabel';
 
-withDefaults(
+const props = withDefaults(
     defineProps<{
         userName: string;
         readChange?: ReadChange | null;
@@ -23,6 +26,7 @@ defineEmits<{
     signOut: [];
     readChanged: [change: ReadChange];
     openAccount: [id: number];
+    accountView: [view: MailboxView];
     mailboxLoaded: [];
     refreshMailbox: [];
     navigate: [section: MailboxView | 'accounts'];
@@ -34,8 +38,16 @@ const navigation: { view: MailboxView; label: string }[] = [
     { view: 'inbox', label: 'Inbox' },
     { view: 'unread', label: 'Unread' },
 ];
-const unavailable = ['Starred', 'Important', 'Completed'];
-const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
+const panes = usePaneWidths();
+const automaticAccounts = computed(() =>
+    props.accounts.filter((account) => account.enabled && account.sync_enabled),
+);
+const syncingAccounts = computed(
+    () => automaticAccounts.value.filter((account) => account.sync_status === 'syncing').length,
+);
+const selectedAccount = computed(() =>
+    props.accounts.find((account) => account.id === props.accountId),
+);
 </script>
 
 <template>
@@ -44,7 +56,6 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
             <div class="identity">
                 <div class="brand-mark brand-mark-small" aria-hidden="true">M</div>
                 <span class="brand-name">MailCenter</span>
-                <span class="phase-label">FOUNDATION</span>
             </div>
             <div class="header-actions">
                 <span class="user-name">{{ userName }}</span>
@@ -54,10 +65,18 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
             </div>
         </header>
 
-        <div class="workspace-grid" :class="{ 'workspace-grid-accounts': section === 'accounts' }">
+        <div
+            class="workspace-grid"
+            :style="panes.style.value"
+            :class="{
+                'workspace-grid-accounts': section === 'accounts',
+                'is-resizing': panes.dragging.value,
+            }"
+        >
             <aside class="sidebar" aria-label="Navigation" data-testid="left-pane">
                 <div class="sidebar-inner">
-                    <p class="section-label">Workspace</p>
+                    <p class="section-label">Global workspace</p>
+                    <p class="scope-hint">All enabled accounts, together</p>
                     <nav aria-label="Views">
                         <button
                             v-for="item in navigation"
@@ -83,15 +102,6 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
                                 :title="`${counts.views[item.view].unread} unread`"
                                 >{{ counts.views[item.view].total }}</span
                             >
-                        </button>
-                        <button
-                            v-for="item in unavailable"
-                            :key="item"
-                            type="button"
-                            class="nav-row nav-button"
-                            disabled
-                        >
-                            {{ item }} <span class="nav-later">Coming later</span>
                         </button>
                     </nav>
                     <div class="sidebar-divider"></div>
@@ -140,16 +150,21 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
                     >
                         Manage accounts
                     </button>
-                    <div class="sidebar-divider"></div>
-                    <p class="section-label">Folders</p>
-                    <div v-for="folder in folders" :key="folder" class="nav-row nav-row-muted">
-                        <span class="folder-dot" aria-hidden="true"></span>
-                        {{ folder }}
-                    </div>
-                    <p class="sidebar-caption">Folder names are layout examples.</p>
                 </div>
-                <div class="sidebar-footer">MailCenter · M2</div>
+                <div class="sidebar-footer">Your mail, one workspace</div>
             </aside>
+            <div
+                class="pane-divider"
+                role="separator"
+                tabindex="0"
+                aria-orientation="vertical"
+                aria-label="Resize sidebar"
+                :aria-valuemin="panes.limits('sidebar').min"
+                :aria-valuemax="panes.limits('sidebar').max"
+                :aria-valuenow="panes.sidebar.value"
+                @pointerdown="panes.start($event, 'sidebar')"
+                @keydown="panes.keyboard($event, 'sidebar')"
+            ></div>
 
             <section
                 v-if="section === 'accounts'"
@@ -168,7 +183,9 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
             >
                 <div class="pane-toolbar">
                     <div>
-                        <p class="eyebrow">WORKSPACE</p>
+                        <p class="eyebrow">
+                            {{ accountId == null ? 'GLOBAL WORKSPACE' : 'ACCOUNT MAILBOX' }}
+                        </p>
                         <h1>
                             {{
                                 accountId != null
@@ -177,22 +194,46 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
                                     : navigation.find((item) => item.view === view)?.label
                             }}
                         </h1>
-                        <small
-                            v-if="
-                                accountId != null &&
-                                accounts.find((account) => account.id === accountId)?.enabled ===
-                                    false
-                            "
+                        <p class="scope-description">
+                            {{
+                                accountId == null
+                                    ? 'Mail across all enabled accounts'
+                                    : selectedAccount?.email_address
+                            }}
+                        </p>
+                        <small v-if="selectedAccount?.enabled === false"
                             >Disabled account · retained mail</small
                         >
                     </div>
                 </div>
+                <nav v-if="accountId != null" class="account-view-tabs" aria-label="Account views">
+                    <button
+                        v-for="item in navigation"
+                        :key="item.view"
+                        type="button"
+                        :aria-current="view === item.view ? 'page' : undefined"
+                        @click="$emit('accountView', item.view)"
+                    >
+                        {{ item.label }}
+                    </button>
+                </nav>
+                <SyncStatus v-if="selectedAccount" :account="selectedAccount" compact />
+                <p v-else class="mailbox-sync-hint">
+                    {{
+                        automaticAccounts.length
+                            ? `${automaticAccounts.length} account(s) sync automatically · new mail appears here`
+                            : accounts.length
+                              ? 'Automatic sync is paused for all accounts'
+                              : 'Connect an account to synchronize mail'
+                    }}<span v-if="syncingAccounts"> · {{ syncingAccounts }} syncing…</span>
+                </p>
                 <button
                     type="button"
                     class="text-button mailbox-refresh"
+                    title="Reload messages already synchronized to MailCenter; account sync runs automatically"
                     @click="$emit('refreshMailbox')"
                 >
-                    Refresh mailbox
+                    Refresh view
                 </button>
                 <MessageList
                     :read-change="readChange"
@@ -206,6 +247,20 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
                 />
             </section>
 
+            <template v-if="section === 'mail'"
+                ><div
+                    class="pane-divider"
+                    role="separator"
+                    tabindex="0"
+                    aria-orientation="vertical"
+                    aria-label="Resize message list"
+                    :aria-valuemin="panes.limits('list').min"
+                    :aria-valuemax="panes.limits('list').max"
+                    :aria-valuenow="panes.list.value"
+                    @pointerdown="panes.start($event, 'list')"
+                    @keydown="panes.keyboard($event, 'list')"
+                ></div
+            ></template>
             <section
                 v-if="section === 'mail'"
                 class="reader-pane"
