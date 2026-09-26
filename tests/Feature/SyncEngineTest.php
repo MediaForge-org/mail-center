@@ -3,6 +3,8 @@
 use App\Connectors\Imap\ImapClient;
 use App\Connectors\Imap\ImapFailure;
 use App\Ingestion\MessageIngestor;
+use App\Jobs\SanitizeMessageHtml;
+use App\Messages\EmailHtml;
 use App\Models\MailAccount;
 use App\Models\User;
 use App\Organization\SystemFolders;
@@ -11,6 +13,7 @@ use App\Sync\SyncAborted;
 use App\Sync\SyncRunner;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Queue;
 use Tests\Support\FakeImapClient;
 
 uses(RefreshDatabase::class);
@@ -392,4 +395,25 @@ it('sorts by received time and falls back to the Date header when INTERNALDATE i
     app(MessageIngestor::class)->ingest($this->account, $folder, 1, 1000, $raw, [], null);
 
     expect(Carbon\Carbon::parse(DB::table('messages')->value('sort_date'))->utc()->toIso8601String())->toBe('2026-09-25T22:58:18+00:00');
+});
+
+it('persists sanitized HTML during ingestion and rebuilds stale output in a queued job', function () {
+    $raw = "From: sender@example.test\r\nTo: recipient@example.test\r\nSubject: HTML test\r\nMIME-Version: 1.0\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n<p>Safe HTML</p><script>evil()</script><img src=\"https://evil.test/pixel\">";
+    $this->imap->add($raw);
+    ($this->runner)();
+    $body = DB::table('message_bodies')->first();
+    expect($body->sanitizer_version)->toBe(EmailHtml::VERSION)
+        ->and($body->html_sanitized)->toContain('<p>Safe HTML</p>')
+        ->not->toContain('script', 'src=', 'evil.test')
+        ->and($body->remote_content_count)->toBe(1);
+    DB::table('message_bodies')->where('message_id', $body->message_id)
+        ->update(['html_sanitized' => null, 'sanitizer_version' => 0]);
+    Queue::fake();
+    $this->artisan('messages:sanitize-html')->assertSuccessful();
+    Queue::assertPushed(SanitizeMessageHtml::class, fn ($job) => $job->messageId === $body->message_id);
+    $job = new SanitizeMessageHtml($body->message_id);
+    $job->handle(new EmailHtml);
+    $job->handle(new EmailHtml);
+    expect(DB::table('message_bodies')->value('html_sanitized'))->toBe($body->html_sanitized);
+    expect(DB::table('messages')->count())->toBe(1);
 });

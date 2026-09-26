@@ -189,3 +189,68 @@ navigation clears selection; browser history restores it. Selection never change
 read, star, important or done flags. The reader shows one message; conversation
 thread presentation remains a later M3 item. HTML rendering, remote resources and
 attachment downloads are not implemented.
+
+## M3.6 safe HTML reader
+
+HTML is sanitized during ingestion using `symfony/html-sanitizer` (locked at 8.1.7),
+chosen because the architecture specifies its explicit element/attribute allowlist
+and maintained URL sanitizers. Configuration follows the
+[official Symfony documentation](https://symfony.com/doc/current/html_sanitizer.html).
+The application does not parse HTML with regular expressions.
+
+`App\Messages\EmailHtml::VERSION` identifies the stored policy. Detail JSON adds
+only `html_available` and `remote_content_count`, never HTML. The authorized
+`GET /api/messages/{id}/render` endpoint only serves nonempty current-version
+stored output, using the same ownership/deletion/disabled-account scope as detail.
+It never reads blobs or parses MIME. Unknown/stale/missing HTML yields 404 at the
+render endpoint and plain-text fallback via detail.
+
+After installing dependencies and restarting queue workers, an operator can queue
+existing stale bodies with:
+
+```sh
+docker compose exec app php artisan messages:sanitize-html
+```
+
+This command was not run against development data during implementation. It scans
+in bounded batches and dispatches ID-only jobs to the configured queue. Jobs read
+the hash-derived private blob path, validate size and SHA-256, and update only
+sanitized body fields. Missing/corrupt blobs or parser errors leave output stale.
+Rerunning is safe; a policy version bump requires rerunning the command. Missing
+body rows remain unavailable rather than being reconstructed by HTTP requests.
+HTML inputs above 1 MiB remain plain-text-only.
+
+M3.6 deliberately strips **all** image sources (including raster data URLs and CID).
+Unlike the eventual architecture resource-reference model, no remote URL is retained
+for later loading. The count covers blocked HTTP(S)/protocol-relative `img src`
+values; other resource attributes are discarded without counting. Styles, classes,
+IDs, active elements, relative links and unapproved attributes are removed. Links
+allow only HTTP, HTTPS and mailto and force a new tab with
+`noopener noreferrer nofollow`.
+
+The reader uses an iframe with
+`sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"` and
+`referrerpolicy="no-referrer"`; users can switch to plain text.
+The response CSP is exactly:
+
+```text
+sandbox allow-same-origin allow-popups allow-popups-to-escape-sandbox; default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; font-src 'none'; script-src 'none'; form-action 'none'; frame-ancestors 'self'; base-uri 'none'
+```
+
+Other headers: `Content-Type: text/html; charset=UTF-8`,
+`X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`,
+`Cache-Control: private, no-store`. No framing-denial header is added.
+
+Security coverage includes synthetic hostile fixtures, authorization/header tests,
+ingestion and queued rebuild tests, and frontend iframe/fallback tests. Run the
+additional database-free browser smoke check with:
+
+```sh
+python3 tests/browser/html-render-smoke.py
+```
+
+It requires local Google Chrome and the app container, uses the real sanitizer/CSP
+in a temporary localhost harness, and checks framed/direct rendering without
+automatic resource requests or active content. It is not an authenticated
+end-to-end deployment test. Attachment/CID rendering and remote-image loading
+remain out of scope.

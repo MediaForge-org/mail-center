@@ -6,6 +6,7 @@ import type { AccountSummary } from '../../api/accounts';
 const props = defineProps<{ messageId: number | null; accounts: AccountSummary[] }>();
 defineEmits<{ close: [] }>();
 const detail = shallowRef<MessageDetail | null>(null);
+const plainMode = ref(false);
 const state = ref<'idle' | 'loading' | 'ready' | 'missing' | 'error'>('idle');
 const account = computed(() =>
     props.accounts.find((item) => item.id === detail.value?.mail_account_id),
@@ -18,6 +19,7 @@ async function load() {
     const active = new AbortController();
     controller = active;
     detail.value = null;
+    plainMode.value = false;
     if (props.messageId === null) {
         state.value = 'idle';
         return;
@@ -48,7 +50,7 @@ onBeforeUnmount(() => controller?.abort());
     <div class="reader-content" :aria-busy="state === 'loading'">
         <div v-if="state === 'idle'" class="reader-placeholder">
             <h2>Select a message</h2>
-            <p>Its plain-text content will appear here.</p>
+            <p>Its content will appear here.</p>
         </div>
         <p v-else-if="state === 'loading'" role="status">Loading message…</p>
         <div v-else-if="state === 'missing' || state === 'error'" role="alert">
@@ -111,7 +113,24 @@ onBeforeUnmount(() => controller?.abort());
                     <span v-if="detail.has_attachments">⌁ Has attachments</span>
                 </div>
             </header>
-            <div v-if="detail.body_status === 'available'" class="reader-body">
+            <div v-if="detail.html_available" class="reader-format">
+                <button type="button" class="text-button" @click="plainMode = !plainMode">
+                    {{ plainMode ? 'Show HTML' : 'Show plain text' }}
+                </button>
+                <span v-if="detail.remote_content_count"
+                    >{{ detail.remote_content_count }} remote images blocked</span
+                >
+            </div>
+            <iframe
+                v-if="detail.html_available && !plainMode"
+                :key="detail.id"
+                class="reader-html"
+                :src="`/api/messages/${detail.id}/render`"
+                title="Email content"
+                sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+                referrerpolicy="no-referrer"
+            ></iframe>
+            <div v-else-if="detail.body_status === 'available'" class="reader-body">
                 {{ detail.text_plain }}
             </div>
             <p v-else class="reader-body-unavailable">

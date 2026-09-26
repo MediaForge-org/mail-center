@@ -38,6 +38,8 @@ export type MessageDetail = Omit<MessageListItem, 'snippet' | 'sort_date'> & {
     reply_to: MessageListItem['to'];
     date_header: string | null;
     remote_status: 'present' | 'missing' | 'removed';
+    html_available: boolean;
+    remote_content_count: number;
     body_status: 'available' | 'unavailable';
     text_plain: string | null;
 };

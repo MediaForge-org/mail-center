@@ -2,6 +2,7 @@
 
 namespace App\Ingestion;
 
+use App\Messages\EmailHtml;
 use App\Models\MailAccount;
 use App\Models\RemoteFolder;
 use App\Organization\SystemFolders;
@@ -53,6 +54,7 @@ class MessageIngestor
                 ]);
                 DB::table('message_bodies')->insert([
                     'message_id' => $messageId, 'text_plain' => $parsed['text'],
+                    ...$parsed['html'],
                     'created_at' => $now, 'updated_at' => $now,
                 ]);
             }
@@ -91,6 +93,7 @@ class MessageIngestor
     private function parse(string $raw): array
     {
         $data = [
+            'html' => (new EmailHtml)->sanitize(null),
             'status' => 'failed', 'message_id' => null, 'in_reply_to' => null, 'references' => [],
             'subject' => '', 'from_name' => '', 'from_address' => '', 'to' => [], 'cc' => [],
             'bcc' => [], 'reply_to' => [], 'date' => null, 'text' => '', 'attachments' => false,
@@ -110,6 +113,7 @@ class MessageIngestor
             }
             $data['date'] = $message->getHeaderValue('Date');
             $data['text'] = mb_substr((string) $message->getTextContent(), 0, 1024 * 1024);
+            $data['html'] = (new EmailHtml)->sanitize($message->getHtmlContent());
             $data['attachments'] = $message->getAttachmentCount() > 0;
             $data['status'] = 'ok';
         } catch (Throwable) {

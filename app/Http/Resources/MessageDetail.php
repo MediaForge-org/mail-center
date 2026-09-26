@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Messages\EmailHtml;
 use Carbon\CarbonImmutable;
 
 final class MessageDetail
@@ -22,6 +23,9 @@ final class MessageDetail
         $available = $row->parse_status !== 'failed' && $row->text_plain !== null && $row->text_plain !== '';
         $data['body_status'] = $available ? 'available' : 'unavailable';
         $data['text_plain'] = $available ? $row->text_plain : null;
+
+        $data['html_available'] = $row->parse_status !== 'failed' && $row->sanitizer_version === EmailHtml::VERSION && $row->has_html;
+        $data['remote_content_count'] = $data['html_available'] ? (int) $row->remote_content_count : 0;
 
         return $data;
     }

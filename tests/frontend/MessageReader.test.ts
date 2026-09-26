@@ -137,3 +137,39 @@ it('restores URL selection, selects rows without mutations, handles history and 
     for (const call of fetchMock.mock.calls)
         expect((call as unknown as [string, RequestInit])[1]?.method ?? 'GET').toBe('GET');
 });
+
+it('uses only a same-origin sandboxed iframe for HTML and keeps plain text available', async () => {
+    const fetchMock = vi
+        .fn()
+        .mockResolvedValueOnce(
+            response({ ...message(1), html_available: true, remote_content_count: 2 }),
+        )
+        .mockResolvedValueOnce(
+            response({ ...message(2), html_available: true, remote_content_count: 0 }),
+        )
+        .mockResolvedValueOnce(
+            response({ ...message(3), html_available: false, remote_content_count: 0 }),
+        );
+    vi.stubGlobal('fetch', fetchMock);
+    const wrapper = mount(MessageReader, { props: { messageId: 1, accounts: [] } });
+    wrappers.push(wrapper);
+    await flushPromises();
+    const frame = wrapper.find('iframe');
+    expect(frame.attributes('src')).toBe('/api/messages/1/render');
+    expect(frame.attributes('sandbox')).toBe(
+        'allow-same-origin allow-popups allow-popups-to-escape-sandbox',
+    );
+    expect(frame.attributes('referrerpolicy')).toBe('no-referrer');
+    expect(frame.attributes('srcdoc')).toBeUndefined();
+    expect(wrapper.text()).toContain('2 remote images blocked');
+    await wrapper.find('.reader-format button').trigger('click');
+    expect(wrapper.find('iframe').exists()).toBe(false);
+    expect(wrapper.find('.reader-body').text()).toBe(message().text_plain);
+    await wrapper.setProps({ messageId: 2 });
+    await flushPromises();
+    expect(wrapper.find('iframe').attributes('src')).toBe('/api/messages/2/render');
+    await wrapper.setProps({ messageId: 3 });
+    await flushPromises();
+    expect(wrapper.find('iframe').exists()).toBe(false);
+    expect(wrapper.find('.reader-body').exists()).toBe(true);
+});

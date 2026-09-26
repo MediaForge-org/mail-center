@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MessageDetail;
 use App\Http\Resources\MessageListItem;
+use App\Messages\EmailHtml;
 use App\Messages\MessageView;
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -72,16 +75,7 @@ class MessageController extends Controller
 
     public function show(Request $request, int $id): JsonResponse
     {
-        $userId = (int) $request->user()->getAuthIdentifier();
-        $row = DB::table('messages')
-            ->join('mail_accounts', 'mail_accounts.id', '=', 'messages.mail_account_id')
-            ->leftJoin('message_bodies', 'message_bodies.message_id', '=', 'messages.id')
-            ->where('messages.id', $id)
-            ->where('messages.user_id', $userId)
-            ->where('mail_accounts.user_id', $userId)
-            ->where('mail_accounts.enabled', true)
-            ->whereNull('mail_accounts.deleted_at')
-            ->whereNull('messages.deleted_at')
+        $row = $this->readableMessage($request, $id)
             ->select([
                 'messages.id', 'messages.mail_account_id', 'messages.subject',
                 'messages.from_name', 'messages.from_address', 'messages.to',
@@ -89,11 +83,49 @@ class MessageController extends Controller
                 'messages.received_at', 'messages.direction', 'messages.is_read',
                 'messages.is_starred', 'messages.is_important', 'messages.is_done',
                 'messages.has_attachments', 'messages.remote_status', 'messages.parse_status',
-                'message_bodies.text_plain',
+                'message_bodies.text_plain', 'message_bodies.sanitizer_version', 'message_bodies.remote_content_count',
+                DB::raw("(message_bodies.html_sanitized IS NOT NULL AND message_bodies.html_sanitized <> '') AS has_html"),
             ])->first();
         abort_if($row === null, 404);
 
         return response()->json(['data' => MessageDetail::fromRow($row)]);
+    }
+
+    private function readableMessage(Request $request, int $id): Builder
+    {
+        $userId = (int) $request->user()->getAuthIdentifier();
+
+        return DB::table('messages')
+            ->join('mail_accounts', 'mail_accounts.id', '=', 'messages.mail_account_id')
+            ->leftJoin('message_bodies', 'message_bodies.message_id', '=', 'messages.id')
+            ->where('messages.id', $id)
+            ->where('messages.user_id', $userId)
+            ->where('mail_accounts.user_id', $userId)
+            ->where('mail_accounts.enabled', true)
+            ->whereNull('mail_accounts.deleted_at')
+            ->whereNull('messages.deleted_at');
+    }
+
+    public function render(Request $request, int $id): Response
+    {
+        $row = $this->readableMessage($request, $id)
+            ->where('message_bodies.sanitizer_version', EmailHtml::VERSION)
+            ->where('messages.parse_status', '<>', 'failed')
+            ->whereNotNull('message_bodies.html_sanitized')
+            ->where('message_bodies.html_sanitized', '<>', '')
+            ->select('message_bodies.html_sanitized')->first();
+        abort_if($row === null, 404);
+
+        // Only versioned sanitizer output enters this standalone document.
+        return response('<!doctype html><html><head><meta charset="utf-8"><title>Message</title>'
+            .'<style>body{font:14px/1.6 system-ui,sans-serif;margin:16px;overflow-wrap:anywhere}pre{white-space:pre-wrap}table{max-width:100%;border-collapse:collapse}td,th{padding:4px}a{color:#315acb}</style>'
+            .'</head><body>'.$row->html_sanitized.'</body></html>', 200, [
+                'Content-Type' => 'text/html; charset=UTF-8',
+                'Content-Security-Policy' => EmailHtml::CSP,
+                'X-Content-Type-Options' => 'nosniff',
+                'Referrer-Policy' => 'no-referrer',
+                'Cache-Control' => 'private, no-store',
+            ]);
     }
 
     private function encodeCursor(object $row, int $userId, MessageView $view): string

@@ -32,7 +32,7 @@ it('returns only reader metadata and stored plain text without mutating flags', 
     expect(array_keys($response->json('data')))->toEqual([
         'id', 'mail_account_id', 'subject', 'from_name', 'from_address', 'direction',
         'is_read', 'is_starred', 'is_important', 'is_done', 'has_attachments', 'remote_status',
-        'to', 'cc', 'bcc', 'reply_to', 'date_header', 'received_at', 'body_status', 'text_plain',
+        'to', 'cc', 'bcc', 'reply_to', 'date_header', 'received_at', 'body_status', 'text_plain', 'html_available', 'remote_content_count',
     ]);
     expect($response->getContent())->not->toContain('HTML secret');
     $this->assertDatabaseHas('messages', ['id' => $id, 'is_read' => false]);
