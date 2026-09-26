@@ -29,9 +29,11 @@ created by migrations or seeders.
 If your host UID/GID differ from 1000, add `LOCAL_UID` and `LOCAL_GID` with those numeric values
 to the ignored `.env`, and use the same UID:GID in the one-time `chown` command. The `:z` volume
 labels support Fedora SELinux. The dedicated `node_modules` Docker volume preserves executable
-permissions even when the workspace filesystem does not. If an existing PostgreSQL volume predates
-the test-database init script, create the test DB once with
-`docker compose exec postgres createdb -U mailcenter -O mailcenter mailcenter_test`.
+permissions even when the workspace filesystem does not. The `postgres_data` named volume holds
+the persistent development database `mailcenter`. Normal container restarts, image rebuilds,
+updates and migrations retain that volume. **Never run `docker compose down -v` casually:** `-v`
+deletes the PostgreSQL volume and all development users, accounts, credentials and synchronized
+messages. `docker compose down` keeps the volume.
 
 `.env` holds the local APP_KEY and development database password. It stays ignored by Git and
 excluded from Docker build context. `.env.example` contains only disposable local defaults.
@@ -46,7 +48,7 @@ HTTPS and `SESSION_SECURE_COOKIE=true` in any production deployment (M7).
 docker compose ps
 docker compose exec app php artisan migrate:status
 docker compose exec app php artisan horizon:status
-docker compose run --rm app php artisan test
+docker compose run --rm test php artisan test
 docker compose run --rm app php vendor/bin/pint --test
 docker compose run --rm app php vendor/bin/phpstan analyse --no-progress
 docker compose run --rm --no-deps vite npm test
@@ -63,8 +65,12 @@ because there is no operator role model yet; Horizon workers still run. View ser
 `docker compose logs --tail=100 app web vite horizon scheduler`. Stop services while keeping data
 with `docker compose down`.
 
-The backend tests use `mailcenter_test` on real PostgreSQL and the two local Redis services; they
-never use SQLite or real email. Frontend component tests use Vitest and jsdom. `php vendor/bin/*`
+Backend tests use a separate `postgres-test` container and its temporary database
+`mailcenter_test`; the development `postgres_data` volume is never mounted there. PHPUnit forces
+the test environment, host and database even if `.env` exports development values. Its bootstrap
+checks the resolved Laravel configuration and active database before `RefreshDatabase` can run.
+Use `docker compose run --rm test php artisan test`, not the `app` service, for backend tests.
+Frontend component tests use Vitest and jsdom. `php vendor/bin/*`
 is intentional: some mounted filesystems do not preserve the executable bit on Composer scripts.
 The production Vite build lands in ignored `public/build/`. The running dev server supplies HMR
 assets at port 5173. The static shell follows the system light/dark preference through CSS tokens.
@@ -129,7 +135,7 @@ sanitized message; a rejected password stops retries until a new password is sav
 ```bash
 docker compose exec app php vendor/bin/pint --test
 docker compose exec app php vendor/bin/phpstan analyse --no-progress --memory-limit=512M
-docker compose exec app php artisan test
+docker compose run --rm test php artisan test
 docker compose exec vite npm run typecheck && docker compose exec vite npm run lint
 docker compose exec vite npm run format:check && docker compose exec vite npm test
 docker compose exec vite npm run build
@@ -138,3 +144,29 @@ docker compose exec vite npm run build
 Automated tests use a deterministic in-memory IMAP client (`tests/Support/FakeImapClient.php`) and
 the library's fake stream; no real mailbox is needed. The test base class keeps the cache in memory
 and disables `after_commit` for queue fakes.
+
+## Development database backups
+
+Before risky local changes, create a timestamped PostgreSQL custom-format dump:
+
+```bash
+sh scripts/backup-dev-db.sh
+```
+
+The script writes `backups/dev/mailcenter-YYYYMMDDTHHMMSSZ-PID.dump` outside the PostgreSQL
+volume. `backups/` is Git ignored; dump files contain private mail and credentials, so keep them
+local and protected. The script requests owner-only permissions and removes incomplete dumps on
+failure; some mounted filesystems ignore `chmod`, so check its warning and secure the directory
+at the filesystem level when that happens.
+
+To restore a chosen backup, stop application writers, then restore into the persistent development
+database. This replaces the current development database contents:
+
+```bash
+docker compose stop app horizon scheduler
+docker compose exec -T postgres sh -c 'exec pg_restore -U "$POSTGRES_USER" -d mailcenter --clean --if-exists --no-owner --no-acl' < backups/dev/CHOSEN.dump
+docker compose start app horizon scheduler
+```
+
+For a fresh clone, `docker compose up -d postgres` initializes the volume before backup or restore.
+Never use `docker compose down -v` as a reset step.

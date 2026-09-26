@@ -20,6 +20,7 @@
 /coverage/
 /test-results/
 /playwright-report/
+/backups/
 *.log
 .phpunit.result.cache
 .phpunit.cache/

@@ -28,7 +28,7 @@ jobs:
           docker compose run --rm --no-deps vite npm ci
       - name: PHP tests and static checks
         run: |
-          docker compose run --rm app php artisan test
+          docker compose run --rm test php artisan test
           docker compose run --rm app php vendor/bin/pint --test
           docker compose run --rm app php vendor/bin/phpstan analyse --no-progress --memory-limit=512M
           docker compose run --rm app composer audit --no-interaction

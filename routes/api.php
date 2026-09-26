@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\AccountSyncController;
 use App\Http\Controllers\Api\ConnectionTestController;
+use App\Http\Controllers\Api\MessageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,6 +17,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     });
 
     Route::get('/accounts', [AccountController::class, 'index']);
+    Route::get('/messages', [MessageController::class, 'index']);
     Route::post('/accounts', [AccountController::class, 'store']);
     Route::post('/accounts/test-connection', [ConnectionTestController::class, 'store'])->middleware('throttle:connection-test');
     Route::get('/connection-tests/{id}', [ConnectionTestController::class, 'show'])->whereNumber('id');

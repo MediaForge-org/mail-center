@@ -6,6 +6,7 @@ graphify-out
 **/.env
 **/.env.*
 secrets
+backups
 **/*.pem
 **/*.key
 vendor

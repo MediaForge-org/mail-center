@@ -8,6 +8,14 @@ abstract class TestCase extends BaseTestCase
 {
     protected function setUp(): void
     {
+        // Secondary fail-closed check if a runner bypasses phpunit.xml's bootstrap.
+        // This must stay before parent::setUp(), which invokes RefreshDatabase.
+        if (getenv('APP_ENV') !== 'testing' || getenv('DB_CONNECTION') !== 'pgsql'
+            || getenv('DB_HOST') !== 'postgres-test' || getenv('DB_DATABASE') !== 'mailcenter_test'
+            || getenv('DB_URL') !== '') {
+            throw new \RuntimeException('Unsafe backend test database target.');
+        }
+
         parent::setUp();
 
         // Tests share a long-lived Redis and reuse database ids after migrate:fresh, so persisted
