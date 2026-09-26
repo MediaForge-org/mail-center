@@ -17,6 +17,7 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     });
 
     Route::get('/accounts', [AccountController::class, 'index']);
+    Route::get('/mailbox-counts', [MessageController::class, 'counts']);
     Route::get('/messages', [MessageController::class, 'index']);
     Route::get('/messages/{id}', [MessageController::class, 'show'])->whereNumber('id');
     Route::get('/messages/{id}/attachments/{attachment}', [MessageController::class, 'downloadAttachment'])->whereNumber(['id', 'attachment']);

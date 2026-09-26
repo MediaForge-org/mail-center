@@ -95,7 +95,7 @@ it('requires authentication and rejects foreign, substituted and inaccessible at
     $this->get($url)->assertNotFound();
     DB::table('messages')->where('id', $id)->update(['deleted_at' => null]);
     $this->account->update(['enabled' => false]);
-    $this->get($url)->assertNotFound();
+    $this->get($url)->assertOk();
     $this->account->update(['enabled' => true, 'deleted_at' => now()]);
     $this->get($url)->assertNotFound();
 });

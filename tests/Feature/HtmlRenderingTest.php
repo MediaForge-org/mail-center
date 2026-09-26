@@ -47,7 +47,7 @@ it('serves only current stored HTML with sandbox headers and no request-time par
     $this->getJson("/api/messages/$id")->assertJsonPath('data.html_available', false)->assertJsonPath('data.text_plain', 'Fallback');
 });
 
-it('denies render access for locally deleted messages and disabled or deleted accounts', function () {
+it('denies render access for locally deleted messages and deleted accounts while retaining disabled access', function () {
     $user = User::factory()->create();
     $account = makeAccount($user);
     $id = listMessage($user, $account->id, 'HTML', '2026-01-01');
@@ -57,7 +57,7 @@ it('denies render access for locally deleted messages and disabled or deleted ac
     $this->get("/api/messages/$id/render")->assertNotFound();
     DB::table('messages')->where('id', $id)->update(['deleted_at' => null]);
     $account->update(['enabled' => false]);
-    $this->get("/api/messages/$id/render")->assertNotFound();
+    $this->get("/api/messages/$id/render")->assertOk();
     $account->update(['enabled' => true, 'deleted_at' => now()]);
     $this->get("/api/messages/$id/render")->assertNotFound();
 });

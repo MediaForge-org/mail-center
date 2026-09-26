@@ -5,6 +5,8 @@ import type { AccountSummary } from '../../api/accounts';
 
 const props = defineProps<{
     view: MailboxView;
+    accountId?: number | null;
+    refreshVersion?: number;
     accounts: AccountSummary[];
     selectedMessageId?: number | null;
 }>();
@@ -12,7 +14,7 @@ const messages = shallowRef<MessageListItem[]>([]);
 const cursor = ref<string | null>(null);
 const loading = ref(false);
 const error = ref(false);
-defineEmits<{ select: [id: number] }>();
+const emit = defineEmits<{ select: [id: number]; loaded: [] }>();
 const accountMap = computed(() => new Map(props.accounts.map((account) => [account.id, account])));
 const emptyText = computed(
     () =>
@@ -29,7 +31,8 @@ async function loadPage() {
     loading.value = true;
     error.value = false;
     try {
-        const page = await listMessages(props.view, cursor.value, active.signal);
+        const firstPage = cursor.value === null;
+        const page = await listMessages(props.view, cursor.value, active.signal, props.accountId);
         if (active.signal.aborted) return;
         const additions = page.data.filter((message) => {
             if (seen.has(message.id)) return false;
@@ -38,6 +41,7 @@ async function loadPage() {
         });
         messages.value = messages.value.concat(additions);
         cursor.value = page.next_cursor;
+        if (firstPage) emit('loaded');
     } catch {
         if (!active.signal.aborted) error.value = true;
     } finally {
@@ -46,7 +50,7 @@ async function loadPage() {
 }
 
 watch(
-    () => props.view,
+    () => [props.view, props.accountId, props.refreshVersion],
     () => {
         controller?.abort();
         controller = new AbortController();

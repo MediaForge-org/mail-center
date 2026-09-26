@@ -318,3 +318,78 @@ blob hash before streaming, so very large files incur a sequential integrity rea
 Background parsing reads a bounded raw message into memory; downloads do not load
 the complete file into PHP memory. Attachment metadata currently shares the detail
 request rather than having a separate loading/error state.
+
+## M3.8 account mailboxes and exact counts
+
+`/mail/account/{accountId}` opens an owned, non-deleted account through the existing
+message list. `GET /api/messages?view=all&account_id={id}` uses the shared
+`MessageFilter`; explicit account selection permits disabled accounts and
+sync-paused accounts, excludes locally deleted mail, and retains done/read/removed
+mail. Foreign, deleted or nonexistent accounts return 404. Account selection
+combined with Inbox/Unread currently returns 422 rather than introducing extra
+account-filtered system views. Signed cursors include the account identity and
+remain bound to the authenticated user; existing unified cursor scopes are retained.
+
+Explicit owned message detail, HTML render and attachment download now also allow
+disabled accounts. This supersedes the temporary disabled-account restrictions
+described in M3.5–M3.7 above. Deleted accounts/messages remain inaccessible, and
+opening mail never re-enables an account or changes message flags.
+
+`GET /api/mailbox-counts` returns:
+```json
+{
+  "views": {
+    "all": {"total": 5, "unread": 4},
+    "inbox": {"total": 2, "unread": 1},
+    "unread": {"total": 3, "unread": 3}
+  },
+  "accounts": {
+    "12": {"total": 5, "unread": 4}
+  }
+}
+```
+
+These are message counts, not location/thread counts. All Mail includes removed
+unread messages in its unread subtotal. Inbox uses the local system Inbox, not
+remote folder membership, excludes done and removed mail. Unread excludes removed
+mail. Unified views exclude disabled/deleted accounts; account counts include
+disabled but exclude deleted accounts. All scopes enforce message/account
+ownership and exclude local deletion. Empty owned accounts have real zero counts.
+
+The endpoint uses six bounded SQL queries: three view aggregates, one system Inbox
+identity lookup, one owned account ID list and one grouped account aggregate. It
+never queries per account and returns `private, no-store`. Counts and feeds share
+the query predicates. Separate queries reflect their execution-time database
+snapshots; counts are not held as a cross-query transactional snapshot during sync.
+
+Counts refresh on initial authenticated load, successful first-page loads (including
+view/account changes and the explicit Refresh mailbox action), and account changes.
+`MailPage.refreshCounts` is the hook for later mutations. There is no added polling;
+background sync changes become visible on navigation or explicit mailbox refresh.
+Loading/failure hides counts instead of inventing zeroes. Stale count/list responses
+are ignored. Account management remains at `/mail/accounts`.
+
+### Query-plan evidence
+
+An isolated test fixture creates 100,000 synthetic messages plus one seed message,
+including a mailbox whose messages precede 95,000 newer messages in another account.
+Before the account-feed index, its first page scanned past 95,000 unrelated rows
+and took 33.95 ms locally. With the index, it read 51 rows in 0.23 ms. Added only:
+
+```sql
+CREATE INDEX messages_account_feed_idx
+ON messages (mail_account_id, sort_date DESC, id DESC)
+WHERE deleted_at IS NULL;
+```
+
+The final fixture also populates Inbox and read states. Measured exact aggregates:
+All Mail 37.78 ms, Inbox 36.28 ms, Unread 33.77 ms, grouped accounts 38.41 ms.
+These are local synthetic timings, not production guarantees. Exact counts require
+scanning matching rows; selective/cached counter redesign is deferred until actual
+scale warrants it. Existing Inbox/Unread indexes remain; no speculative count
+indexes were added.
+
+`MailboxPlanTest` records EXPLAIN ANALYZE/BUFFERS output in the ignored
+`storage/logs/mailcenter-m38-plans.json` using only the guarded isolated test DB.
+The new index migration has **not** been applied to persistent development data.
+Normal deployment migrations are required separately. No reprocessing is needed.

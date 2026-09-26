@@ -38,7 +38,7 @@ it('returns only reader metadata and stored plain text without mutating flags', 
     $this->assertDatabaseHas('messages', ['id' => $id, 'is_read' => false]);
 });
 
-it('rejects foreign, deleted, disabled and nonexistent messages', function () {
+it('rejects foreign, deleted and nonexistent messages', function () {
     $user = User::factory()->create();
     $other = User::factory()->create();
     $foreign = listMessage($other, makeAccount($other)->id, 'Foreign', '2026-01-01');
@@ -50,7 +50,7 @@ it('rejects foreign, deleted, disabled and nonexistent messages', function () {
     $this->getJson("/api/messages/$id")->assertNotFound();
     DB::table('messages')->where('id', $id)->update(['deleted_at' => null]);
     $account->update(['enabled' => false]);
-    $this->getJson("/api/messages/$id")->assertNotFound();
+    $this->getJson("/api/messages/$id")->assertOk();
     $account->update(['enabled' => true, 'deleted_at' => now()]);
     $this->getJson("/api/messages/$id")->assertNotFound();
 });

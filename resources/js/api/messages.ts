@@ -24,8 +24,10 @@ export async function listMessages(
     view: MailboxView,
     cursor: string | null,
     signal: AbortSignal,
+    accountId?: number | null,
 ): Promise<MessagePage> {
     const params = new URLSearchParams({ view, limit: '50' });
+    if (accountId != null) params.set('account_id', String(accountId));
     if (cursor) params.set('cursor', cursor);
     const response = await request(`/api/messages?${params}`, { signal });
     if (!response.ok) throw new Error('Unable to load this mailbox.');
@@ -61,4 +63,16 @@ export async function getMessage(id: number, signal: AbortSignal): Promise<Messa
     const response = await request(`/api/messages/${id}`, { signal });
     if (!response.ok) throw new MessageDetailError(response.status === 404);
     return ((await response.json()) as { data: MessageDetail }).data;
+}
+
+export type MailboxCounts = {
+    views: Record<MailboxView, { total: number; unread: number }>;
+    accounts: Record<string, { total: number; unread: number }>;
+};
+export async function getMailboxCounts(signal: AbortSignal): Promise<MailboxCounts> {
+    const response = await request('/api/mailbox-counts', { signal });
+    if (!response.ok) throw new Error('Counts unavailable.');
+    const data = (await response.json()) as MailboxCounts;
+    if (!data.views || !data.accounts) throw new Error('Counts unavailable.');
+    return data;
 }

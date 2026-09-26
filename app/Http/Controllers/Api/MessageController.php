@@ -7,6 +7,7 @@ use App\Http\Resources\MessageDetail;
 use App\Http\Resources\MessageListItem;
 use App\Messages\AttachmentMetadata;
 use App\Messages\EmailHtml;
+use App\Messages\MessageFilter;
 use App\Messages\MessageView;
 use App\Storage\BlobStore;
 use Carbon\CarbonImmutable;
@@ -26,27 +27,28 @@ class MessageController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        if (array_diff(array_keys($request->query()), ['view', 'limit', 'cursor']) !== []) {
+        if (array_diff(array_keys($request->query()), ['view', 'limit', 'cursor', 'account_id']) !== []) {
             throw ValidationException::withMessages(['query' => 'Unknown message filter.']);
         }
         $input = $request->validate([
+            'account_id' => ['sometimes', 'integer', 'min:1'],
             'view' => ['sometimes', Rule::in(['all', 'inbox', 'unread'])],
             'limit' => ['sometimes', 'integer', 'min:1', 'max:100'],
             'cursor' => ['sometimes', 'string', 'max:2048'],
         ]);
         $view = MessageView::from($input['view'] ?? 'all');
+        $accountId = isset($input['account_id']) ? (int) $input['account_id'] : null;
+        if ($accountId !== null && $view !== MessageView::All) {
+            throw ValidationException::withMessages(['account_id' => 'Account mailboxes use the all view.']);
+        }
+        $filter = new MessageFilter($view, $accountId);
         $limit = (int) ($input['limit'] ?? 50);
         $userId = (int) $request->user()->getAuthIdentifier();
-        $after = isset($input['cursor']) ? $this->decodeCursor($input['cursor'], $userId, $view) : null;
-
-        $query = DB::table('messages')
-            ->join('mail_accounts', 'mail_accounts.id', '=', 'messages.mail_account_id')
-            ->where('messages.user_id', $userId)
-            ->where('mail_accounts.user_id', $userId)
-            ->where('mail_accounts.enabled', true)
-            ->whereNull('mail_accounts.deleted_at')
-            ->whereNull('messages.deleted_at');
-        $view->apply($query, $userId);
+        if ($accountId !== null) {
+            abort_unless(DB::table('mail_accounts')->where('id', $accountId)->where('user_id', $userId)->whereNull('deleted_at')->exists(), 404);
+        }
+        $after = isset($input['cursor']) ? $this->decodeCursor($input['cursor'], $userId, $filter) : null;
+        $query = $filter->query($userId);
 
         if ($after !== null) {
             $query->where(function ($query) use ($after) {
@@ -73,8 +75,29 @@ class MessageController extends Controller
 
         return response()->json([
             'data' => $page->map(fn ($row) => MessageListItem::fromRow($row))->values(),
-            'next_cursor' => $hasMore && $last !== null ? $this->encodeCursor($last, $userId, $view) : null,
+            'next_cursor' => $hasMore && $last !== null ? $this->encodeCursor($last, $userId, $filter) : null,
         ]);
+    }
+
+    public function counts(Request $request): JsonResponse
+    {
+        $userId = (int) $request->user()->getAuthIdentifier();
+        $views = [];
+        foreach (MessageView::cases() as $view) {
+            $row = (new MessageFilter($view))->query($userId)
+                ->selectRaw('count(*) AS total, count(*) FILTER (WHERE messages.is_read = false) AS unread')->first();
+            $views[$view->value] = ['total' => (int) $row->total, 'unread' => (int) $row->unread];
+        }
+        $accounts = DB::table('mail_accounts')->where('user_id', $userId)->whereNull('deleted_at')
+            ->pluck('id')->mapWithKeys(fn ($id) => [(string) $id => ['total' => 0, 'unread' => 0]])->all();
+        $rows = MessageFilter::base($userId, true)->groupBy('messages.mail_account_id')
+            ->selectRaw('messages.mail_account_id, count(*) AS total, count(*) FILTER (WHERE messages.is_read = false) AS unread')->get();
+        foreach ($rows as $row) {
+            $accounts[(string) $row->mail_account_id] = ['total' => (int) $row->total, 'unread' => (int) $row->unread];
+        }
+
+        return response()->json(['views' => $views, 'accounts' => (object) $accounts])
+            ->header('Cache-Control', 'private, no-store');
     }
 
     public function show(Request $request, int $id): JsonResponse
@@ -131,7 +154,6 @@ class MessageController extends Controller
             ->where('messages.id', $id)
             ->where('messages.user_id', $userId)
             ->where('mail_accounts.user_id', $userId)
-            ->where('mail_accounts.enabled', true)
             ->whereNull('mail_accounts.deleted_at')
             ->whereNull('messages.deleted_at');
     }
@@ -158,19 +180,19 @@ class MessageController extends Controller
             ]);
     }
 
-    private function encodeCursor(object $row, int $userId, MessageView $view): string
+    private function encodeCursor(object $row, int $userId, MessageFilter $filter): string
     {
         return Crypt::encryptString(json_encode([
             'v' => 1,
             'user_id' => $userId,
-            'filter' => $view->cursorScope(),
+            'filter' => $filter->cursorScope(),
             'sort_date' => CarbonImmutable::parse($row->sort_date)->utc()->format('Y-m-d H:i:s.uP'),
             'id' => (int) $row->id,
         ], JSON_THROW_ON_ERROR));
     }
 
     /** @return array{sort_date: string, id: int} */
-    private function decodeCursor(string $cursor, int $userId, MessageView $view): array
+    private function decodeCursor(string $cursor, int $userId, MessageFilter $filter): array
     {
         try {
             $payload = json_decode(Crypt::decryptString($cursor), true, flags: JSON_THROW_ON_ERROR);
@@ -180,7 +202,7 @@ class MessageController extends Controller
 
         if (! is_array($payload) || array_keys($payload) !== ['v', 'user_id', 'filter', 'sort_date', 'id']
             || $payload['v'] !== 1 || $payload['user_id'] !== $userId
-            || $payload['filter'] !== $view->cursorScope() || ! is_string($payload['sort_date'])
+            || $payload['filter'] !== $filter->cursorScope() || ! is_string($payload['sort_date'])
             || ! preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}\+00:00$/', $payload['sort_date'])
             || ! is_int($payload['id']) || $payload['id'] < 1) {
             throw ValidationException::withMessages(['cursor' => 'Invalid cursor.']);

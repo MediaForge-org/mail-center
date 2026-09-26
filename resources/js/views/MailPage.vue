@@ -2,7 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { listAccounts, type AccountSummary } from '../api/accounts';
-import { type MailboxView } from '../api/messages';
+import { getMailboxCounts, type MailboxCounts, type MailboxView } from '../api/messages';
 import { currentUser, logout } from '../api/auth';
 import AccountsPanel from '../features/accounts/AccountsPanel.vue';
 import MailWorkspace from '../features/workspace/MailWorkspace.vue';
@@ -10,6 +10,27 @@ import MailWorkspace from '../features/workspace/MailWorkspace.vue';
 const router = useRouter();
 const route = useRoute();
 const accounts = ref<AccountSummary[]>([]);
+const accountId = computed(() => (route.params.accountId ? Number(route.params.accountId) : null));
+const counts = ref<MailboxCounts | null>(null);
+const refreshVersion = ref(0);
+let countsController: AbortController | undefined;
+async function refreshCounts() {
+    countsController?.abort();
+    const active = new AbortController();
+    countsController = active;
+    counts.value = null;
+    try {
+        const result = await getMailboxCounts(active.signal);
+        if (!active.signal.aborted) counts.value = result;
+    } catch {
+        // Counts are optional; never replace unavailable data with false zeroes.
+    }
+}
+async function accountsChanged() {
+    await refreshAccounts();
+    refreshVersion.value++;
+    void refreshCounts();
+}
 const section = computed<'mail' | 'accounts'>(() =>
     route.params.view === 'accounts' ? 'accounts' : 'mail',
 );
@@ -50,6 +71,7 @@ onMounted(async () => {
         }
         name.value = user.name;
         await refreshAccounts();
+        void refreshCounts();
         timer = setInterval(() => {
             const busy = accounts.value.some((a) =>
                 ['syncing', 'never_synced'].includes(a.sync_status),
@@ -63,7 +85,10 @@ onMounted(async () => {
     }
 });
 
-onBeforeUnmount(() => clearInterval(timer));
+onBeforeUnmount(() => {
+    clearInterval(timer);
+    countsController?.abort();
+});
 
 async function signOut() {
     try {
@@ -84,13 +109,19 @@ async function signOut() {
         :accounts="accounts"
         :section="section"
         :view="view"
+        :account-id="accountId"
+        :counts="counts"
+        :refresh-version="refreshVersion"
+        @open-account="(id) => router.push(`/mail/account/${id}`)"
+        @mailbox-loaded="refreshCounts"
+        @refresh-mailbox="refreshVersion++"
         :selected-message-id="selectedMessageId"
         @select="selectMessage"
         @sign-out="signOut"
         @navigate="(target) => router.push(`/mail/${target}`)"
     >
         <template #accounts>
-            <AccountsPanel :accounts="accounts" @changed="refreshAccounts" />
+            <AccountsPanel :accounts="accounts" @changed="accountsChanged" />
         </template>
     </MailWorkspace>
 </template>

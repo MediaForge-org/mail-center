@@ -53,7 +53,7 @@ it('applies all, inbox and unread predicates with local folders and owner scope'
 it('rejects unknown views and unrelated query filters', function () {
     $this->actingAs(User::factory()->create());
     $this->getJson('/api/messages?view=starred')->assertUnprocessable()->assertJsonValidationErrors('view');
-    $this->getJson('/api/messages?account_id=1')->assertUnprocessable()->assertJsonValidationErrors('query');
+    $this->getJson('/api/messages?folder_id=1')->assertUnprocessable()->assertJsonValidationErrors('query');
     $this->getJson('/api/messages?view[]=inbox')->assertUnprocessable()->assertJsonValidationErrors('view');
 });
 

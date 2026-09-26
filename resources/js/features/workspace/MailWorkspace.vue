@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import MessageReader from '../messages/MessageReader.vue';
 import MessageList from '../messages/MessageList.vue';
-import type { MailboxView } from '../../api/messages';
+import type { MailboxCounts, MailboxView } from '../../api/messages';
 import type { AccountSummary } from '../../api/accounts';
 import { statusLabels, statusTone } from '../accounts/statusLabel';
 
@@ -11,12 +11,18 @@ withDefaults(
         accounts?: AccountSummary[];
         section?: 'mail' | 'accounts';
         view?: MailboxView;
+        accountId?: number | null;
+        counts?: MailboxCounts | null;
+        refreshVersion?: number;
         selectedMessageId?: number | null;
     }>(),
     { accounts: () => [], section: 'mail', view: 'all' },
 );
 defineEmits<{
     signOut: [];
+    openAccount: [id: number];
+    mailboxLoaded: [];
+    refreshMailbox: [];
     navigate: [section: MailboxView | 'accounts'];
     select: [id: number | null];
 }>();
@@ -56,14 +62,25 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
                             :key="item.view"
                             type="button"
                             class="nav-row nav-button"
-                            :class="{ 'nav-row-current': section === 'mail' && view === item.view }"
+                            :class="{
+                                'nav-row-current':
+                                    section === 'mail' && accountId == null && view === item.view,
+                            }"
                             :aria-current="
-                                section === 'mail' && view === item.view ? 'page' : undefined
+                                section === 'mail' && accountId == null && view === item.view
+                                    ? 'page'
+                                    : undefined
                             "
                             @click="$emit('navigate', item.view)"
                         >
                             <span class="nav-glyph" aria-hidden="true">◇</span>
                             {{ item.label }}
+                            <span
+                                v-if="counts?.views[item.view]"
+                                class="mailbox-count"
+                                :title="`${counts.views[item.view].unread} unread`"
+                                >{{ counts.views[item.view].total }}</span
+                            >
                         </button>
                         <button
                             v-for="item in unavailable"
@@ -80,10 +97,19 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
                     <div v-if="accounts.length === 0" class="sidebar-hint">
                         No account connected
                     </div>
-                    <span
+                    <button
+                        type="button"
                         v-for="account in accounts"
                         :key="account.id"
-                        class="nav-row account-nav-row"
+                        class="nav-row nav-button account-nav-row"
+                        :class="{
+                            'nav-row-current': section === 'mail' && accountId === account.id,
+                            'account-disabled': !account.enabled,
+                        }"
+                        :aria-current="
+                            section === 'mail' && accountId === account.id ? 'page' : undefined
+                        "
+                        @click="$emit('openAccount', account.id)"
                         :title="statusLabels[account.sync_status]"
                     >
                         <span
@@ -91,8 +117,18 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
                             :class="`tone-${statusTone(account.sync_status)}`"
                             aria-hidden="true"
                         ></span>
-                        {{ account.display_name }}
-                    </span>
+                        <span class="account-nav-label"
+                            >{{ account.display_name
+                            }}<small v-if="!account.enabled">Disabled</small></span
+                        >
+                        <span
+                            v-if="counts?.accounts[account.id]"
+                            class="mailbox-count"
+                            :title="`${counts.accounts[account.id].unread} unread`"
+                            >{{ counts.accounts[account.id].total
+                            }}<small>{{ counts.accounts[account.id].unread }} unread</small></span
+                        >
+                    </button>
                     <button
                         class="nav-row nav-button"
                         :class="{ 'nav-row-current': section === 'accounts' }"
@@ -131,11 +167,36 @@ const folders = ['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done'];
                 <div class="pane-toolbar">
                     <div>
                         <p class="eyebrow">WORKSPACE</p>
-                        <h1>{{ navigation.find((item) => item.view === view)?.label }}</h1>
+                        <h1>
+                            {{
+                                accountId != null
+                                    ? accounts.find((account) => account.id === accountId)
+                                          ?.display_name || 'Account mailbox'
+                                    : navigation.find((item) => item.view === view)?.label
+                            }}
+                        </h1>
+                        <small
+                            v-if="
+                                accountId != null &&
+                                accounts.find((account) => account.id === accountId)?.enabled ===
+                                    false
+                            "
+                            >Disabled account · retained mail</small
+                        >
                     </div>
                 </div>
+                <button
+                    type="button"
+                    class="text-button mailbox-refresh"
+                    @click="$emit('refreshMailbox')"
+                >
+                    Refresh mailbox
+                </button>
                 <MessageList
                     :view="view"
+                    :account-id="accountId"
+                    :refresh-version="refreshVersion"
+                    @loaded="$emit('mailboxLoaded')"
                     :accounts="accounts"
                     :selected-message-id="selectedMessageId"
                     @select="$emit('select', $event)"
