@@ -12,6 +12,7 @@ final class MessageListItem
         return [
             'id' => (int) $row->id,
             'mail_account_id' => (int) $row->mail_account_id,
+            'folder_id' => $row->folder_id === null ? null : (int) $row->folder_id,
             'subject' => $row->subject,
             'from_name' => $row->from_name,
             'from_address' => $row->from_address,

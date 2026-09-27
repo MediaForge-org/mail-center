@@ -127,7 +127,8 @@ it('invalidates ingestion, bodies, account disable and delete atomically and sco
     $next = $this->getJson("/api/changes?since={$next}")->assertJsonPath('invalidate', true)->json('version');
     DB::table('message_bodies')->insert(['message_id' => $id, 'text_plain' => 'Body']);
     $this->getJson("/api/changes?since={$next}")->assertJsonPath('invalidate', true);
-    $this->actingAs(User::factory()->create())->getJson('/api/changes')->assertJsonPath('version', '1');
+    // Two statement-level inserts create a new user's folders: system folders, then seeded default custom folders.
+    $this->actingAs(User::factory()->create())->getJson('/api/changes')->assertJsonPath('version', '2');
 });
 
 it('recovers durable maintenance after lost dispatch and fences live leases', function () {

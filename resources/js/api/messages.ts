@@ -4,6 +4,7 @@ export type MailboxView = 'all' | 'inbox' | 'unread' | 'sent' | 'archive';
 export type MessageListItem = {
     id: number;
     mail_account_id: number;
+    folder_id: number | null;
     subject: string;
     from_name: string;
     from_address: string;
@@ -25,9 +26,11 @@ export async function listMessages(
     cursor: string | null,
     signal: AbortSignal,
     accountId?: number | null,
+    folderId?: number | null,
 ): Promise<MessagePage> {
-    const params = new URLSearchParams({ view, limit: '50' });
+    const params = new URLSearchParams({ view: folderId != null ? 'all' : view, limit: '50' });
     if (accountId != null) params.set('account_id', String(accountId));
+    if (folderId != null) params.set('folder_id', String(folderId));
     if (cursor) params.set('cursor', cursor);
     const response = await request(`/api/messages?${params}`, { signal });
     if (!response.ok) throw new Error('Unable to load this mailbox.');
@@ -70,12 +73,13 @@ export async function getMessage(id: number, signal: AbortSignal): Promise<Messa
 export type MailboxCounts = {
     views: Record<MailboxView, { total: number; unread: number }>;
     accounts: Record<string, { total: number; unread: number }>;
+    folders: Record<string, { total: number; unread: number }>;
 };
 export async function getMailboxCounts(signal: AbortSignal): Promise<MailboxCounts> {
     const response = await request('/api/mailbox-counts', { signal });
     if (!response.ok) throw new Error('Counts unavailable.');
     const data = (await response.json()) as MailboxCounts;
-    if (!data.views || !data.accounts) throw new Error('Counts unavailable.');
+    if (!data.views || !data.accounts || !data.folders) throw new Error('Counts unavailable.');
     return data;
 }
 
@@ -127,6 +131,31 @@ export async function getConversation(
     if (!response.ok) throw new MessageDetailError(response.status === 404);
     return response.json();
 }
+export type MoveChange = { id: number; folder_id: number };
+export async function moveMessageFolder(id: number, folderId: number): Promise<MoveChange> {
+    const response = await request(`/api/messages/${id}/folder`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folder_id: folderId }),
+    });
+    if (!response.ok) throw new Error('Unable to move this message.');
+    return ((await response.json()) as { data: MoveChange }).data;
+}
+
+export type ConversationMoveResult = { moved_count: number; folder_id: number };
+export async function moveConversationFolder(
+    id: number,
+    folderId: number,
+): Promise<ConversationMoveResult> {
+    const response = await request(`/api/messages/${id}/conversation/folder`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folder_id: folderId }),
+    });
+    if (!response.ok) throw new Error('Unable to move this conversation.');
+    return ((await response.json()) as { data: ConversationMoveResult }).data;
+}
+
 export async function getMailboxVersion(
     since: string,
 ): Promise<{ version: string; invalidate: boolean; realtime?: boolean; active?: boolean }> {

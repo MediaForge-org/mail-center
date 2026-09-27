@@ -1212,3 +1212,87 @@ button {
     overflow: visible;
     flex: none;
 }
+
+.folder-row-wrap {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+.folder-nav-row {
+    flex: 1;
+    min-width: 0;
+}
+.folder-row-actions {
+    display: flex;
+    flex-shrink: 0;
+    gap: 1px;
+}
+.icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-soft);
+    font-size: 11px;
+    cursor: pointer;
+}
+.icon-button:hover {
+    background: var(--surface-soft);
+    color: var(--text-muted);
+}
+.icon-button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+}
+.folder-edit-form,
+.folder-create-form {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 8px;
+}
+.folder-edit-form input,
+.folder-create-form input {
+    flex: 1;
+    min-width: 0;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 12px;
+}
+.folder-move-menu {
+    padding: 3px 6px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 11px;
+}
+.folder-move-menu:disabled {
+    opacity: 0.5;
+}
+.message-row-item {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+}
+.message-row-item .message-row {
+    flex: 1;
+    border-bottom: 0;
+}
+.message-row-move {
+    flex-shrink: 0;
+    margin-right: 10px;
+}
+.reader-move-action {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 6px 0 0;
+}

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 final readonly class MessageFilter
 {
-    public function __construct(public MessageView $view = MessageView::All, public ?int $accountId = null) {}
+    public function __construct(public MessageView $view = MessageView::All, public ?int $accountId = null, public ?int $folderId = null) {}
 
     public static function base(int $userId, bool $includeDisabled = false): Builder
     {
@@ -24,6 +24,9 @@ final readonly class MessageFilter
         if ($this->accountId !== null) {
             $query->where('messages.mail_account_id', $this->accountId);
         }
+        if ($this->folderId !== null) {
+            $query->where('messages.folder_id', $this->folderId);
+        }
         $this->view->apply($query, $userId);
 
         return $query;
@@ -31,6 +34,8 @@ final readonly class MessageFilter
 
     public function cursorScope(): string
     {
-        return $this->accountId === null ? $this->view->cursorScope() : 'account:'.$this->accountId.':'.$this->view->value.':v1';
+        $scope = $this->accountId === null ? $this->view->cursorScope() : 'account:'.$this->accountId.':'.$this->view->value.':v1';
+
+        return $this->folderId === null ? $scope : $scope.':folder:'.$this->folderId;
     }
 }

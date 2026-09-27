@@ -2,22 +2,49 @@
 import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue';
 import {
     getMessage,
+    moveMessageFolder,
     remoteImageConsent,
     revokeRemoteImageConsent,
     setMessageRead,
     MessageDetailError,
     type MessageDetail,
+    type MoveChange,
     type ReadChange,
 } from '../../api/messages';
 import type { AccountSummary } from '../../api/accounts';
+import type { Folder } from '../../api/folders';
+import FolderMoveMenu from './FolderMoveMenu.vue';
 
 const props = defineProps<{
     messageId: number | null;
     accounts: AccountSummary[];
+    folders?: Folder[];
     embedded?: boolean;
     refreshVersion?: number;
 }>();
-const emit = defineEmits<{ close: []; readChanged: [change: ReadChange] }>();
+const emit = defineEmits<{
+    close: [];
+    readChanged: [change: ReadChange];
+    moved: [change: MoveChange];
+}>();
+const movingFolder = ref(false);
+const moveError = ref('');
+async function moveMessage(folderId: number) {
+    if (!detail.value || movingFolder.value) return;
+    const id = detail.value.id;
+    movingFolder.value = true;
+    moveError.value = '';
+    try {
+        const change = await moveMessageFolder(id, folderId);
+        if (detail.value?.id === id)
+            detail.value = { ...detail.value, folder_id: change.folder_id };
+        emit('moved', change);
+    } catch {
+        moveError.value = 'Unable to move this message. Please try again.';
+    } finally {
+        movingFolder.value = false;
+    }
+}
 const savingRead = ref(false);
 const readError = ref('');
 const detail = shallowRef<MessageDetail | null>(null);
@@ -270,6 +297,16 @@ onBeforeUnmount(() => {
                         </button>
                     </template>
                     <p v-if="readError" role="alert" class="form-error">{{ readError }}</p>
+                </div>
+                <div v-if="folders?.length" class="reader-move-action">
+                    <FolderMoveMenu
+                        :folders="folders"
+                        :current-folder-id="detail.folder_id"
+                        :disabled="movingFolder"
+                        label="Move message to…"
+                        @move="moveMessage"
+                    />
+                    <p v-if="moveError" role="alert" class="form-error">{{ moveError }}</p>
                 </div>
                 <div class="reader-status">
                     <span v-if="detail.is_starred">★ Starred</span>

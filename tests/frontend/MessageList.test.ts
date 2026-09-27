@@ -7,6 +7,7 @@ import type { AccountSummary } from '../../resources/js/api/accounts';
 const message = (id: number): MessageListItem => ({
     id,
     mail_account_id: 1,
+    folder_id: null,
     from_name: 'Alice',
     from_address: 'alice@example.test',
     subject: `Subject ${id}`,

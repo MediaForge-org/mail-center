@@ -57,6 +57,7 @@ async function open(state: {
             body = {
                 views: { inbox: { total: rows.length, unread: rows.length } },
                 accounts: { '1': { total: rows.length, unread: 0 } },
+                folders: {},
             };
         }
         if (url.startsWith('/api/messages?')) {

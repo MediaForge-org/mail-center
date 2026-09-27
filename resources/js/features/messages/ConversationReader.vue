@@ -1,15 +1,45 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref, shallowRef, watch } from 'vue';
-import { getConversation, type ConversationItem, type ReadChange } from '../../api/messages';
+import {
+    getConversation,
+    moveConversationFolder,
+    type ConversationItem,
+    type ConversationMoveResult,
+    type MoveChange,
+    type ReadChange,
+} from '../../api/messages';
 import type { AccountSummary } from '../../api/accounts';
+import type { Folder } from '../../api/folders';
+import FolderMoveMenu from './FolderMoveMenu.vue';
 import MessageReader from './MessageReader.vue';
 
 const props = defineProps<{
     messageId: number | null;
     accounts: AccountSummary[];
+    folders?: Folder[];
     refreshVersion?: number;
 }>();
-defineEmits<{ close: []; readChanged: [change: ReadChange] }>();
+const emit = defineEmits<{
+    close: [];
+    readChanged: [change: ReadChange];
+    moved: [change: MoveChange | ConversationMoveResult];
+}>();
+const movingConversation = ref(false);
+const conversationMoveError = ref('');
+async function moveConversation(folderId: number) {
+    if (props.messageId === null || movingConversation.value) return;
+    movingConversation.value = true;
+    conversationMoveError.value = '';
+    try {
+        const result = await moveConversationFolder(props.messageId, folderId);
+        emit('moved', result);
+        void load();
+    } catch {
+        conversationMoveError.value = 'Unable to move this conversation. Please try again.';
+    } finally {
+        movingConversation.value = false;
+    }
+}
 const items = shallowRef<ConversationItem[]>([]);
 const expanded = ref(new Set<number>());
 const cursor = ref<string | null>(null);
@@ -81,8 +111,18 @@ onBeforeUnmount(() => controller?.abort());
     <div class="conversation-reader">
         <div v-if="messageId !== null" class="reader-toolbar">
             <span>Conversation · oldest first</span>
+            <FolderMoveMenu
+                v-if="folders?.length"
+                :folders="folders"
+                :disabled="movingConversation"
+                label="Move conversation to…"
+                @move="moveConversation"
+            />
             <button class="text-button" type="button" @click="$emit('close')">Close message</button>
         </div>
+        <p v-if="conversationMoveError" role="alert" class="form-error">
+            {{ conversationMoveError }}
+        </p>
         <p v-if="loading && !items.length" class="conversation-status" role="status">
             Loading conversation…
         </p>
@@ -118,9 +158,11 @@ onBeforeUnmount(() => controller?.abort());
                 v-if="expanded.has(item.id)"
                 :message-id="item.id"
                 :accounts="accounts"
+                :folders="folders"
                 :refresh-version="refreshVersion"
                 embedded
                 @read-changed="$emit('readChanged', $event)"
+                @moved="$emit('moved', $event)"
             />
         </section>
         <button
@@ -140,10 +182,12 @@ onBeforeUnmount(() => controller?.abort());
             :key="messageId ?? 'empty'"
             :message-id="messageId"
             :accounts="accounts"
+            :folders="folders"
             :refresh-version="refreshVersion"
             :embedded="messageId !== null"
             @close="$emit('close')"
             @read-changed="$emit('readChanged', $event)"
+            @moved="$emit('moved', $event)"
         />
     </div>
 </template>

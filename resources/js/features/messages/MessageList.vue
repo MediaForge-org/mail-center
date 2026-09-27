@@ -2,16 +2,22 @@
 import { computed, onBeforeUnmount, ref, shallowRef, watch } from 'vue';
 import {
     listMessages,
+    moveMessageFolder,
     type MailboxView,
     type MessageListItem,
+    type MoveChange,
     type ReadChange,
 } from '../../api/messages';
 import type { AccountSummary } from '../../api/accounts';
+import type { Folder } from '../../api/folders';
+import FolderMoveMenu from './FolderMoveMenu.vue';
 
 const props = defineProps<{
     view: MailboxView;
     readChange?: ReadChange | null;
     accountId?: number | null;
+    folderId?: number | null;
+    folders?: Folder[];
     refreshVersion?: number;
     accounts: AccountSummary[];
     selectedMessageId?: number | null;
@@ -23,18 +29,38 @@ const error = ref(false);
 const refreshing = ref(false);
 let refreshPending = false;
 let refreshFailed = false;
-const emit = defineEmits<{ select: [id: number]; loaded: [] }>();
+const emit = defineEmits<{ select: [id: number]; loaded: []; moved: [change: MoveChange] }>();
 const accountMap = computed(() => new Map(props.accounts.map((account) => [account.id, account])));
-const emptyText = computed(
-    () =>
-        ({
-            all: 'No messages yet.',
-            inbox: 'Your Inbox is empty.',
-            unread: 'No unread messages.',
-            sent: 'No sent messages.',
-            archive: 'Your Archive is empty.',
-        })[props.view],
+const emptyText = computed(() =>
+    props.folderId != null
+        ? 'This folder is empty.'
+        : {
+              all: 'No messages yet.',
+              inbox: 'Your Inbox is empty.',
+              unread: 'No unread messages.',
+              sent: 'No sent messages.',
+              archive: 'Your Archive is empty.',
+          }[props.view],
 );
+const movingId = ref<number | null>(null);
+const moveError = ref('');
+async function moveTo(id: number, folderId: number) {
+    if (movingId.value !== null) return;
+    movingId.value = id;
+    moveError.value = '';
+    try {
+        const change = await moveMessageFolder(id, folderId);
+        emit('moved', change);
+    } catch {
+        moveError.value = 'Unable to move this message. Please try again.';
+    } finally {
+        movingId.value = null;
+    }
+}
+function dragStart(event: DragEvent, id: number) {
+    event.dataTransfer?.setData('application/x-mailcenter-message-id', String(id));
+    if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
+}
 // Same ordering as the API: sort_date descending, then id descending.
 function isOlder(a: MessageListItem, b: MessageListItem): boolean {
     const da = Date.parse(a.sort_date);
@@ -75,6 +101,7 @@ async function loadPage(replace = false) {
             requestedCursor,
             active.signal,
             props.accountId,
+            props.folderId,
         );
         if (active.signal.aborted) return;
         if (replace) seen = new Set();
@@ -124,7 +151,7 @@ async function loadPage(replace = false) {
 }
 
 watch(
-    () => [props.view, props.accountId],
+    () => [props.view, props.accountId, props.folderId],
     () => {
         controller?.abort();
         refreshPending = false;
@@ -164,10 +191,12 @@ function dateLabel(value: string): string {
 <template>
     <div class="message-feed" :aria-busy="loading">
         <ul v-if="messages.length" class="message-rows" aria-label="Messages">
-            <li v-for="message in messages" :key="message.id">
+            <li v-for="message in messages" :key="message.id" class="message-row-item">
                 <button
                     type="button"
                     class="message-row"
+                    draggable="true"
+                    @dragstart="dragStart($event, message.id)"
                     :class="{
                         'message-unread': !message.is_read,
                         'message-selected': selectedMessageId === message.id,
@@ -218,8 +247,18 @@ function dateLabel(value: string): string {
                         >
                     </span>
                 </button>
+                <FolderMoveMenu
+                    v-if="folders?.length"
+                    class="message-row-move"
+                    :folders="folders"
+                    :current-folder-id="message.folder_id"
+                    :disabled="movingId === message.id"
+                    label="Move to…"
+                    @move="(folderId) => moveTo(message.id, folderId)"
+                />
             </li>
         </ul>
+        <p v-if="moveError" role="alert" class="form-error">{{ moveError }}</p>
         <div class="message-feed-footer" aria-live="polite">
             <p v-if="loading">
                 {{

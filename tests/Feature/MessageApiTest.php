@@ -80,7 +80,7 @@ it('returns only the list field allowlist', function () {
 
     $item = $this->actingAs($user)->getJson('/api/messages')->assertOk()->json('data.0');
     expect(array_keys($item))->toEqualCanonicalizing([
-        'id', 'mail_account_id', 'subject', 'from_name', 'from_address', 'to', 'snippet',
+        'id', 'mail_account_id', 'folder_id', 'subject', 'from_name', 'from_address', 'to', 'snippet',
         'sort_date', 'received_at', 'is_read', 'is_starred', 'is_important', 'is_done',
         'has_attachments', 'direction',
     ]);

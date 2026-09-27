@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Organization\DefaultFolders;
 use App\Organization\SystemFolders;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -20,7 +21,10 @@ class User extends Authenticatable
 
     protected static function booted(): void
     {
-        static::created(fn (self $user) => SystemFolders::createForUser($user->id));
+        static::created(function (self $user) {
+            SystemFolders::createForUser($user->id);
+            DefaultFolders::seedForUser($user->id);
+        });
     }
 
     /**

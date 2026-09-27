@@ -10,6 +10,7 @@ import {
     type MailboxView,
 } from '../api/messages';
 import { currentUser, logout } from '../api/auth';
+import { listFolders, type Folder } from '../api/folders';
 import AccountsPanel from '../features/accounts/AccountsPanel.vue';
 import MailWorkspace from '../features/workspace/MailWorkspace.vue';
 import { syncPollPolicy } from '../features/workspace/syncPollPolicy';
@@ -44,6 +45,24 @@ const router = useRouter();
 const route = useRoute();
 const accounts = ref<AccountSummary[]>([]);
 const accountId = computed(() => (route.params.accountId ? Number(route.params.accountId) : null));
+const folderId = computed(() => (route.params.folderId ? Number(route.params.folderId) : null));
+const folders = ref<Folder[]>([]);
+const foldersError = ref('');
+async function refreshFolders() {
+    try {
+        folders.value = await listFolders();
+        foldersError.value = '';
+    } catch {
+        foldersError.value = 'Unable to load folders.';
+    }
+}
+function onFolderMutated() {
+    void refreshFolders();
+    void refreshCounts();
+}
+function onMoved() {
+    refreshMailbox();
+}
 const counts = ref<MailboxCounts | null>(null);
 const refreshVersion = ref(0);
 const readChange = ref<ReadChange | null>(null);
@@ -141,6 +160,7 @@ onMounted(async () => {
         name.value = user.name;
         await pollChanges();
         await refreshAccounts();
+        void refreshFolders();
         void refreshCounts();
         schedulePoll();
         document.addEventListener('visibilitychange', onVisibility);
@@ -176,8 +196,9 @@ async function pollChanges() {
         }
         if (change.invalidate) {
             refreshVersion.value++;
-            // Let the visible list request leave first; accounts/counts follow without delaying rows.
+            // Let the visible list request leave first; accounts/counts/folders follow without delaying rows.
             await nextTick();
+            void refreshFolders();
             const results = await Promise.all([refreshAccounts(), refreshCounts()]);
             if (results.every(Boolean)) observedVersion = change.version;
         }
@@ -238,10 +259,17 @@ async function signOut() {
         :section="section"
         :view="view"
         :account-id="accountId"
+        :folder-id="folderId"
+        :folders="folders"
+        :folders-error="foldersError"
         :counts="counts"
         :refresh-version="refreshVersion"
         @open-account="(id) => router.push(`/mail/account/${id}/all`)"
         @account-view="(target) => router.push(`/mail/account/${accountId}/${target}`)"
+        @open-folder="(id) => router.push(`/mail/folder/${id}`)"
+        @folder-mutated="onFolderMutated"
+        @folder-deleted="(id) => folderId === id && router.push('/mail/inbox')"
+        @moved="onMoved"
         @mailbox-loaded="refreshCounts"
         @refresh-mailbox="refreshMailbox"
         :selected-message-id="selectedMessageId"

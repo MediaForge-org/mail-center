@@ -31,22 +31,30 @@ class MessageController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        if (array_diff(array_keys($request->query()), ['view', 'limit', 'cursor', 'account_id']) !== []) {
+        if (array_diff(array_keys($request->query()), ['view', 'limit', 'cursor', 'account_id', 'folder_id']) !== []) {
             throw ValidationException::withMessages(['query' => 'Unknown message filter.']);
         }
         $input = $request->validate([
             'account_id' => ['sometimes', 'integer', 'min:1'],
+            'folder_id' => ['sometimes', 'integer', 'min:1'],
             'view' => ['sometimes', Rule::enum(MessageView::class)],
             'limit' => ['sometimes', 'integer', 'min:1', 'max:100'],
             'cursor' => ['sometimes', 'string', 'max:2048'],
         ]);
+        if (isset($input['folder_id']) && ($input['view'] ?? 'all') !== 'all') {
+            throw ValidationException::withMessages(['view' => 'A folder view cannot be combined with another system view.']);
+        }
         $view = MessageView::from($input['view'] ?? 'all');
         $accountId = isset($input['account_id']) ? (int) $input['account_id'] : null;
-        $filter = new MessageFilter($view, $accountId);
+        $folderId = isset($input['folder_id']) ? (int) $input['folder_id'] : null;
+        $filter = new MessageFilter($view, $accountId, $folderId);
         $limit = (int) ($input['limit'] ?? 50);
         $userId = (int) $request->user()->getAuthIdentifier();
         if ($accountId !== null) {
             abort_unless(DB::table('mail_accounts')->where('id', $accountId)->where('user_id', $userId)->whereNull('deleted_at')->exists(), 404);
+        }
+        if ($folderId !== null) {
+            abort_unless(DB::table('folders')->where('id', $folderId)->where('user_id', $userId)->exists(), 404);
         }
         $after = isset($input['cursor']) ? $this->decodeCursor($input['cursor'], $userId, $filter) : null;
         $query = $filter->query($userId);
@@ -67,6 +75,7 @@ class MessageController extends Controller
             'messages.snippet', 'messages.sort_date', 'messages.received_at',
             'messages.is_read', 'messages.is_starred', 'messages.is_important',
             'messages.is_done', 'messages.has_attachments', 'messages.direction',
+            'messages.folder_id',
         ])->orderByDesc('messages.sort_date')->orderByDesc('messages.id')
             ->limit($limit + 1)->get();
 
@@ -127,7 +136,16 @@ class MessageController extends Controller
             $accounts[(string) $row->mail_account_id] = ['total' => (int) $row->total, 'unread' => (int) $row->unread];
         }
 
-        return response()->json(['views' => $views, 'accounts' => (object) $accounts])
+        $folders = DB::table('folders')->where('user_id', $userId)
+            ->pluck('id')->mapWithKeys(fn ($id) => [(string) $id => ['total' => 0, 'unread' => 0]])->all();
+        $folderRows = MessageFilter::base($userId, false)->whereNotNull('messages.folder_id')
+            ->groupBy('messages.folder_id')
+            ->selectRaw('messages.folder_id, count(*) AS total, count(*) FILTER (WHERE messages.is_read = false) AS unread')->get();
+        foreach ($folderRows as $row) {
+            $folders[(string) $row->folder_id] = ['total' => (int) $row->total, 'unread' => (int) $row->unread];
+        }
+
+        return response()->json(['views' => $views, 'accounts' => (object) $accounts, 'folders' => (object) $folders])
             ->header('Cache-Control', 'private, no-store');
     }
 
@@ -136,6 +154,20 @@ class MessageController extends Controller
         $data = $request->validate(['is_read' => ['required', 'boolean']]);
 
         return response()->json(['data' => $organization->setRead((int) $request->user()->id, $id, (bool) $data['is_read'])]);
+    }
+
+    public function moveFolder(Request $request, int $id, OrganizationService $organization): JsonResponse
+    {
+        $data = $request->validate(['folder_id' => ['required', 'integer', 'min:1']]);
+
+        return response()->json(['data' => $organization->moveMessage((int) $request->user()->id, $id, (int) $data['folder_id'])]);
+    }
+
+    public function moveConversationFolder(Request $request, int $id, OrganizationService $organization): JsonResponse
+    {
+        $data = $request->validate(['folder_id' => ['required', 'integer', 'min:1']]);
+
+        return response()->json(['data' => $organization->moveConversation((int) $request->user()->id, $id, (int) $data['folder_id'])]);
     }
 
     public function show(Request $request, int $id): JsonResponse
@@ -147,7 +179,7 @@ class MessageController extends Controller
                 'messages.cc', 'messages.bcc', 'messages.reply_to', 'messages.date_header',
                 'messages.received_at', 'messages.direction', 'messages.is_read',
                 'messages.is_starred', 'messages.is_important', 'messages.is_done',
-                'messages.has_attachments', 'messages.remote_status', 'messages.parse_status',
+                'messages.has_attachments', 'messages.remote_status', 'messages.parse_status', 'messages.folder_id',
                 'message_bodies.text_plain', 'message_bodies.sanitizer_version', 'message_bodies.remote_content_count',
                 DB::raw("(message_bodies.html_sanitized IS NOT NULL AND message_bodies.html_sanitized <> '') AS has_html"),
             ])->first();

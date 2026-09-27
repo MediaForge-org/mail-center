@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { usePaneWidths } from './usePaneWidths';
 import SyncStatus from '../accounts/SyncStatus.vue';
 import ConversationReader from '../messages/ConversationReader.vue';
 import MessageList from '../messages/MessageList.vue';
-import type { MailboxCounts, MailboxView, ReadChange } from '../../api/messages';
+import type { MailboxCounts, MailboxView, MoveChange, ReadChange } from '../../api/messages';
+import { moveMessageFolder, type ConversationMoveResult } from '../../api/messages';
 import type { AccountSummary } from '../../api/accounts';
+import type { Folder } from '../../api/folders';
+import { createFolder, deleteFolder, renameFolder, reorderFolders } from '../../api/folders';
 import { statusLabels, statusTone } from '../accounts/statusLabel';
 
 const props = withDefaults(
@@ -18,18 +21,25 @@ const props = withDefaults(
         syncPending?: number | null;
         syncError?: string;
         accountId?: number | null;
+        folderId?: number | null;
+        folders?: Folder[];
+        foldersError?: string;
         counts?: MailboxCounts | null;
         refreshVersion?: number;
         selectedMessageId?: number | null;
     }>(),
-    { accounts: () => [], section: 'mail', view: 'all' },
+    { accounts: () => [], folders: () => [], section: 'mail', view: 'all' },
 );
-defineEmits<{
+const emit = defineEmits<{
     signOut: [];
     syncNow: [id: number];
     readChanged: [change: ReadChange];
+    moved: [change: MoveChange | ConversationMoveResult];
     openAccount: [id: number];
     accountView: [view: MailboxView];
+    openFolder: [id: number];
+    folderMutated: [];
+    folderDeleted: [id: number];
     mailboxLoaded: [];
     refreshMailbox: [];
     navigate: [section: MailboxView | 'accounts'];
@@ -53,6 +63,94 @@ const syncingAccounts = computed(
 const selectedAccount = computed(() =>
     props.accounts.find((account) => account.id === props.accountId),
 );
+const selectedFolder = computed(() => props.folders.find((folder) => folder.id === props.folderId));
+
+const creatingFolder = ref(false);
+const newFolderName = ref('');
+const folderActionError = ref('');
+const editingFolderId = ref<number | null>(null);
+const editingName = ref('');
+
+async function submitCreate() {
+    const name = newFolderName.value.trim();
+    if (!name) return;
+    folderActionError.value = '';
+    try {
+        await createFolder(name);
+        newFolderName.value = '';
+        creatingFolder.value = false;
+        emit('folderMutated');
+    } catch (cause) {
+        folderActionError.value =
+            cause instanceof Error ? cause.message : 'Unable to create folder.';
+    }
+}
+function startRename(folder: Folder) {
+    editingFolderId.value = folder.id;
+    editingName.value = folder.name;
+    folderActionError.value = '';
+}
+function cancelRename() {
+    editingFolderId.value = null;
+}
+async function submitRename() {
+    if (editingFolderId.value === null) return;
+    const name = editingName.value.trim();
+    if (!name) return;
+    try {
+        await renameFolder(editingFolderId.value, name);
+        editingFolderId.value = null;
+        emit('folderMutated');
+    } catch (cause) {
+        folderActionError.value =
+            cause instanceof Error ? cause.message : 'Unable to rename folder.';
+    }
+}
+async function removeFolder(folder: Folder) {
+    const total = props.counts?.folders[String(folder.id)]?.total ?? 0;
+    const message =
+        total > 0
+            ? `Delete "${folder.name}"? ${total} message${total === 1 ? '' : 's'} will move back to Inbox. Email is never deleted.`
+            : `Delete "${folder.name}"? It is empty.`;
+    if (!window.confirm(message)) return;
+    folderActionError.value = '';
+    try {
+        await deleteFolder(folder.id);
+        emit('folderDeleted', folder.id);
+        emit('folderMutated');
+    } catch (cause) {
+        folderActionError.value =
+            cause instanceof Error ? cause.message : 'Unable to delete folder.';
+    }
+}
+async function moveFolderPosition(folder: Folder, direction: -1 | 1) {
+    const ordered = [...props.folders].sort((a, b) => a.position - b.position).map((f) => f.id);
+    const index = ordered.indexOf(folder.id);
+    const target = index + direction;
+    if (target < 0 || target >= ordered.length) return;
+    [ordered[index], ordered[target]] = [ordered[target], ordered[index]];
+    try {
+        await reorderFolders(ordered);
+        emit('folderMutated');
+    } catch (cause) {
+        folderActionError.value =
+            cause instanceof Error ? cause.message : 'Unable to reorder folders.';
+    }
+}
+function allowDrop(event: DragEvent) {
+    event.preventDefault();
+}
+function dropOnFolder(event: DragEvent, folder: Folder) {
+    event.preventDefault();
+    const raw = event.dataTransfer?.getData('application/x-mailcenter-message-id') ?? '';
+    const id = Number(raw);
+    if (!Number.isInteger(id) || id <= 0) return;
+    moveMessageFolder(id, folder.id)
+        .then((change) => emit('moved', change))
+        .catch(() => {
+            folderActionError.value = 'Unable to move message.';
+        });
+}
 </script>
 
 <template>
@@ -90,10 +188,16 @@ const selectedAccount = computed(() =>
                             class="nav-row nav-button"
                             :class="{
                                 'nav-row-current':
-                                    section === 'mail' && accountId == null && view === item.view,
+                                    section === 'mail' &&
+                                    accountId == null &&
+                                    folderId == null &&
+                                    view === item.view,
                             }"
                             :aria-current="
-                                section === 'mail' && accountId == null && view === item.view
+                                section === 'mail' &&
+                                accountId == null &&
+                                folderId == null &&
+                                view === item.view
                                     ? 'page'
                                     : undefined
                             "
@@ -155,6 +259,131 @@ const selectedAccount = computed(() =>
                     >
                         Manage accounts
                     </button>
+                    <div class="sidebar-divider"></div>
+                    <p class="section-label">Folders</p>
+                    <p v-if="foldersError" class="form-error" role="alert">{{ foldersError }}</p>
+                    <nav aria-label="Folders">
+                        <div
+                            v-for="folder in folders"
+                            :key="folder.id"
+                            class="folder-row-wrap"
+                            @dragover="allowDrop"
+                            @drop="dropOnFolder($event, folder)"
+                        >
+                            <form
+                                v-if="editingFolderId === folder.id"
+                                class="folder-edit-form"
+                                @submit.prevent="submitRename"
+                            >
+                                <input
+                                    v-model="editingName"
+                                    :aria-label="`Rename ${folder.name}`"
+                                    @keyup.escape="cancelRename"
+                                />
+                                <button type="submit" class="small-button">Save</button>
+                                <button type="button" class="text-button" @click="cancelRename">
+                                    Cancel
+                                </button>
+                            </form>
+                            <template v-else>
+                                <button
+                                    type="button"
+                                    class="nav-row nav-button folder-nav-row"
+                                    :class="{
+                                        'nav-row-current':
+                                            section === 'mail' && folderId === folder.id,
+                                    }"
+                                    :aria-current="
+                                        section === 'mail' && folderId === folder.id
+                                            ? 'page'
+                                            : undefined
+                                    "
+                                    @click="$emit('openFolder', folder.id)"
+                                >
+                                    <span class="nav-glyph" aria-hidden="true">▸</span>
+                                    {{ folder.name }}
+                                    <span
+                                        v-if="counts?.folders[String(folder.id)]"
+                                        class="mailbox-count"
+                                        :title="`${counts.folders[String(folder.id)].unread} unread`"
+                                        >{{ counts.folders[String(folder.id)].total }}</span
+                                    >
+                                </button>
+                                <span class="folder-row-actions">
+                                    <button
+                                        type="button"
+                                        class="icon-button"
+                                        title="Move up"
+                                        aria-label="Move folder up"
+                                        @click="moveFolderPosition(folder, -1)"
+                                    >
+                                        ↑
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="icon-button"
+                                        title="Move down"
+                                        aria-label="Move folder down"
+                                        @click="moveFolderPosition(folder, 1)"
+                                    >
+                                        ↓
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="icon-button"
+                                        title="Rename folder"
+                                        aria-label="Rename folder"
+                                        @click="startRename(folder)"
+                                    >
+                                        ✎
+                                    </button>
+                                    <button
+                                        v-if="folder.system_role === null"
+                                        type="button"
+                                        class="icon-button"
+                                        title="Delete folder"
+                                        aria-label="Delete folder"
+                                        @click="removeFolder(folder)"
+                                    >
+                                        ✕
+                                    </button>
+                                </span>
+                            </template>
+                        </div>
+                    </nav>
+                    <form
+                        v-if="creatingFolder"
+                        class="folder-create-form"
+                        @submit.prevent="submitCreate"
+                    >
+                        <input
+                            v-model="newFolderName"
+                            placeholder="Folder name"
+                            aria-label="New folder name"
+                        />
+                        <button type="submit" class="small-button">Create</button>
+                        <button
+                            type="button"
+                            class="text-button"
+                            @click="
+                                creatingFolder = false;
+                                newFolderName = '';
+                            "
+                        >
+                            Cancel
+                        </button>
+                    </form>
+                    <button
+                        v-else
+                        type="button"
+                        class="nav-row nav-button"
+                        @click="creatingFolder = true"
+                    >
+                        + New folder
+                    </button>
+                    <p v-if="folderActionError" class="form-error" role="alert">
+                        {{ folderActionError }}
+                    </p>
                 </div>
                 <div class="sidebar-footer">Your mail, one workspace</div>
             </aside>
@@ -189,21 +418,31 @@ const selectedAccount = computed(() =>
                 <div class="pane-toolbar">
                     <div>
                         <p class="eyebrow">
-                            {{ accountId == null ? 'GLOBAL WORKSPACE' : 'ACCOUNT MAILBOX' }}
+                            {{
+                                folderId != null
+                                    ? 'FOLDER'
+                                    : accountId == null
+                                      ? 'GLOBAL WORKSPACE'
+                                      : 'ACCOUNT MAILBOX'
+                            }}
                         </p>
                         <h1>
                             {{
-                                accountId != null
-                                    ? accounts.find((account) => account.id === accountId)
-                                          ?.display_name || 'Account mailbox'
-                                    : navigation.find((item) => item.view === view)?.label
+                                folderId != null
+                                    ? selectedFolder?.name || 'Folder'
+                                    : accountId != null
+                                      ? accounts.find((account) => account.id === accountId)
+                                            ?.display_name || 'Account mailbox'
+                                      : navigation.find((item) => item.view === view)?.label
                             }}
                         </h1>
                         <p class="scope-description">
                             {{
-                                accountId == null
-                                    ? 'Mail across all enabled accounts'
-                                    : selectedAccount?.email_address
+                                folderId != null
+                                    ? 'Local organization folder · never a remote mailbox folder'
+                                    : accountId == null
+                                      ? 'Mail across all enabled accounts'
+                                      : selectedAccount?.email_address
                             }}
                         </p>
                         <small v-if="selectedAccount?.enabled === false"
@@ -211,7 +450,11 @@ const selectedAccount = computed(() =>
                         >
                     </div>
                 </div>
-                <nav v-if="accountId != null" class="account-view-tabs" aria-label="Account views">
+                <nav
+                    v-if="accountId != null && folderId == null"
+                    class="account-view-tabs"
+                    aria-label="Account views"
+                >
                     <button
                         v-for="item in navigation"
                         :key="item.view"
@@ -222,8 +465,12 @@ const selectedAccount = computed(() =>
                         {{ item.label }}
                     </button>
                 </nav>
-                <SyncStatus v-if="selectedAccount" :account="selectedAccount" compact />
-                <p v-else class="mailbox-sync-hint">
+                <SyncStatus
+                    v-if="selectedAccount && folderId == null"
+                    :account="selectedAccount"
+                    compact
+                />
+                <p v-else-if="folderId == null" class="mailbox-sync-hint">
                     {{
                         automaticAccounts.length
                             ? `${automaticAccounts.length} account(s) sync automatically · new mail appears here`
@@ -254,11 +501,14 @@ const selectedAccount = computed(() =>
                     :read-change="readChange"
                     :view="view"
                     :account-id="accountId"
+                    :folder-id="folderId"
+                    :folders="folders"
                     :refresh-version="refreshVersion"
                     @loaded="$emit('mailboxLoaded')"
                     :accounts="accounts"
                     :selected-message-id="selectedMessageId"
                     @select="$emit('select', $event)"
+                    @moved="$emit('moved', $event)"
                 />
             </section>
 
@@ -287,7 +537,9 @@ const selectedAccount = computed(() =>
                     :message-id="selectedMessageId ?? null"
                     :refresh-version="refreshVersion"
                     :accounts="accounts"
+                    :folders="folders"
                     @close="$emit('select', null)"
+                    @moved="$emit('moved', $event)"
                 />
             </section>
         </div>

@@ -8,17 +8,21 @@ use Illuminate\Support\Facades\Schema;
 
 uses(RefreshDatabase::class);
 
-it('creates separate system folders for each new user without exposing folder editing', function () {
+it('creates separate system folders plus seeded default custom folders for each new user', function () {
     $alice = User::factory()->create();
     $bob = User::factory()->create();
 
     foreach ([$alice, $bob] as $user) {
         expect(DB::table('folders')->where('user_id', $user->id)->orderBy('position')->pluck('system_role')->all())
-            ->toBe(['inbox', 'sent', 'archive']);
+            ->toBe(['inbox', 'sent', 'archive', null, null, null, null, null]);
+        expect(DB::table('folders')->where('user_id', $user->id)->whereNull('system_role')->orderBy('position')->pluck('name')->all())
+            ->toBe(['Reloads', 'Support', 'Withdrawals', 'Verification', 'Done']);
     }
     expect(SystemFolders::idFor($alice->id, 'inbox'))->not->toBe(SystemFolders::idFor($bob->id, 'inbox'));
-    $this->actingAs($alice)->postJson('/api/folders', ['name' => 'Custom'])->assertNotFound();
-    $this->patchJson('/api/folders/1', ['name' => 'Changed'])->assertNotFound();
+    $this->actingAs($alice)->postJson('/api/folders', ['name' => 'Custom'])->assertCreated();
+    $inboxId = SystemFolders::idFor($alice->id, 'inbox');
+    $this->patchJson("/api/folders/{$inboxId}", ['name' => 'Primary'])->assertOk()->assertJsonPath('data.system_role', 'inbox');
+    $this->deleteJson("/api/folders/{$inboxId}")->assertUnprocessable();
 });
 
 it('applies all, inbox and unread predicates with local folders and owner scope', function () {
@@ -53,8 +57,9 @@ it('applies all, inbox and unread predicates with local folders and owner scope'
 it('rejects unknown views and unrelated query filters', function () {
     $this->actingAs(User::factory()->create());
     $this->getJson('/api/messages?view=starred')->assertUnprocessable()->assertJsonValidationErrors('view');
-    $this->getJson('/api/messages?folder_id=1')->assertUnprocessable()->assertJsonValidationErrors('query');
+    $this->getJson('/api/messages?unrelated=1')->assertUnprocessable()->assertJsonValidationErrors('query');
     $this->getJson('/api/messages?view[]=inbox')->assertUnprocessable()->assertJsonValidationErrors('view');
+    $this->getJson('/api/messages?folder_id=999999&view=inbox')->assertUnprocessable()->assertJsonValidationErrors('view');
 });
 
 it('keeps cursors within each view and paginates identical dates deterministically', function () {

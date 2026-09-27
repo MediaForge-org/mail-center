@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\AccountSyncController;
 use App\Http\Controllers\Api\ConnectionTestController;
+use App\Http\Controllers\Api\FolderController;
 use App\Http\Controllers\Api\MessageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,8 +22,15 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::get('/mailbox-counts', [MessageController::class, 'counts']);
     Route::get('/messages', [MessageController::class, 'index']);
     Route::patch('/messages/{id}/read', [MessageController::class, 'setRead'])->whereNumber('id');
+    Route::patch('/messages/{id}/folder', [MessageController::class, 'moveFolder'])->whereNumber('id');
+    Route::patch('/messages/{id}/conversation/folder', [MessageController::class, 'moveConversationFolder'])->whereNumber('id');
     Route::get('/messages/{id}/conversation', [MessageController::class, 'conversation'])->whereNumber('id');
     Route::get('/messages/{id}', [MessageController::class, 'show'])->whereNumber('id');
+    Route::get('/folders', [FolderController::class, 'index']);
+    Route::post('/folders', [FolderController::class, 'store']);
+    Route::patch('/folders/{id}', [FolderController::class, 'update'])->whereNumber('id');
+    Route::put('/folders/order', [FolderController::class, 'order']);
+    Route::delete('/folders/{id}', [FolderController::class, 'destroy'])->whereNumber('id');
     Route::post('/accounts', [AccountController::class, 'store']);
     Route::post('/accounts/test-connection', [ConnectionTestController::class, 'store'])->middleware('throttle:connection-test');
     Route::get('/connection-tests/{id}', [ConnectionTestController::class, 'show'])->whereNumber('id');

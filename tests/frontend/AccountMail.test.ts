@@ -18,6 +18,7 @@ const counts = {
         unread: { total: 11, unread: 11 },
     },
     accounts: { '1': { total: 150, unread: 12 }, '2': { total: 40, unread: 4 } },
+    folders: {},
 };
 const message = (id: number, account: number) => ({
     id,

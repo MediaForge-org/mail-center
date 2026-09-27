@@ -31,7 +31,7 @@ it('returns only reader metadata and stored plain text without mutating flags', 
         ->assertJsonPath('data.text_plain', "Hello\n<script>literal text</script>");
     expect(array_keys($response->json('data')))->toEqual([
         'id', 'mail_account_id', 'subject', 'from_name', 'from_address', 'direction',
-        'is_read', 'is_starred', 'is_important', 'is_done', 'has_attachments', 'remote_status',
+        'is_read', 'is_starred', 'is_important', 'is_done', 'has_attachments', 'remote_status', 'folder_id',
         'to', 'cc', 'bcc', 'reply_to', 'date_header', 'received_at', 'body_status', 'text_plain', 'html_available', 'remote_content_count', 'remote_images_always', 'read_writeback', 'attachments',
     ]);
     expect($response->getContent())->not->toContain('HTML secret');

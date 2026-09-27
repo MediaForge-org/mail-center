@@ -15,6 +15,7 @@ export const routes: RouteRecordRaw[] = [
         component: MailPage,
     },
     { path: '/mail/:view(all|inbox|unread|sent|archive|accounts)', component: MailPage },
+    { path: '/mail/folder/:folderId(\\d+)', component: MailPage },
     { path: '/mail/:pathMatch(.*)*', redirect: '/mail/all' },
 ];
 

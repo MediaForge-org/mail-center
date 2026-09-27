@@ -97,6 +97,7 @@ it('restores URL selection, selects rows without mutations, handles history and 
             return Promise.resolve(
                 new Response(JSON.stringify({ data: [message(1), message(2)], next_cursor: null })),
             );
+        if (url === '/api/folders') return Promise.resolve(response([]));
         return Promise.resolve(response(message(Number(url.split('/').pop()))));
     });
     vi.stubGlobal('fetch', fetchMock);
@@ -246,6 +247,7 @@ it('explicit read actions update reader, Unread rows and server counts without r
                             unread: { total: isRead ? 0 : 1, unread: isRead ? 0 : 1 },
                         },
                         accounts: {},
+                        folders: {},
                     }),
                 ),
             );
@@ -260,6 +262,7 @@ it('explicit read actions update reader, Unread rows and server counts without r
                     JSON.stringify({ data: isRead ? [] : [message(1)], next_cursor: null }),
                 ),
             );
+        if (url === '/api/folders') return Promise.resolve(response([]));
         return Promise.resolve(response({ ...message(1), is_read: isRead }));
     });
     vi.stubGlobal('fetch', fetchMock);
