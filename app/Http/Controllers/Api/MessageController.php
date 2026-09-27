@@ -85,7 +85,21 @@ class MessageController extends Controller
         $input = $request->validate(['since' => ['sometimes', 'integer', 'min:0']]);
         $version = (string) (DB::table('user_change_versions')->where('user_id', $request->user()->id)->value('version') ?? 0);
 
-        return response()->json(['version' => $version, 'invalidate' => $version !== (string) ($input['since'] ?? '0')])
+        // Live watcher health (healthy lease on an enabled folder of an active account), never capability.
+        $realtime = DB::table('sync_watchers')
+            ->join('remote_folders', 'remote_folders.id', '=', 'sync_watchers.remote_folder_id')
+            ->join('mail_accounts', 'mail_accounts.id', '=', 'sync_watchers.mail_account_id')
+            ->where('mail_accounts.user_id', $request->user()->id)->whereNull('mail_accounts.deleted_at')
+            ->where('mail_accounts.enabled', true)->where('mail_accounts.sync_enabled', true)
+            ->where('sync_watchers.state', 'watching')->where('sync_watchers.lease_until', '>', now())
+            ->where('remote_folders.sync_enabled', true)->whereNull('remote_folders.removed_at')->exists();
+
+        // A queued/running request means a commit is imminent: clients poll faster only for that window.
+        $active = DB::table('mail_accounts')->where('user_id', $request->user()->id)->whereNull('deleted_at')
+            ->where('enabled', true)->where('sync_enabled', true)
+            ->whereColumn('sync_requested_generation', '>', 'sync_completed_generation')->exists();
+
+        return response()->json(['version' => $version, 'invalidate' => $version !== (string) ($input['since'] ?? '0'), 'realtime' => $realtime, 'active' => $active])
             ->header('Cache-Control', 'private, no-store');
     }
 

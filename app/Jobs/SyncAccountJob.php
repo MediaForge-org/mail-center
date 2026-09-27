@@ -3,44 +3,29 @@
 namespace App\Jobs;
 
 use App\Sync\SyncRunner;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Queue\Middleware\WithoutOverlapping;
 
-/**
- * One job per account. No Laravel-level retries: the run is checkpointed and idempotent, and the
- * scheduler re-dispatches according to the persisted backoff. Redis uniqueness is an optimization;
- * the PostgreSQL advisory lock in SyncRunner is the actual writer guard.
- */
-class SyncAccountJob implements ShouldBeUnique, ShouldQueue
+/** Durable database generations coalesce requests; PostgreSQL fences all remote writers. */
+class SyncAccountJob implements ShouldQueue
 {
     use Queueable;
 
-    public int $tries = 1;
+    public int $tries = 0;
 
     public int $timeout = 600;
-
-    public int $uniqueFor = 900;
 
     public function __construct(public readonly int $accountId, public readonly string $trigger = 'scheduled')
     {
         $this->onConnection('mail_sync');
-        $this->onQueue('sync');
-    }
-
-    public function middleware(): array
-    {
-        return [(new WithoutOverlapping('imap-account:'.$this->accountId))->shared()->releaseAfter(30)->expireAfter(900)];
-    }
-
-    public function uniqueId(): string
-    {
-        return (string) $this->accountId;
+        $this->onQueue(in_array($trigger, ['manual', 'idle'], true) ? 'sync-high' : 'sync');
     }
 
     public function handle(SyncRunner $runner): void
     {
-        $runner->run($this->accountId, $this->trigger);
+        $result = $runner->run($this->accountId, $this->trigger, true);
+        if ($result === 'locked' && $this->job !== null) {
+            $this->release(1);
+        }
     }
 }

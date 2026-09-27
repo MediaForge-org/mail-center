@@ -129,7 +129,7 @@ export async function getConversation(
 }
 export async function getMailboxVersion(
     since: string,
-): Promise<{ version: string; invalidate: boolean }> {
+): Promise<{ version: string; invalidate: boolean; realtime?: boolean; active?: boolean }> {
     const response = await request(`/api/changes?since=${encodeURIComponent(since)}`);
     if (!response.ok) throw new Error('Freshness unavailable.');
     return response.json();

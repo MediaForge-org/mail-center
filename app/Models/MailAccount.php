@@ -9,6 +9,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
+ * @property int $sync_requested_generation
+ * @property int $sync_started_generation
+ * @property int $sync_completed_generation
+ * @property string $sync_request_trigger
+ * @property CarbonInterface|null $sync_requested_at
+ * @property CarbonInterface|null $sync_dispatched_at
  * @property int $id
  * @property int $user_id
  * @property array{host?: string, port?: int, security?: string, username?: string} $incoming
@@ -34,11 +40,15 @@ class MailAccount extends Model
 {
     use SoftDeletes;
 
+    /** @var array{trigger?:string, generation?:int|null} Ephemeral execution context, never persisted. */
+    public array $syncContext = [];
+
     protected $guarded = [];
 
     protected function casts(): array
     {
         return [
+            'sync_requested_at' => 'datetime', 'sync_dispatched_at' => 'datetime',
             'incoming' => 'array', 'aliases' => 'array', 'capabilities' => 'array',
             'write_back_seen' => 'boolean', 'seen_mirror_generation' => 'integer',
             'sync_state' => 'array', 'enabled' => 'boolean', 'sync_enabled' => 'boolean',

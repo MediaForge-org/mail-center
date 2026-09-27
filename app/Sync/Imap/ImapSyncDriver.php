@@ -12,7 +12,9 @@ use App\Organization\OrganizationService;
 use App\Sync\AccountSyncDriver;
 use App\Sync\AccountSyncLock;
 use App\Sync\SyncAborted;
+use App\Sync\SyncTelemetry;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class ImapSyncDriver implements AccountSyncDriver
@@ -24,17 +26,27 @@ class ImapSyncDriver implements AccountSyncDriver
         private readonly AccountSyncLock $lock,
     ) {}
 
+    private array $maintained = [];
+
+    private bool $manualRetry = false;
+
     public function sync(MailAccount $account): array
     {
+        $this->maintained = [];
+        $this->manualRetry = ($account->syncContext['trigger'] ?? '') === 'manual';
         $stats = ['remaining' => false, 'new' => 0, 'linked' => 0, 'removed' => 0, 'failures' => 0, 'partial' => 0];
         $deadline = microtime(true) + (int) config('mailcenter.imap.work_seconds');
+        app(SyncTelemetry::class)->mark('connect_started');
         $this->client->connect($account, $this->vault->forAccount($account));
+        app(SyncTelemetry::class)->mark('connected');
         try {
             $this->discover($account, $this->client->folders());
             // Repeated passes give each folder one window in turn (fairness) until the budget is spent.
             for ($pass = 0; $pass < 1000; $pass++) {
                 $stats['remaining'] = $this->pass($account, $deadline, $stats);
-                if (! $stats['remaining'] || microtime(true) >= $deadline) {
+                $this->manualRetry = false;
+                if (! $stats['remaining'] || microtime(true) >= $deadline || $this->followUpRequested($account)
+                    || (($account->syncContext['generation'] ?? null) !== null && in_array($account->syncContext['trigger'], ['manual', 'idle'], true))) {
                     break;
                 }
             }
@@ -76,7 +88,24 @@ class ImapSyncDriver implements AccountSyncDriver
                 continue;
             }
             $this->identity($account, $folder, $examined);
-            $remaining = $this->syncFolder($account, $folder, $examined, $deadline, $stats) || $remaining;
+            $remaining = $this->incremental($account, $folder, $examined, $deadline, $stats) || $remaining;
+        }
+        // All folders receive their new-UID pass before any historical or reconciliation work.
+        foreach ($folders as $folder) {
+            if (microtime(true) >= $deadline || $this->followUpRequested($account)) {
+                return true;
+            }
+            $this->assertActive($account);
+            try {
+                $examined = $this->client->examine($folder->raw_name);
+                $this->identity($account, $folder, $examined);
+                $remaining = $this->syncFolder($account, $folder, $examined, $deadline, $stats) || $remaining;
+            } catch (ImapFailure $failure) {
+                if ($failure->category !== ImapFailure::FOLDER) {
+                    throw $failure;
+                }
+                $stats['partial']++;
+            }
         }
 
         return $remaining;
@@ -97,8 +126,8 @@ class ImapSyncDriver implements AccountSyncDriver
             } else {
                 $account->remoteFolders()->create([
                     ...$item,
-                    // M2 synchronizes INBOX only; other folders are discovered and can be enabled per folder.
-                    'sync_enabled' => $item['selectable'] && $item['role'] === 'inbox',
+                    // Inbox (received) and Sent (sent by this account) sync by default; other folders are opt-in.
+                    'sync_enabled' => $item['selectable'] && in_array($item['role'], ['inbox', 'sent'], true),
                 ]);
             }
         }
@@ -148,11 +177,10 @@ class ImapSyncDriver implements AccountSyncDriver
         });
     }
 
-    private function syncFolder(MailAccount $account, RemoteFolder $folder, array $examined, float $deadline, array &$stats): bool
+    private function incremental(MailAccount $account, RemoteFolder $folder, array $examined, float $deadline, array &$stats): bool
     {
         $window = (int) config('mailcenter.imap.uid_window');
         $upper = max(0, (int) $examined['uidnext'] - 1);
-        $this->retryQuarantined($account, $folder, $stats);
         while ($folder->sync_high_uid < $upper && microtime(true) < $deadline) {
             $low = (int) $folder->sync_high_uid + 1;
             $high = min($upper, $low + $window - 1);
@@ -162,13 +190,24 @@ class ImapSyncDriver implements AccountSyncDriver
         if ($folder->sync_high_uid < $upper) {
             return true;
         }
+        $this->retryQuarantined($account, $folder, $stats);
+
+        return false;
+    }
+
+    private function syncFolder(MailAccount $account, RemoteFolder $folder, array $examined, float $deadline, array &$stats): bool
+    {
+        $window = (int) config('mailcenter.imap.uid_window');
+        $upper = max(0, (int) $examined['uidnext'] - 1);
+        // Bound each historical slice, so newly arriving high UIDs get another pass promptly.
+        $historyDeadline = min($deadline, microtime(true) + 1);
         if ($folder->backfill_completed_at === null && microtime(true) < $deadline) {
             $high = (int) $folder->backfill_low_uid - 1;
             if ($high < 1) {
                 $folder->update(['backfill_completed_at' => now()]);
             } else {
                 $low = max(1, $high - $window + 1);
-                $done = $this->processWindow($account, $folder, $low, $high, $deadline, true, $stats);
+                $done = $this->processWindow($account, $folder, $low, $high, $historyDeadline, true, $stats);
                 $folder->update([
                     'backfill_low_uid' => $done,
                     'backfill_completed_at' => $done <= 1 ? now() : null,
@@ -178,10 +217,16 @@ class ImapSyncDriver implements AccountSyncDriver
         if ($folder->backfill_completed_at === null) {
             return true;
         }
+        if (isset($this->maintained[$folder->id])) {
+            return false;
+        }
         // Membership scans use numeric UID windows, not EXISTS counts or unbounded SEARCH ALL.
         $state = $account->sync_state ?: ['version' => 1];
         $cursor = (int) (($state['membership'] ?? [])[(string) $folder->id] ?? 1);
         while ($cursor <= $upper && microtime(true) < $deadline) {
+            if ($this->followUpRequested($account)) {
+                return true;
+            }
             $this->assertActive($account);
             $high = min($upper, $cursor + $window - 1);
             $this->membership($folder, $cursor, $high, $stats);
@@ -197,10 +242,11 @@ class ImapSyncDriver implements AccountSyncDriver
         $account->update(['sync_state' => $state]);
         $needsInitialization = $account->write_back_seen && DB::table('messages')->where('mail_account_id', $account->id)
             ->where('seen_mirror_generation', '<>', $account->seen_mirror_generation)->whereNull('deleted_at')->exists();
-        if ($needsInitialization || $folder->last_flag_scan_at === null || $folder->last_flag_scan_at->lt(now()->subSeconds((int) config('mailcenter.imap.flag_scan_seconds')))) {
+        if (($account->syncContext['trigger'] ?? '') === 'idle' || $needsInitialization || $folder->last_flag_scan_at === null || $folder->last_flag_scan_at->lt(now()->subSeconds((int) config('mailcenter.imap.flag_scan_seconds')))) {
             $this->scanFlags($folder, $upper, $deadline);
         }
         $folder->update(['last_synced_at' => now()]);
+        $this->maintained[$folder->id] = true;
 
         return false;
     }
@@ -223,6 +269,9 @@ class ImapSyncDriver implements AccountSyncDriver
             }
             $this->assertActive($account);
             foreach ($batch as $uid) {
+                if (microtime(true) >= $deadline || ($descending && $this->followUpRequested($account))) {
+                    return $checkpoint;
+                }
                 $this->processUid($account, $folder, $uid, $stats);
                 $checkpoint = $uid;
             }
@@ -235,7 +284,13 @@ class ImapSyncDriver implements AccountSyncDriver
     {
         $due = DB::table('sync_failures')->where('remote_folder_id', $folder->id)
             ->where('uidvalidity', $folder->uidvalidity)->where('status', 'retryable')
-            ->where('next_attempt_at', '<=', now())->orderBy('next_attempt_at')->limit(50)->pluck('uid');
+            ->where(function ($query) {
+                $query->where('next_attempt_at', '<=', now());
+                if ($this->manualRetry) {
+                    // One bounded early retry per accepted manual run, never terminal/oversize failures.
+                    $query->orWhere('error_code', 'message_error');
+                }
+            })->orderBy('next_attempt_at')->limit(50)->pluck('uid');
         foreach ($due as $uid) {
             $this->assertActive($account);
             $this->processUid($account, $folder, (int) $uid, $stats);
@@ -253,6 +308,7 @@ class ImapSyncDriver implements AccountSyncDriver
             return;
         }
         try {
+            app(SyncTelemetry::class)->mark('first_fetch_started');
             $meta = $this->client->metadata($uid);
             $fetched = null;
             if ($meta !== null && $meta['size'] > $limit) {
@@ -281,8 +337,10 @@ class ImapSyncDriver implements AccountSyncDriver
 
                 return;
             }
+            app(SyncTelemetry::class)->mark('first_ingestion_started');
             $this->ingestor->ingest($account, $folder, $uid, (int) $folder->uidvalidity,
                 $fetched['raw'], $fetched['flags'], $fetched['internal_date']);
+            app(SyncTelemetry::class)->mark('first_message_committed');
             DB::table('sync_failures')->where('remote_folder_id', $folder->id)
                 ->where('uidvalidity', $folder->uidvalidity)->where('uid', $uid)
                 ->update(['status' => 'resolved', 'resolved_at' => now()]);
@@ -295,7 +353,8 @@ class ImapSyncDriver implements AccountSyncDriver
             $stats['failures']++;
         } catch (SyncAborted $aborted) {
             throw $aborted;
-        } catch (Throwable) {
+        } catch (Throwable $error) {
+            Log::warning('Message ingestion quarantined.', ['account_id' => $account->id, 'folder_id' => $folder->id, 'exception' => $error::class]);
             $this->failure($folder, $uid, 'message_error');
             $stats['failures']++;
         }
@@ -382,6 +441,13 @@ class ImapSyncDriver implements AccountSyncDriver
         (clone $missing)->where('remote_status', 'missing')
             ->where('remote_missing_since', '<', now()->subSeconds((int) config('mailcenter.imap.removal_grace_seconds')))
             ->update(['remote_status' => 'removed', 'remote_removed_at' => now()]);
+    }
+
+    private function followUpRequested(MailAccount $account): bool
+    {
+        $generation = $account->syncContext['generation'] ?? null;
+
+        return $generation !== null && (int) DB::table('mail_accounts')->where('id', $account->id)->value('sync_requested_generation') > $generation;
     }
 
     private function assertActive(MailAccount $account): void

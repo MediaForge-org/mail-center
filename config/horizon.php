@@ -16,9 +16,14 @@ return [
             'maxProcesses' => 2, 'memory' => 256, 'tries' => 1, 'timeout' => 120,
             'maxJobs' => 100, 'maxTime' => 3600,
         ],
+        'sync-high-supervisor' => [
+            'connection' => 'mail_sync', 'queue' => ['sync-high'], 'balance' => 'simple',
+            'maxProcesses' => 1, 'memory' => 512, 'tries' => 0, 'timeout' => 600,
+            'sleep' => 0, 'maxJobs' => 50, 'maxTime' => 3600,
+        ],
         'sync-supervisor' => [
             'connection' => 'mail_sync', 'queue' => ['sync'], 'balance' => 'simple',
-            'maxProcesses' => 2, 'memory' => 512, 'tries' => 1, 'timeout' => 600,
+            'maxProcesses' => 2, 'memory' => 512, 'tries' => 0, 'timeout' => 600, 'sleep' => 0,
             'maxJobs' => 50, 'maxTime' => 3600,
         ],
         'default-supervisor' => [

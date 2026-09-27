@@ -4,6 +4,7 @@ namespace App\Sync;
 
 use App\Connectors\Imap\ImapFailure;
 use App\Models\MailAccount;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -19,28 +20,47 @@ class SyncRunner
     ) {}
 
     /** @return string one of skipped, locked, success, partial, failed, aborted */
-    public function run(int $accountId, string $trigger = 'scheduled'): string
+    public function run(int $accountId, string $trigger = 'scheduled', bool $requested = false): string
     {
+        app(SyncTelemetry::class)->start();
+        $workerStarted = now();
+        $started = microtime(true);
+        $generation = null;
+        $continue = false;
         $account = MailAccount::query()->find($accountId);
-        if ($account === null || ! $account->enabled || ! $account->sync_enabled) {
+        if ($account === null || ! $this->eligible($account, $requested)) {
             return 'skipped';
         }
         if (! $this->lock->acquire($account)) {
             return 'locked';
         }
 
+        app(SyncTelemetry::class)->mark('lock_acquired');
         $runId = null;
         try {
             $account->refresh();
-            if (! $account->enabled || ! $account->sync_enabled) {
+            if (! $this->eligible($account, $requested)) {
                 return 'skipped';
+            }
+            if ($requested) {
+                if (! app(SyncRequests::class)->claim($account)) {
+                    return 'skipped';
+                }
+                $generation = $account->sync_started_generation;
+                $trigger = $account->sync_request_trigger;
             }
             $runId = DB::table('sync_runs')->insertGetId([
                 'mail_account_id' => $account->id, 'trigger' => $trigger, 'started_at' => now(),
+                'request_generation' => $generation, 'requested_at' => $requested ? $account->sync_requested_at : null,
+                'worker_started_at' => $workerStarted,
+                'timings' => json_encode(['lock_acquired_ms' => (microtime(true) - $started) * 1000]),
             ]);
             $account->update(['sync_status' => 'syncing', 'last_sync_started_at' => now()]);
 
+            // The driver reads the run trigger without persisting protocol state on the account.
+            $account->syncContext = ['trigger' => $trigger, 'generation' => $generation];
             $stats = $this->driver->sync($account);
+            $continue = (bool) $stats['remaining'];
 
             return $this->succeeded($account, $runId, $stats);
         } catch (SyncAborted) {
@@ -56,13 +76,41 @@ class SyncRunner
         } catch (ImapFailure $failure) {
             return $this->failed($account, $runId, $failure->category, ImapFailure::safeMessage($failure->category));
         } catch (Throwable $e) {
+            if ($this->transientDatabaseConflict($e)) {
+                // A lock-order deadlock/serialization failure is a lost race, not a provider failure: the
+                // transaction rolled back, so record the run as aborted and replay via a continuation.
+                Log::warning('Mail synchronization lost a database race; retrying.', ['account_id' => $account->id]);
+                $this->finishRun($runId, 'aborted', [], null, null);
+                $account->refresh();
+                $account->update(['sync_status' => 'idle', 'last_sync_finished_at' => now()]);
+                $continue = true;
+
+                return 'aborted';
+            }
             // Never log the message or trace: they can carry connection details.
             Log::error('Mail synchronization failed unexpectedly.', ['account_id' => $account->id, 'exception' => $e::class]);
 
             return $this->failed($account, $runId, 'unexpected_error', 'Synchronization failed unexpectedly; it will be retried.');
         } finally {
-            $this->lock->release($account);
+            try {
+                if ($generation !== null) {
+                    app(SyncRequests::class)->finish($accountId, $generation, $continue);
+                }
+            } finally {
+                $this->lock->release($account);
+            }
         }
+    }
+
+    private function transientDatabaseConflict(Throwable $e): bool
+    {
+        return $e instanceof QueryException && in_array((string) $e->getCode(), ['40P01', '40001'], true);
+    }
+
+    private function eligible(MailAccount $account, bool $requested): bool
+    {
+        return $account->enabled && $account->sync_enabled && ! $account->trashed() && $account->sync_status !== 'auth_failed'
+            && ! ($requested && in_array($account->sync_status, ['backing_off', 'error'], true) && $account->next_sync_at?->isFuture());
     }
 
     private function succeeded(MailAccount $account, int $runId, array $stats): string
@@ -131,9 +179,11 @@ class SyncRunner
         if ($runId === null) {
             return;
         }
+        app(SyncTelemetry::class)->mark('run_finished');
         DB::table('sync_runs')->where('id', $runId)->update([
             'finished_at' => now(), 'status' => $status, 'stats' => json_encode($stats),
             'error_code' => $code, 'error_message' => $message,
+            'timings' => json_encode(app(SyncTelemetry::class)->all()),
         ]);
     }
 }

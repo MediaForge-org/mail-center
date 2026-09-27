@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\SyncAccountJob;
 use App\Models\MailAccount;
 use App\Models\RemoteFolder;
+use App\Sync\SyncRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,10 +27,9 @@ class AccountSyncController extends Controller
                 'next_sync_at' => $account->next_sync_at,
             ], 409);
         }
-        $account->update(['next_sync_at' => now()]);
-        SyncAccountJob::dispatch($account->id, 'manual'); // unique per account: repeated clicks are harmless
+        $accepted = app(SyncRequests::class)->request($account->id, 'manual');
 
-        return response()->json(['message' => 'Synchronization queued.'], 202);
+        return response()->json(['message' => 'Synchronization accepted.', 'data' => $accepted], 202);
     }
 
     public function runs(Request $request, int $id): JsonResponse
@@ -60,6 +59,12 @@ class AccountSyncController extends Controller
         $data = $request->validate(['sync_enabled' => ['required', 'boolean']]);
         abort_if($data['sync_enabled'] && ! $folder->selectable, 422, 'This folder cannot be synchronized.');
         $folder->update(['sync_enabled' => $data['sync_enabled']]);
+        $account = MailAccount::query()->find($folder->mail_account_id);
+        if ($data['sync_enabled'] && $folder->wasChanged('sync_enabled') && $account && $account->enabled
+            && $account->sync_enabled && $account->sync_status !== 'auth_failed') {
+            // Newly enabled folders import through the normal engine (new mail first, history after).
+            app(SyncRequests::class)->request($account->id, 'manual');
+        }
 
         return response()->json(['data' => $this->presentFolder($folder)]);
     }

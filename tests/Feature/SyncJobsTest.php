@@ -6,6 +6,7 @@ use App\Connectors\Imap\ImapFailure;
 use App\Jobs\SyncAccountJob;
 use App\Jobs\TestConnectionJob;
 use App\Models\User;
+use App\Sync\SyncRequests;
 use App\Sync\SyncRunner;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -30,12 +31,12 @@ afterEach(function () {
     }
 });
 
-it('configures the sync job for the sync queue, one attempt, and per-account uniqueness', function () {
+it('uses transport wakeups without Redis uniqueness and prioritizes manual requests', function () {
     $job = new SyncAccountJob(42);
-    expect($job)->toBeInstanceOf(ShouldBeUnique::class)
+    expect($job)->not->toBeInstanceOf(ShouldBeUnique::class)
         ->and($job->connection)->toBe('mail_sync')->and($job->queue)->toBe('sync')
-        ->and($job->tries)->toBe(1)->and($job->timeout)->toBeLessThan(660)
-        ->and($job->uniqueId())->toBe('42');
+        ->and($job->tries)->toBe(0)->and($job->timeout)->toBeLessThan(660)
+        ->and((new SyncAccountJob(42, 'manual'))->queue)->toBe('sync-high');
     expect(config('queue.connections.mail_sync.retry_after'))->toBeGreaterThan($job->timeout);
 });
 
@@ -43,6 +44,8 @@ it('runs a queued sync job end to end', function () {
     $account = makeAccount($this->user);
     $this->imap->add(FakeImapClient::raw('Queued'));
 
+    Queue::fake();
+    app(SyncRequests::class)->request($account->id, 'manual');
     (new SyncAccountJob($account->id, 'manual'))->handle(app(SyncRunner::class));
 
     expect(DB::table('messages')->count())->toBe(1);

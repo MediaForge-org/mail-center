@@ -15,6 +15,8 @@ const props = withDefaults(
         accounts?: AccountSummary[];
         section?: 'mail' | 'accounts';
         view?: MailboxView;
+        syncPending?: number | null;
+        syncError?: string;
         accountId?: number | null;
         counts?: MailboxCounts | null;
         refreshVersion?: number;
@@ -24,6 +26,7 @@ const props = withDefaults(
 );
 defineEmits<{
     signOut: [];
+    syncNow: [id: number];
     readChanged: [change: ReadChange];
     openAccount: [id: number];
     accountView: [view: MailboxView];
@@ -237,6 +240,16 @@ const selectedAccount = computed(() =>
                 >
                     Refresh view
                 </button>
+                <button
+                    v-if="selectedAccount?.enabled && selectedAccount.sync_enabled"
+                    class="text-button mailbox-refresh"
+                    type="button"
+                    :disabled="syncPending === selectedAccount.id"
+                    @click="$emit('syncNow', selectedAccount.id)"
+                >
+                    Sync now
+                </button>
+                <p v-if="syncError" class="form-error" role="alert">{{ syncError }}</p>
                 <MessageList
                     :read-change="readChange"
                     :view="view"

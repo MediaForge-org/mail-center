@@ -1,0 +1,486 @@
+{
+  "result": {
+    "scenario": "inbox",
+    "mode": "cold",
+    "iterations": 10,
+    "connect_ms": 0,
+    "summary": {
+      "event_to_sync_start_ms": {
+        "p50": 15.2,
+        "p95": 18.9
+      },
+      "sync_start_to_commit_ms": {
+        "p50": 62.5,
+        "p95": 520.8
+      },
+      "commit_to_observed_ms": {
+        "p50": 475.3,
+        "p95": 600.6
+      },
+      "observed_to_rendered_ms": {
+        "p50": 111.0,
+        "p95": 311.0
+      },
+      "commit_to_rendered_ms": {
+        "p50": 602.3,
+        "p95": 891.9
+      },
+      "event_to_commit_ms": {
+        "p50": 78.0,
+        "p95": 539.1
+      },
+      "event_to_rendered_ms": {
+        "p50": 752.5,
+        "p95": 949.4
+      },
+      "change_polls": {
+        "p50": 3,
+        "p95": 4
+      },
+      "list_fetches": {
+        "p50": 2,
+        "p95": 2
+      },
+      "account_fetches": {
+        "p50": 2,
+        "p95": 2
+      },
+      "count_fetches": {
+        "p50": 2,
+        "p95": 2
+      }
+    },
+    "flicker": {
+      "min_rows_ever_below_start": false,
+      "loading_frames_total": 0,
+      "reader_loading_frames_total": 0,
+      "counts_disappeared": false
+    },
+    "initial_sent_count": 2,
+    "sent_counts_exact": true
+  },
+  "samples": [
+    {
+      "event_to_sync_start_ms": 18.27406883239746,
+      "sync_start_to_commit_ms": 520.8280086517334,
+      "commit_to_observed_ms": 46.02694511413574,
+      "observed_to_rendered_ms": 251.00016593933105,
+      "commit_to_rendered_ms": 297.0271110534668,
+      "event_to_commit_ms": 539.1020774841309,
+      "event_to_rendered_ms": 836.1291885375977,
+      "ui_realtime_at_event": "Up to datePolling fallback \u00b7 Auto sync every 3 minLast synced 02:18Next sync ~02:21",
+      "flicker": {
+        "start_rows": 25,
+        "rows_min": 25,
+        "rows_max": 26,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 148
+      },
+      "sidebar_sent_after": "2",
+      "sidebar_all_after": "28",
+      "change_polls": 4,
+      "list_fetches": 2,
+      "account_fetches": 2,
+      "count_fetches": 2
+    },
+    {
+      "event_to_sync_start_ms": 18.909931182861328,
+      "sync_start_to_commit_ms": 52.44803428649902,
+      "commit_to_observed_ms": 588.8631343841553,
+      "observed_to_rendered_ms": 115.99993705749512,
+      "commit_to_rendered_ms": 704.8630714416504,
+      "event_to_commit_ms": 71.35796546936035,
+      "event_to_rendered_ms": 776.2210369110107,
+      "ui_realtime_at_event": "Up to datePolling fallback \u00b7 Auto sync every 3 minLast synced 02:19Next sync ~02:22",
+      "flicker": {
+        "start_rows": 26,
+        "rows_min": 26,
+        "rows_max": 27,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 147
+      },
+      "sidebar_sent_after": "2",
+      "sidebar_all_after": "29",
+      "change_polls": 4,
+      "list_fetches": 1,
+      "account_fetches": 1,
+      "count_fetches": 1
+    },
+    {
+      "event_to_sync_start_ms": 18.93305778503418,
+      "sync_start_to_commit_ms": 72.65806198120117,
+      "commit_to_observed_ms": 350.147008895874,
+      "observed_to_rendered_ms": 184.00001525878906,
+      "commit_to_rendered_ms": 534.1470241546631,
+      "event_to_commit_ms": 91.59111976623535,
+      "event_to_rendered_ms": 625.7381439208984,
+      "ui_realtime_at_event": "Up to datePolling fallback \u00b7 Auto sync every 3 minLast synced 02:19Next sync ~02:22",
+      "flicker": {
+        "start_rows": 27,
+        "rows_min": 27,
+        "rows_max": 28,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 137
+      },
+      "sidebar_sent_after": "2",
+      "sidebar_all_after": "30",
+      "change_polls": 3,
+      "list_fetches": 2,
+      "account_fetches": 2,
+      "count_fetches": 2
+    },
+    {
+      "event_to_sync_start_ms": 14.330863952636719,
+      "sync_start_to_commit_ms": 71.98309898376465,
+      "commit_to_observed_ms": 600.5890369415283,
+      "observed_to_rendered_ms": 98.9999771118164,
+      "commit_to_rendered_ms": 699.5890140533447,
+      "event_to_commit_ms": 86.31396293640137,
+      "event_to_rendered_ms": 785.9029769897461,
+      "ui_realtime_at_event": "Up to datePolling fallback \u00b7 Auto sync every 3 minLast synced 02:19Next sync ~02:22",
+      "flicker": {
+        "start_rows": 28,
+        "rows_min": 28,
+        "rows_max": 29,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 144
+      },
+      "sidebar_sent_after": "2",
+      "sidebar_all_after": "31",
+      "change_polls": 4,
+      "list_fetches": 1,
+      "account_fetches": 1,
+      "count_fetches": 1
+    },
+    {
+      "event_to_sync_start_ms": 15.188932418823242,
+      "sync_start_to_commit_ms": 46.64301872253418,
+      "commit_to_observed_ms": 588.6499881744385,
+      "observed_to_rendered_ms": 101.99999809265137,
+      "commit_to_rendered_ms": 690.6499862670898,
+      "event_to_commit_ms": 61.83195114135742,
+      "event_to_rendered_ms": 752.4819374084473,
+      "ui_realtime_at_event": "Up to datePolling fallback \u00b7 Auto sync every 3 minLast synced 02:19Next sync ~02:22",
+      "flicker": {
+        "start_rows": 29,
+        "rows_min": 29,
+        "rows_max": 30,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 144
+      },
+      "sidebar_sent_after": "2",
+      "sidebar_all_after": "32",
+      "change_polls": 4,
+      "list_fetches": 1,
+      "account_fetches": 1,
+      "count_fetches": 1
+    },
+    {
+      "event_to_sync_start_ms": 18.516063690185547,
+      "sync_start_to_commit_ms": 71.42281532287598,
+      "commit_to_observed_ms": 119.02713775634766,
+      "observed_to_rendered_ms": 0,
+      "commit_to_rendered_ms": 119.02713775634766,
+      "event_to_commit_ms": 89.93887901306152,
+      "event_to_rendered_ms": 208.96601676940918,
+      "ui_realtime_at_event": "Up to datePolling fallback \u00b7 Auto sync every 3 minLast synced 02:19Next sync ~02:22",
+      "flicker": {
+        "start_rows": 30,
+        "rows_min": 30,
+        "rows_max": 31,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 110
+      },
+      "sidebar_sent_after": "2",
+      "sidebar_all_after": "33",
+      "change_polls": 3,
+      "list_fetches": 2,
+      "account_fetches": 2,
+      "count_fetches": 2
+    },
+    {
+      "event_to_sync_start_ms": 11.515140533447266,
+      "sync_start_to_commit_ms": 46.04697227478027,
+      "commit_to_observed_ms": 580.8770656585693,
+      "observed_to_rendered_ms": 310.99987030029297,
+      "commit_to_rendered_ms": 891.8769359588623,
+      "event_to_commit_ms": 57.56211280822754,
+      "event_to_rendered_ms": 949.4390487670898,
+      "ui_realtime_at_event": "Up to datePolling fallback \u00b7 Auto sync every 3 minLast synced 02:19Next sync ~02:22",
+      "flicker": {
+        "start_rows": 31,
+        "rows_min": 31,
+        "rows_max": 32,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 153
+      },
+      "sidebar_sent_after": "2",
+      "sidebar_all_after": "34",
+      "change_polls": 3,
+      "list_fetches": 2,
+      "account_fetches": 2,
+      "count_fetches": 1
+    },
+    {
+      "event_to_sync_start_ms": 14.503002166748047,
+      "sync_start_to_commit_ms": 60.801029205322266,
+      "commit_to_observed_ms": 593.8138961791992,
+      "observed_to_rendered_ms": 111.00006103515625,
+      "commit_to_rendered_ms": 704.8139572143555,
+      "event_to_commit_ms": 75.30403137207031,
+      "event_to_rendered_ms": 780.1179885864258,
+      "ui_realtime_at_event": "Up to datePolling fallback \u00b7 Auto sync every 3 minLast synced 02:20Next sync ~02:23",
+      "flicker": {
+        "start_rows": 32,
+        "rows_min": 32,
+        "rows_max": 33,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 145
+      },
+      "sidebar_sent_after": "2",
+      "sidebar_all_after": "35",
+      "change_polls": 4,
+      "list_fetches": 2,
+      "account_fetches": 2,
+      "count_fetches": 2
+    },
+    {
+      "event_to_sync_start_ms": 13.911008834838867,
+      "sync_start_to_commit_ms": 67.1999454498291,
+      "commit_to_observed_ms": 109.03310775756836,
+      "observed_to_rendered_ms": 0,
+      "commit_to_rendered_ms": 109.03310775756836,
+      "event_to_commit_ms": 81.11095428466797,
+      "event_to_rendered_ms": 190.14406204223633,
+      "ui_realtime_at_event": "Up to datePolling fallback \u00b7 Auto sync every 3 minLast synced 02:20Next sync ~02:23",
+      "flicker": {
+        "start_rows": 33,
+        "rows_min": 33,
+        "rows_max": 34,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 109
+      },
+      "sidebar_sent_after": "2",
+      "sidebar_all_after": "36",
+      "change_polls": 3,
+      "list_fetches": 2,
+      "account_fetches": 2,
+      "count_fetches": 2
+    },
+    {
+      "event_to_sync_start_ms": 15.449047088623047,
+      "sync_start_to_commit_ms": 62.519073486328125,
+      "commit_to_observed_ms": 475.27503967285156,
+      "observed_to_rendered_ms": 126.9998550415039,
+      "commit_to_rendered_ms": 602.2748947143555,
+      "event_to_commit_ms": 77.96812057495117,
+      "event_to_rendered_ms": 680.2430152893066,
+      "ui_realtime_at_event": "Up to datePolling fallback \u00b7 Auto sync every 3 minLast synced 02:20Next sync ~02:23",
+      "flicker": {
+        "start_rows": 34,
+        "rows_min": 34,
+        "rows_max": 35,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 137
+      },
+      "sidebar_sent_after": "2",
+      "sidebar_all_after": "37",
+      "change_polls": 3,
+      "list_fetches": 2,
+      "account_fetches": 2,
+      "count_fetches": 2
+    }
+  ],
+  "traces": [
+    {
+      "run": {
+        "connected": 1790468349.53115,
+        "run_finished": 1790468350.530452,
+        "lock_acquired": 1790468349.516055,
+        "worker_started": 1790468349.513145,
+        "connect_started": 1790468349.525912,
+        "first_fetch_started": 1790468349.547017,
+        "first_ingestion_started": 1790468349.54781,
+        "first_message_committed": 1790468350.033973
+      },
+      "event": 1790468349.494871,
+      "observed": 1790468350.08,
+      "rendered": 1790468350.331,
+      "subject": "Latency b7d0cb591256e4c0"
+    },
+    {
+      "run": {
+        "connected": 1790468359.527357,
+        "run_finished": 1790468359.902245,
+        "lock_acquired": 1790468359.515476,
+        "worker_started": 1790468359.511689,
+        "connect_started": 1790468359.524749,
+        "first_fetch_started": 1790468359.536615,
+        "first_ingestion_started": 1790468359.537023,
+        "first_message_committed": 1790468359.564137
+      },
+      "event": 1790468359.492779,
+      "observed": 1790468360.153,
+      "rendered": 1790468360.269,
+      "subject": "Latency 52d2365192a7aa45"
+    },
+    {
+      "run": {
+        "connected": 1790468369.62872,
+        "run_finished": 1790468370.253889,
+        "lock_acquired": 1790468369.611691,
+        "worker_started": 1790468369.609195,
+        "connect_started": 1790468369.62304,
+        "first_fetch_started": 1790468369.643528,
+        "first_ingestion_started": 1790468369.644732,
+        "first_message_committed": 1790468369.681853
+      },
+      "event": 1790468369.590262,
+      "observed": 1790468370.032,
+      "rendered": 1790468370.216,
+      "subject": "Latency 880e15584a8b01d1"
+    },
+    {
+      "run": {
+        "connected": 1790468379.658523,
+        "run_finished": 1790468380.218641,
+        "lock_acquired": 1790468379.644681,
+        "worker_started": 1790468379.642428,
+        "connect_started": 1790468379.653476,
+        "first_fetch_started": 1790468379.674591,
+        "first_ingestion_started": 1790468379.676114,
+        "first_message_committed": 1790468379.714411
+      },
+      "event": 1790468379.628097,
+      "observed": 1790468380.315,
+      "rendered": 1790468380.414,
+      "subject": "Latency d132c39f1eb38fd4"
+    },
+    {
+      "run": {
+        "connected": 1790468389.630199,
+        "run_finished": 1790468390.125594,
+        "lock_acquired": 1790468389.613928,
+        "worker_started": 1790468389.611707,
+        "connect_started": 1790468389.624632,
+        "first_fetch_started": 1790468389.641036,
+        "first_ingestion_started": 1790468389.641541,
+        "first_message_committed": 1790468389.65835
+      },
+      "event": 1790468389.596518,
+      "observed": 1790468390.247,
+      "rendered": 1790468390.349,
+      "subject": "Latency acc5f34cbb27ffe6"
+    },
+    {
+      "run": {
+        "connected": 1790468399.04254,
+        "run_finished": 1790468399.622487,
+        "lock_acquired": 1790468399.024508,
+        "worker_started": 1790468399.02255,
+        "connect_started": 1790468399.03612,
+        "first_fetch_started": 1790468399.061276,
+        "first_ingestion_started": 1790468399.062153,
+        "first_message_committed": 1790468399.093973
+      },
+      "event": 1790468399.004034,
+      "observed": 1790468399.213,
+      "rendered": 1790468399.213,
+      "subject": "Latency d6b2d55a5d6f7840"
+    },
+    {
+      "run": {
+        "connected": 1790468412.436481,
+        "run_finished": 1790468413.028399,
+        "lock_acquired": 1790468412.426304,
+        "worker_started": 1790468412.424076,
+        "connect_started": 1790468412.433648,
+        "first_fetch_started": 1790468412.445833,
+        "first_ingestion_started": 1790468412.446387,
+        "first_message_committed": 1790468412.470123
+      },
+      "event": 1790468412.412561,
+      "observed": 1790468413.051,
+      "rendered": 1790468413.362,
+      "subject": "Latency 4b55be0b6fed091d"
+    },
+    {
+      "run": {
+        "connected": 1790468425.725862,
+        "run_finished": 1790468426.340843,
+        "lock_acquired": 1790468425.717197,
+        "worker_started": 1790468425.714385,
+        "connect_started": 1790468425.723411,
+        "first_fetch_started": 1790468425.736939,
+        "first_ingestion_started": 1790468425.737473,
+        "first_message_committed": 1790468425.775186
+      },
+      "event": 1790468425.699882,
+      "observed": 1790468426.369,
+      "rendered": 1790468426.48,
+      "subject": "Latency 892cec8cff6db420"
+    },
+    {
+      "run": {
+        "connected": 1790468435.57621,
+        "run_finished": 1790468436.162006,
+        "lock_acquired": 1790468435.559456,
+        "worker_started": 1790468435.556767,
+        "connect_started": 1790468435.571191,
+        "first_fetch_started": 1790468435.59238,
+        "first_ingestion_started": 1790468435.593174,
+        "first_message_committed": 1790468435.623967
+      },
+      "event": 1790468435.542856,
+      "observed": 1790468435.733,
+      "rendered": 1790468435.733,
+      "subject": "Latency da8188dd241292f5"
+    },
+    {
+      "run": {
+        "connected": 1790468444.894003,
+        "run_finished": 1790468445.527296,
+        "lock_acquired": 1790468444.881624,
+        "worker_started": 1790468444.879206,
+        "connect_started": 1790468444.8906,
+        "first_fetch_started": 1790468444.910847,
+        "first_ingestion_started": 1790468444.911533,
+        "first_message_committed": 1790468444.941725
+      },
+      "event": 1790468444.863757,
+      "observed": 1790468445.417,
+      "rendered": 1790468445.544,
+      "subject": "Latency a2f49858acafb260"
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "result": {
+    "scenario": "inbox",
+    "mode": "cold",
+    "iterations": 2,
+    "connect_ms": 0,
+    "summary": {
+      "event_to_sync_start_ms": {
+        "p50": 19.6,
+        "p95": 23193.5
+      },
+      "sync_start_to_commit_ms": {
+        "p50": 92.3,
+        "p95": 110.8
+      },
+      "commit_to_observed_ms": {
+        "p50": 728.6,
+        "p95": 5217.5
+      },
+      "observed_to_rendered_ms": {
+        "p50": 148.0,
+        "p95": 163.0
+      },
+      "commit_to_rendered_ms": {
+        "p50": 876.6,
+        "p95": 5380.5
+      },
+      "event_to_commit_ms": {
+        "p50": 130.4,
+        "p95": 23285.8
+      },
+      "event_to_rendered_ms": {
+        "p50": 1007.0,
+        "p95": 28666.3
+      },
+      "change_polls": {
+        "p50": 4,
+        "p95": 32
+      },
+      "list_fetches": {
+        "p50": 1,
+        "p95": 1
+      },
+      "account_fetches": {
+        "p50": 1,
+        "p95": 2
+      },
+      "count_fetches": {
+        "p50": 1,
+        "p95": 1
+      }
+    },
+    "flicker": {
+      "min_rows_ever_below_start": false,
+      "loading_frames_total": 0,
+      "reader_loading_frames_total": 0,
+      "counts_disappeared": false
+    },
+    "sent_counts_exact": true
+  },
+  "samples": [
+    {
+      "event_to_sync_start_ms": 19.587039947509766,
+      "sync_start_to_commit_ms": 110.84103584289551,
+      "commit_to_observed_ms": 728.5518646240234,
+      "observed_to_rendered_ms": 148.00000190734863,
+      "commit_to_rendered_ms": 876.5518665313721,
+      "event_to_commit_ms": 130.42807579040527,
+      "event_to_rendered_ms": 1006.9799423217773,
+      "ui_realtime_at_event": "Up to datePolling fallback \u00b7 Auto sync every 3 minLast synced 01:39Next sync ~01:42",
+      "flicker": {
+        "start_rows": 26,
+        "rows_min": 26,
+        "rows_max": 27,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 196
+      },
+      "sidebar_sent_after": "2",
+      "sidebar_all_after": "29",
+      "change_polls": 4,
+      "list_fetches": 1,
+      "account_fetches": 1,
+      "count_fetches": 1
+    },
+    {
+      "event_to_sync_start_ms": 23193.52912902832,
+      "sync_start_to_commit_ms": 92.28706359863281,
+      "commit_to_observed_ms": 5217.484951019287,
+      "observed_to_rendered_ms": 162.99986839294434,
+      "commit_to_rendered_ms": 5380.484819412231,
+      "event_to_commit_ms": 23285.816192626953,
+      "event_to_rendered_ms": 28666.301012039185,
+      "ui_realtime_at_event": "Up to dateRealtime \u00b7 Sent + InboxLast synced 01:40Next sync ~01:43",
+      "flicker": {
+        "start_rows": 27,
+        "rows_min": 27,
+        "rows_max": 28,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 1826
+      },
+      "sidebar_sent_after": "2",
+      "sidebar_all_after": "30",
+      "change_polls": 32,
+      "list_fetches": 1,
+      "account_fetches": 2,
+      "count_fetches": 1
+    }
+  ],
+  "traces": [
+    {
+      "run": {
+        "connected": 1790466051.053786,
+        "run_finished": 1790466051.777346,
+        "lock_acquired": 1790466051.022646,
+        "worker_started": 1790466051.019607,
+        "connect_started": 1790466051.047955,
+        "first_fetch_started": 1790466051.082993,
+        "first_ingestion_started": 1790466051.085021,
+        "first_message_committed": 1790466051.130448
+      },
+      "event": 1790466051.00002,
+      "observed": 1790466051.859,
+      "rendered": 1790466052.007,
+      "subject": "Latency eb60b40de6eb1d7a"
+    },
+    {
+      "run": {
+        "connected": 1790466084.002708,
+        "run_finished": 1790466084.628193,
+        "lock_acquired": 1790466083.991086,
+        "worker_started": 1790466083.982228,
+        "connect_started": 1790466084.000207,
+        "first_fetch_started": 1790466084.012578,
+        "first_ingestion_started": 1790466084.013104,
+        "first_message_committed": 1790466084.074515
+      },
+      "event": 1790466060.788699,
+      "observed": 1790466089.292,
+      "rendered": 1790466089.455,
+      "subject": "Latency 0e50edfa591387fe"
+    }
+  ]
+}

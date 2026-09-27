@@ -1,0 +1,424 @@
+{
+  "A": [
+    {
+      "run": {
+        "connected": 1790453185.442607,
+        "run_finished": 1790453185.587269,
+        "lock_acquired": 1790453184.16964,
+        "worker_started": 1790453184.049104,
+        "connect_started": 1790453184.204983
+      },
+      "click_or_event": 1790453183.093,
+      "accepted": 1790453183.271871,
+      "api_response": 1790453183.948,
+      "freshness_observed": 1790453186.143,
+      "rendered": 1790453186.648
+    },
+    {
+      "run": {
+        "connected": 1790453198.564851,
+        "run_finished": 1790453198.668669,
+        "lock_acquired": 1790453197.350601,
+        "worker_started": 1790453197.347378,
+        "connect_started": 1790453197.359467
+      },
+      "click_or_event": 1790453194.353,
+      "accepted": 1790453197.154821,
+      "api_response": 1790453197.388,
+      "freshness_observed": 1790453199.233,
+      "rendered": 1790453199.672
+    },
+    {
+      "run": {
+        "connected": 1790453202.764221,
+        "run_finished": 1790453202.82601,
+        "lock_acquired": 1790453201.548483,
+        "worker_started": 1790453201.545969,
+        "connect_started": 1790453201.559421
+      },
+      "click_or_event": 1790453200.344,
+      "accepted": 1790453201.34915,
+      "api_response": 1790453201.639,
+      "freshness_observed": 1790453202.854,
+      "rendered": 1790453203.282
+    },
+    {
+      "run": {
+        "connected": 1790453205.991599,
+        "run_finished": 1790453206.074957,
+        "lock_acquired": 1790453204.777259,
+        "worker_started": 1790453204.774614,
+        "connect_started": 1790453204.7865
+      },
+      "click_or_event": 1790453204.492,
+      "accepted": 1790453204.7106,
+      "api_response": 1790453204.793,
+      "freshness_observed": 1790453206.492,
+      "rendered": 1790453206.789
+    },
+    {
+      "run": {
+        "connected": 1790453209.097582,
+        "run_finished": 1790453209.14888,
+        "lock_acquired": 1790453207.882149,
+        "worker_started": 1790453207.879433,
+        "connect_started": 1790453207.894081
+      },
+      "click_or_event": 1790453207.458,
+      "accepted": 1790453207.683949,
+      "api_response": 1790453207.919,
+      "freshness_observed": 1790453210.707,
+      "rendered": 1790453211.453
+    },
+    {
+      "run": {
+        "connected": 1790453215.273693,
+        "run_finished": 1790453215.329683,
+        "lock_acquired": 1790453214.059103,
+        "worker_started": 1790453214.056026,
+        "connect_started": 1790453214.068479
+      },
+      "click_or_event": 1790453213.559,
+      "accepted": 1790453213.763617,
+      "api_response": 1790453214.098,
+      "freshness_observed": 1790453215.969,
+      "rendered": 1790453215.969
+    },
+    {
+      "run": {
+        "connected": 1790453217.763594,
+        "run_finished": 1790453217.816914,
+        "lock_acquired": 1790453216.548507,
+        "worker_started": 1790453216.546029,
+        "connect_started": 1790453216.558067
+      },
+      "click_or_event": 1790453216.374,
+      "accepted": 1790453216.504474,
+      "api_response": 1790453216.555,
+      "freshness_observed": 1790453217.844,
+      "rendered": 1790453218.024
+    },
+    {
+      "run": {
+        "connected": 1790453225.774529,
+        "run_finished": 1790453225.847771,
+        "lock_acquired": 1790453224.557266,
+        "worker_started": 1790453224.554075,
+        "connect_started": 1790453224.567806
+      },
+      "click_or_event": 1790453221.071,
+      "accepted": 1790453224.289569,
+      "api_response": 1790453224.661,
+      "freshness_observed": 1790453226.806,
+      "rendered": 1790453227.077
+    },
+    {
+      "run": {
+        "connected": 1790453229.017356,
+        "run_finished": 1790453229.065147,
+        "lock_acquired": 1790453227.801728,
+        "worker_started": 1790453227.799449,
+        "connect_started": 1790453227.811037
+      },
+      "click_or_event": 1790453227.664,
+      "accepted": 1790453227.772411,
+      "api_response": 1790453227.809,
+      "freshness_observed": 1790453229.115,
+      "rendered": 1790453229.261
+    },
+    {
+      "run": {
+        "connected": 1790453230.881192,
+        "run_finished": 1790453230.935488,
+        "lock_acquired": 1790453229.666134,
+        "worker_started": 1790453229.664324,
+        "connect_started": 1790453229.677748
+      },
+      "click_or_event": 1790453229.564,
+      "accepted": 1790453229.659453,
+      "api_response": 1790453229.671,
+      "freshness_observed": 1790453231.479,
+      "rendered": 1790453231.725
+    },
+    {
+      "run": {
+        "connected": 1790453233.640913,
+        "run_finished": 1790453233.700941,
+        "lock_acquired": 1790453232.424122,
+        "worker_started": 1790453232.420665,
+        "connect_started": 1790453232.435753
+      },
+      "click_or_event": 1790453232.282,
+      "accepted": 1790453232.39125,
+      "api_response": 1790453232.427,
+      "freshness_observed": 1790453234.311,
+      "rendered": 1790453234.427
+    },
+    {
+      "run": {
+        "connected": 1790453236.04784,
+        "run_finished": 1790453236.099191,
+        "lock_acquired": 1790453234.832301,
+        "worker_started": 1790453234.828987,
+        "connect_started": 1790453234.842485
+      },
+      "click_or_event": 1790453234.725,
+      "accepted": 1790453234.823915,
+      "api_response": 1790453234.837,
+      "freshness_observed": 1790453236.222,
+      "rendered": 1790453236.222
+    },
+    {
+      "run": {
+        "connected": 1790453237.961657,
+        "run_finished": 1790453238.020737,
+        "lock_acquired": 1790453236.744523,
+        "worker_started": 1790453236.742106,
+        "connect_started": 1790453236.755016
+      },
+      "click_or_event": 1790453236.581,
+      "accepted": 1790453236.71248,
+      "api_response": 1790453236.75,
+      "freshness_observed": 1790453238.192,
+      "rendered": 1790453238.4
+    },
+    {
+      "run": {
+        "connected": 1790453240.086303,
+        "run_finished": 1790453240.159399,
+        "lock_acquired": 1790453238.868497,
+        "worker_started": 1790453238.865458,
+        "connect_started": 1790453238.879986
+      },
+      "click_or_event": 1790453238.749,
+      "accepted": 1790453238.858342,
+      "api_response": 1790453238.875,
+      "freshness_observed": 1790453240.643,
+      "rendered": 1790453240.816
+    },
+    {
+      "run": {
+        "connected": 1790453242.513568,
+        "run_finished": 1790453242.572136,
+        "lock_acquired": 1790453241.297569,
+        "worker_started": 1790453241.293262,
+        "connect_started": 1790453241.308943
+      },
+      "click_or_event": 1790453241.164,
+      "accepted": 1790453241.267014,
+      "api_response": 1790453241.302,
+      "freshness_observed": 1790453242.71,
+      "rendered": 1790453242.71
+    },
+    {
+      "run": {
+        "connected": 1790453244.533227,
+        "run_finished": 1790453244.586173,
+        "lock_acquired": 1790453243.318444,
+        "worker_started": 1790453243.316148,
+        "connect_started": 1790453243.32788
+      },
+      "click_or_event": 1790453243.071,
+      "accepted": 1790453243.310256,
+      "api_response": 1790453243.332,
+      "freshness_observed": 1790453245.077,
+      "rendered": 1790453245.211
+    },
+    {
+      "run": {
+        "connected": 1790453246.898302,
+        "run_finished": 1790453246.942126,
+        "lock_acquired": 1790453245.68305,
+        "worker_started": 1790453245.680944,
+        "connect_started": 1790453245.69407
+      },
+      "click_or_event": 1790453245.536,
+      "accepted": 1790453245.656562,
+      "api_response": 1790453245.689,
+      "freshness_observed": 1790453247.139,
+      "rendered": 1790453247.298
+    },
+    {
+      "run": {
+        "connected": 1790453248.969301,
+        "run_finished": 1790453249.011824,
+        "lock_acquired": 1790453247.751767,
+        "worker_started": 1790453247.749274,
+        "connect_started": 1790453247.764428
+      },
+      "click_or_event": 1790453247.643,
+      "accepted": 1790453247.744088,
+      "api_response": 1790453247.757,
+      "freshness_observed": 1790453249.586,
+      "rendered": 1790453249.742
+    },
+    {
+      "run": {
+        "connected": 1790453251.417138,
+        "run_finished": 1790453251.475105,
+        "lock_acquired": 1790453250.202124,
+        "worker_started": 1790453250.198947,
+        "connect_started": 1790453250.211374
+      },
+      "click_or_event": 1790453250.054,
+      "accepted": 1790453250.171097,
+      "api_response": 1790453250.208,
+      "freshness_observed": 1790453251.48,
+      "rendered": 1790453251.659
+    },
+    {
+      "run": {
+        "connected": 1790453253.3133,
+        "run_finished": 1790453253.373178,
+        "lock_acquired": 1790453252.100593,
+        "worker_started": 1790453252.098487,
+        "connect_started": 1790453252.1081
+      },
+      "click_or_event": 1790453251.981,
+      "accepted": 1790453252.092591,
+      "api_response": 1790453252.103,
+      "freshness_observed": 1790453253.591,
+      "rendered": 1790453253.591
+    },
+    {
+      "run": {
+        "connected": 1790453255.297585,
+        "run_finished": 1790453255.350039,
+        "lock_acquired": 1790453254.082984,
+        "worker_started": 1790453254.079594,
+        "connect_started": 1790453254.092965
+      },
+      "click_or_event": 1790453253.936,
+      "accepted": 1790453254.046429,
+      "api_response": 1790453254.092,
+      "freshness_observed": 1790453255.476,
+      "rendered": 1790453255.613
+    },
+    {
+      "run": {
+        "connected": 1790453257.309271,
+        "run_finished": 1790453257.368218,
+        "lock_acquired": 1790453256.092814,
+        "worker_started": 1790453256.088147,
+        "connect_started": 1790453256.103942
+      },
+      "click_or_event": 1790453255.97,
+      "accepted": 1790453256.083047,
+      "api_response": 1790453256.095,
+      "freshness_observed": 1790453257.738,
+      "rendered": 1790453257.87
+    },
+    {
+      "run": {
+        "connected": 1790453259.701072,
+        "run_finished": 1790453259.760623,
+        "lock_acquired": 1790453258.483623,
+        "worker_started": 1790453258.480775,
+        "connect_started": 1790453258.494403
+      },
+      "click_or_event": 1790453258.334,
+      "accepted": 1790453258.447875,
+      "api_response": 1790453258.487,
+      "freshness_observed": 1790453260.277,
+      "rendered": 1790453260.46
+    },
+    {
+      "run": {
+        "connected": 1790453262.204769,
+        "run_finished": 1790453262.2611,
+        "lock_acquired": 1790453260.989634,
+        "worker_started": 1790453260.984148,
+        "connect_started": 1790453260.999595
+      },
+      "click_or_event": 1790453260.855,
+      "accepted": 1790453260.979272,
+      "api_response": 1790453260.991,
+      "freshness_observed": 1790453262.289,
+      "rendered": 1790453262.427
+    },
+    {
+      "run": {
+        "connected": 1790453264.13938,
+        "run_finished": 1790453264.19464,
+        "lock_acquired": 1790453262.923164,
+        "worker_started": 1790453262.919133,
+        "connect_started": 1790453262.935392
+      },
+      "click_or_event": 1790453262.755,
+      "accepted": 1790453262.875007,
+      "api_response": 1790453262.936,
+      "freshness_observed": 1790453264.78,
+      "rendered": 1790453264.941
+    },
+    {
+      "run": {
+        "connected": 1790453266.61056,
+        "run_finished": 1790453266.661233,
+        "lock_acquired": 1790453265.395984,
+        "worker_started": 1790453265.393317,
+        "connect_started": 1790453265.405827
+      },
+      "click_or_event": 1790453265.261,
+      "accepted": 1790453265.370936,
+      "api_response": 1790453265.399,
+      "freshness_observed": 1790453267.318,
+      "rendered": 1790453267.467
+    },
+    {
+      "run": {
+        "connected": 1790453269.101668,
+        "run_finished": 1790453269.167851,
+        "lock_acquired": 1790453267.885787,
+        "worker_started": 1790453267.88353,
+        "connect_started": 1790453267.895117
+      },
+      "click_or_event": 1790453267.772,
+      "accepted": 1790453267.877459,
+      "api_response": 1790453267.888,
+      "freshness_observed": 1790453269.677,
+      "rendered": 1790453269.816
+    },
+    {
+      "run": {
+        "connected": 1790453271.664607,
+        "run_finished": 1790453271.693344,
+        "lock_acquired": 1790453270.451081,
+        "worker_started": 1790453270.448284,
+        "connect_started": 1790453270.460241
+      },
+      "click_or_event": 1790453270.312,
+      "accepted": 1790453270.426491,
+      "api_response": 1790453270.455,
+      "freshness_observed": 1790453272.142,
+      "rendered": 1790453272.292
+    },
+    {
+      "run": {
+        "connected": 1790453273.938569,
+        "run_finished": 1790453274.001457,
+        "lock_acquired": 1790453272.721329,
+        "worker_started": 1790453272.717646,
+        "connect_started": 1790453272.734539
+      },
+      "click_or_event": 1790453272.61,
+      "accepted": 1790453272.709595,
+      "api_response": 1790453272.732,
+      "freshness_observed": 1790453274.07,
+      "rendered": 1790453274.212
+    },
+    {
+      "run": {
+        "connected": 1790453275.862245,
+        "run_finished": 1790453275.925823,
+        "lock_acquired": 1790453274.644571,
+        "worker_started": 1790453274.641558,
+        "connect_started": 1790453274.657092
+      },
+      "click_or_event": 1790453274.513,
+      "accepted": 1790453274.61473,
+      "api_response": 1790453274.647,
+      "freshness_observed": 1790453276.024,
+      "rendered": 1790453276.024
+    }
+  ]
+}

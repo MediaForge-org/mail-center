@@ -117,18 +117,22 @@ function sizeLabel(bytes: number): string {
 async function load() {
     const refreshing = detail.value !== null && detail.value.id === props.messageId;
     if (!refreshing) revokeGrant();
-    imageBusy.value = false;
-    imageError.value = '';
-    frameObserver?.disconnect();
-    frameHeight.value = 240;
+    if (!refreshing) {
+        imageBusy.value = false;
+        imageError.value = '';
+        frameObserver?.disconnect();
+        frameHeight.value = 240;
+    }
     controller?.abort();
     const active = new AbortController();
     controller = active;
     if (!refreshing) detail.value = null;
-    savingRead.value = false;
-    readError.value = '';
-    if (!refreshing) plainMode.value = false;
-    resourceError.value = false;
+    if (!refreshing) {
+        savingRead.value = false;
+        readError.value = '';
+        plainMode.value = false;
+        resourceError.value = false;
+    }
     if (props.messageId === null) {
         state.value = 'idle';
         return;
@@ -137,7 +141,9 @@ async function load() {
     try {
         const result = await getMessage(props.messageId, active.signal);
         if (active.signal.aborted) return;
-        detail.value = result;
+        // A background refresh only swaps the detail when something actually changed.
+        if (!refreshing || JSON.stringify(result) !== JSON.stringify(detail.value))
+            detail.value = result;
         state.value = 'ready';
     } catch (cause) {
         if (!active.signal.aborted)

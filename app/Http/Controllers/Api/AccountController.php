@@ -6,9 +6,9 @@ use App\Accounts\AccountPresenter;
 use App\Accounts\Credentials\CredentialVault;
 use App\Http\Controllers\Controller;
 use App\Jobs\PushRemoteFlagChangesJob;
-use App\Jobs\SyncAccountJob;
 use App\Models\MailAccount;
 use App\Organization\OrganizationService;
+use App\Sync\SyncRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -50,7 +50,7 @@ class AccountController extends Controller
             return $account;
         });
 
-        SyncAccountJob::dispatch($account->id, 'initial');
+        app(SyncRequests::class)->request($account->id, 'initial');
 
         return response()->json(['data' => $this->present($account->refresh())], 201);
     }

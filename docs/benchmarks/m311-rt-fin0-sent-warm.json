@@ -1,0 +1,1487 @@
+{
+  "result": {
+    "scenario": "sent",
+    "mode": "warm",
+    "iterations": 30,
+    "warmup_events_excluded": 3,
+    "connect_ms": 0,
+    "summary": {
+      "event_to_sync_start_ms": {
+        "p50": 14.6,
+        "p95": 19.0
+      },
+      "sync_start_to_commit_ms": {
+        "p50": 75.0,
+        "p95": 92.1
+      },
+      "commit_to_observed_ms": {
+        "p50": 243.8,
+        "p95": 571.2
+      },
+      "observed_to_rendered_ms": {
+        "p50": 111.0,
+        "p95": 242.0
+      },
+      "commit_to_rendered_ms": {
+        "p50": 364.3,
+        "p95": 678.2
+      },
+      "event_to_commit_ms": {
+        "p50": 91.0,
+        "p95": 107.3
+      },
+      "event_to_rendered_ms": {
+        "p50": 454.3,
+        "p95": 764.2
+      },
+      "change_polls": {
+        "p50": 7,
+        "p95": 8
+      },
+      "list_fetches": {
+        "p50": 6,
+        "p95": 7
+      },
+      "account_fetches": {
+        "p50": 6,
+        "p95": 7
+      },
+      "count_fetches": {
+        "p50": 6,
+        "p95": 7
+      }
+    },
+    "flicker": {
+      "min_rows_ever_below_start": false,
+      "loading_frames_total": 0,
+      "reader_loading_frames_total": 0,
+      "counts_disappeared": false
+    },
+    "initial_sent_count": 73,
+    "sent_counts_exact": true
+  },
+  "samples": [
+    {
+      "event_to_sync_start_ms": 13.983964920043945,
+      "sync_start_to_commit_ms": 70.26505470275879,
+      "commit_to_observed_ms": 71.58303260803223,
+      "observed_to_rendered_ms": 302.99997329711914,
+      "commit_to_rendered_ms": 374.58300590515137,
+      "event_to_commit_ms": 84.24901962280273,
+      "event_to_rendered_ms": 458.8320255279541,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 50,
+        "rows_min": 50,
+        "rows_max": 51,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 124
+      },
+      "sidebar_sent_after": "74",
+      "sidebar_all_after": "238",
+      "change_polls": 7,
+      "list_fetches": 7,
+      "account_fetches": 7,
+      "count_fetches": 7,
+      "warmup": true,
+      "conversation_contains_parent": true
+    },
+    {
+      "event_to_sync_start_ms": 13.889074325561523,
+      "sync_start_to_commit_ms": 69.93889808654785,
+      "commit_to_observed_ms": 289.1659736633301,
+      "observed_to_rendered_ms": 121.99997901916504,
+      "commit_to_rendered_ms": 411.1659526824951,
+      "event_to_commit_ms": 83.82797241210938,
+      "event_to_rendered_ms": 494.9939250946045,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 51,
+        "rows_min": 51,
+        "rows_max": 52,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 127
+      },
+      "sidebar_sent_after": "75",
+      "sidebar_all_after": "239",
+      "change_polls": 6,
+      "list_fetches": 6,
+      "account_fetches": 6,
+      "count_fetches": 6,
+      "warmup": true
+    },
+    {
+      "event_to_sync_start_ms": 14.929056167602539,
+      "sync_start_to_commit_ms": 75.56891441345215,
+      "commit_to_observed_ms": 206.956148147583,
+      "observed_to_rendered_ms": 119.99988555908203,
+      "commit_to_rendered_ms": 326.95603370666504,
+      "event_to_commit_ms": 90.49797058105469,
+      "event_to_rendered_ms": 417.4540042877197,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 52,
+        "rows_min": 52,
+        "rows_max": 53,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 124
+      },
+      "sidebar_sent_after": "76",
+      "sidebar_all_after": "240",
+      "change_polls": 7,
+      "list_fetches": 6,
+      "account_fetches": 6,
+      "count_fetches": 6,
+      "warmup": true
+    },
+    {
+      "event_to_sync_start_ms": 14.632940292358398,
+      "sync_start_to_commit_ms": 71.9759464263916,
+      "commit_to_observed_ms": 245.82600593566895,
+      "observed_to_rendered_ms": 125.0,
+      "commit_to_rendered_ms": 370.82600593566895,
+      "event_to_commit_ms": 86.60888671875,
+      "event_to_rendered_ms": 457.43489265441895,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 53,
+        "rows_min": 53,
+        "rows_max": 54,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 126
+      },
+      "sidebar_sent_after": "77",
+      "sidebar_all_after": "241",
+      "change_polls": 7,
+      "list_fetches": 6,
+      "account_fetches": 6,
+      "count_fetches": 6,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 15.197992324829102,
+      "sync_start_to_commit_ms": 95.68595886230469,
+      "commit_to_observed_ms": 473.3600616455078,
+      "observed_to_rendered_ms": 103.00016403198242,
+      "commit_to_rendered_ms": 576.3602256774902,
+      "event_to_commit_ms": 110.88395118713379,
+      "event_to_rendered_ms": 687.244176864624,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 54,
+        "rows_min": 54,
+        "rows_max": 55,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 138
+      },
+      "sidebar_sent_after": "78",
+      "sidebar_all_after": "242",
+      "change_polls": 7,
+      "list_fetches": 5,
+      "account_fetches": 5,
+      "count_fetches": 5,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 18.04184913635254,
+      "sync_start_to_commit_ms": 56.84709548950195,
+      "commit_to_observed_ms": 120.73397636413574,
+      "observed_to_rendered_ms": 125.99992752075195,
+      "commit_to_rendered_ms": 246.7339038848877,
+      "event_to_commit_ms": 74.88894462585449,
+      "event_to_rendered_ms": 321.6228485107422,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 55,
+        "rows_min": 55,
+        "rows_max": 56,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 124
+      },
+      "sidebar_sent_after": "79",
+      "sidebar_all_after": "243",
+      "change_polls": 7,
+      "list_fetches": 7,
+      "account_fetches": 7,
+      "count_fetches": 7,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 13.06915283203125,
+      "sync_start_to_commit_ms": 64.56899642944336,
+      "commit_to_observed_ms": 159.75284576416016,
+      "observed_to_rendered_ms": 103.00016403198242,
+      "commit_to_rendered_ms": 262.7530097961426,
+      "event_to_commit_ms": 77.63814926147461,
+      "event_to_rendered_ms": 340.3911590576172,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 56,
+        "rows_min": 56,
+        "rows_max": 57,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 117
+      },
+      "sidebar_sent_after": "80",
+      "sidebar_all_after": "244",
+      "change_polls": 6,
+      "list_fetches": 6,
+      "account_fetches": 6,
+      "count_fetches": 6,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 12.924909591674805,
+      "sync_start_to_commit_ms": 73.7910270690918,
+      "commit_to_observed_ms": 50.61197280883789,
+      "observed_to_rendered_ms": 133.00013542175293,
+      "commit_to_rendered_ms": 183.61210823059082,
+      "event_to_commit_ms": 86.7159366607666,
+      "event_to_rendered_ms": 270.3280448913574,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 57,
+        "rows_min": 57,
+        "rows_max": 58,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 116
+      },
+      "sidebar_sent_after": "81",
+      "sidebar_all_after": "245",
+      "change_polls": 7,
+      "list_fetches": 7,
+      "account_fetches": 7,
+      "count_fetches": 7,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 19.032001495361328,
+      "sync_start_to_commit_ms": 73.98104667663574,
+      "commit_to_observed_ms": 141.7708396911621,
+      "observed_to_rendered_ms": 103.00016403198242,
+      "commit_to_rendered_ms": 244.77100372314453,
+      "event_to_commit_ms": 93.01304817199707,
+      "event_to_rendered_ms": 337.7840518951416,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 58,
+        "rows_min": 58,
+        "rows_max": 59,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 121
+      },
+      "sidebar_sent_after": "82",
+      "sidebar_all_after": "246",
+      "change_polls": 7,
+      "list_fetches": 6,
+      "account_fetches": 6,
+      "count_fetches": 6,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 15.994787216186523,
+      "sync_start_to_commit_ms": 81.97402954101562,
+      "commit_to_observed_ms": 340.440034866333,
+      "observed_to_rendered_ms": 136.0001564025879,
+      "commit_to_rendered_ms": 476.4401912689209,
+      "event_to_commit_ms": 97.96881675720215,
+      "event_to_rendered_ms": 574.409008026123,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 59,
+        "rows_min": 59,
+        "rows_max": 60,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 132
+      },
+      "sidebar_sent_after": "83",
+      "sidebar_all_after": "247",
+      "change_polls": 6,
+      "list_fetches": 6,
+      "account_fetches": 6,
+      "count_fetches": 6,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 13.42916488647461,
+      "sync_start_to_commit_ms": 89.24293518066406,
+      "commit_to_observed_ms": 96.42195701599121,
+      "observed_to_rendered_ms": 0,
+      "commit_to_rendered_ms": 96.42195701599121,
+      "event_to_commit_ms": 102.67210006713867,
+      "event_to_rendered_ms": 199.09405708312988,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 60,
+        "rows_min": 60,
+        "rows_max": 61,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 109
+      },
+      "sidebar_sent_after": "84",
+      "sidebar_all_after": "248",
+      "change_polls": 7,
+      "list_fetches": 7,
+      "account_fetches": 7,
+      "count_fetches": 7,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 15.293121337890625,
+      "sync_start_to_commit_ms": 79.95200157165527,
+      "commit_to_observed_ms": 427.3409843444824,
+      "observed_to_rendered_ms": 135.9999179840088,
+      "commit_to_rendered_ms": 563.3409023284912,
+      "event_to_commit_ms": 95.2451229095459,
+      "event_to_rendered_ms": 658.5860252380371,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 61,
+        "rows_min": 61,
+        "rows_max": 62,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 138
+      },
+      "sidebar_sent_after": "85",
+      "sidebar_all_after": "249",
+      "change_polls": 8,
+      "list_fetches": 6,
+      "account_fetches": 6,
+      "count_fetches": 6,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 14.657974243164062,
+      "sync_start_to_commit_ms": 60.93788146972656,
+      "commit_to_observed_ms": 548.9270687103271,
+      "observed_to_rendered_ms": 121.99997901916504,
+      "commit_to_rendered_ms": 670.9270477294922,
+      "event_to_commit_ms": 75.59585571289062,
+      "event_to_rendered_ms": 746.5229034423828,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 62,
+        "rows_min": 62,
+        "rows_max": 63,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 142
+      },
+      "sidebar_sent_after": "86",
+      "sidebar_all_after": "250",
+      "change_polls": 7,
+      "list_fetches": 6,
+      "account_fetches": 6,
+      "count_fetches": 6,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 16.410112380981445,
+      "sync_start_to_commit_ms": 75.81400871276855,
+      "commit_to_observed_ms": 548.8579273223877,
+      "observed_to_rendered_ms": 111.00006103515625,
+      "commit_to_rendered_ms": 659.857988357544,
+      "event_to_commit_ms": 92.22412109375,
+      "event_to_rendered_ms": 752.082109451294,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 63,
+        "rows_min": 63,
+        "rows_max": 64,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 158
+      },
+      "sidebar_sent_after": "87",
+      "sidebar_all_after": "251",
+      "change_polls": 7,
+      "list_fetches": 5,
+      "account_fetches": 5,
+      "count_fetches": 5,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 15.269994735717773,
+      "sync_start_to_commit_ms": 84.58089828491211,
+      "commit_to_observed_ms": 309.722900390625,
+      "observed_to_rendered_ms": 113.00015449523926,
+      "commit_to_rendered_ms": 422.72305488586426,
+      "event_to_commit_ms": 99.85089302062988,
+      "event_to_rendered_ms": 522.5739479064941,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 64,
+        "rows_min": 64,
+        "rows_max": 65,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 134
+      },
+      "sidebar_sent_after": "88",
+      "sidebar_all_after": "252",
+      "change_polls": 6,
+      "list_fetches": 6,
+      "account_fetches": 6,
+      "count_fetches": 6,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 16.124963760375977,
+      "sync_start_to_commit_ms": 82.53192901611328,
+      "commit_to_observed_ms": 31.0821533203125,
+      "observed_to_rendered_ms": 241.99986457824707,
+      "commit_to_rendered_ms": 273.08201789855957,
+      "event_to_commit_ms": 98.65689277648926,
+      "event_to_rendered_ms": 371.7389106750488,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 65,
+        "rows_min": 65,
+        "rows_max": 66,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 119
+      },
+      "sidebar_sent_after": "89",
+      "sidebar_all_after": "253",
+      "change_polls": 7,
+      "list_fetches": 6,
+      "account_fetches": 6,
+      "count_fetches": 6,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 15.272140502929688,
+      "sync_start_to_commit_ms": 92.06080436706543,
+      "commit_to_observed_ms": 0,
+      "observed_to_rendered_ms": 0,
+      "commit_to_rendered_ms": -222.32484817504883,
+      "event_to_commit_ms": 107.33294486999512,
+      "event_to_rendered_ms": -114.99190330505371,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 66,
+        "rows_min": 66,
+        "rows_max": 67,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 149
+      },
+      "sidebar_sent_after": "90",
+      "sidebar_all_after": "254",
+      "change_polls": 7,
+      "list_fetches": 6,
+      "account_fetches": 6,
+      "count_fetches": 6,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 13.895034790039062,
+      "sync_start_to_commit_ms": 88.65594863891602,
+      "commit_to_observed_ms": 385.91814041137695,
+      "observed_to_rendered_ms": 126.9998550415039,
+      "commit_to_rendered_ms": 512.9179954528809,
+      "event_to_commit_ms": 102.55098342895508,
+      "event_to_rendered_ms": 615.4689788818359,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 67,
+        "rows_min": 67,
+        "rows_max": 68,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 135
+      },
+      "sidebar_sent_after": "91",
+      "sidebar_all_after": "255",
+      "change_polls": 6,
+      "list_fetches": 6,
+      "account_fetches": 6,
+      "count_fetches": 6,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 12.926101684570312,
+      "sync_start_to_commit_ms": 60.60981750488281,
+      "commit_to_observed_ms": 518.233060836792,
+      "observed_to_rendered_ms": 101.99999809265137,
+      "commit_to_rendered_ms": 620.2330589294434,
+      "event_to_commit_ms": 73.53591918945312,
+      "event_to_rendered_ms": 693.7689781188965,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 68,
+        "rows_min": 68,
+        "rows_max": 69,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 145
+      },
+      "sidebar_sent_after": "92",
+      "sidebar_all_after": "256",
+      "change_polls": 7,
+      "list_fetches": 6,
+      "account_fetches": 6,
+      "count_fetches": 6,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 19.00196075439453,
+      "sync_start_to_commit_ms": 70.75309753417969,
+      "commit_to_observed_ms": 243.83902549743652,
+      "observed_to_rendered_ms": 116.99986457824707,
+      "commit_to_rendered_ms": 360.8388900756836,
+      "event_to_commit_ms": 89.75505828857422,
+      "event_to_rendered_ms": 450.5939483642578,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 69,
+        "rows_min": 69,
+        "rows_max": 70,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 124
+      },
+      "sidebar_sent_after": "93",
+      "sidebar_all_after": "257",
+      "change_polls": 6,
+      "list_fetches": 6,
+      "account_fetches": 6,
+      "count_fetches": 6,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 14.062881469726562,
+      "sync_start_to_commit_ms": 71.98405265808105,
+      "commit_to_observed_ms": 571.1989402770996,
+      "observed_to_rendered_ms": 107.00011253356934,
+      "commit_to_rendered_ms": 678.199052810669,
+      "event_to_commit_ms": 86.04693412780762,
+      "event_to_rendered_ms": 764.2459869384766,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 70,
+        "rows_min": 70,
+        "rows_max": 71,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 147
+      },
+      "sidebar_sent_after": "94",
+      "sidebar_all_after": "258",
+      "change_polls": 7,
+      "list_fetches": 6,
+      "account_fetches": 6,
+      "count_fetches": 6,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 15.002965927124023,
+      "sync_start_to_commit_ms": 91.17603302001953,
+      "commit_to_observed_ms": 102.20909118652344,
+      "observed_to_rendered_ms": 0,
+      "commit_to_rendered_ms": 102.20909118652344,
+      "event_to_commit_ms": 106.17899894714355,
+      "event_to_rendered_ms": 208.388090133667,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 71,
+        "rows_min": 71,
+        "rows_max": 72,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 111
+      },
+      "sidebar_sent_after": "95",
+      "sidebar_all_after": "259",
+      "change_polls": 8,
+      "list_fetches": 7,
+      "account_fetches": 7,
+      "count_fetches": 7,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 15.329122543334961,
+      "sync_start_to_commit_ms": 71.19202613830566,
+      "commit_to_observed_ms": 612.8840446472168,
+      "observed_to_rendered_ms": 107.99980163574219,
+      "commit_to_rendered_ms": 720.883846282959,
+      "event_to_commit_ms": 86.52114868164062,
+      "event_to_rendered_ms": 807.4049949645996,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 72,
+        "rows_min": 72,
+        "rows_max": 73,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 146
+      },
+      "sidebar_sent_after": "96",
+      "sidebar_all_after": "260",
+      "change_polls": 8,
+      "list_fetches": 6,
+      "account_fetches": 6,
+      "count_fetches": 6,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 14.634847640991211,
+      "sync_start_to_commit_ms": 78.28402519226074,
+      "commit_to_observed_ms": 209.0461254119873,
+      "observed_to_rendered_ms": 103.99985313415527,
+      "commit_to_rendered_ms": 313.0459785461426,
+      "event_to_commit_ms": 92.91887283325195,
+      "event_to_rendered_ms": 405.96485137939453,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 73,
+        "rows_min": 73,
+        "rows_max": 74,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 123
+      },
+      "sidebar_sent_after": "97",
+      "sidebar_all_after": "261",
+      "change_polls": 7,
+      "list_fetches": 7,
+      "account_fetches": 7,
+      "count_fetches": 7,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 13.365983963012695,
+      "sync_start_to_commit_ms": 74.96094703674316,
+      "commit_to_observed_ms": 253.01599502563477,
+      "observed_to_rendered_ms": 112.99991607666016,
+      "commit_to_rendered_ms": 366.0159111022949,
+      "event_to_commit_ms": 88.32693099975586,
+      "event_to_rendered_ms": 454.3428421020508,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 74,
+        "rows_min": 74,
+        "rows_max": 75,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 138
+      },
+      "sidebar_sent_after": "98",
+      "sidebar_all_after": "262",
+      "change_polls": 8,
+      "list_fetches": 6,
+      "account_fetches": 6,
+      "count_fetches": 6,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 16.540050506591797,
+      "sync_start_to_commit_ms": 72.38101959228516,
+      "commit_to_observed_ms": 396.0847854614258,
+      "observed_to_rendered_ms": 101.99999809265137,
+      "commit_to_rendered_ms": 498.08478355407715,
+      "event_to_commit_ms": 88.92107009887695,
+      "event_to_rendered_ms": 587.0058536529541,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 75,
+        "rows_min": 75,
+        "rows_max": 76,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 133
+      },
+      "sidebar_sent_after": "99",
+      "sidebar_all_after": "263",
+      "change_polls": 7,
+      "list_fetches": 7,
+      "account_fetches": 7,
+      "count_fetches": 6,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 13.916969299316406,
+      "sync_start_to_commit_ms": 79.96416091918945,
+      "commit_to_observed_ms": 198.49491119384766,
+      "observed_to_rendered_ms": 108.99996757507324,
+      "commit_to_rendered_ms": 307.4948787689209,
+      "event_to_commit_ms": 93.88113021850586,
+      "event_to_rendered_ms": 401.37600898742676,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 76,
+        "rows_min": 76,
+        "rows_max": 77,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 120
+      },
+      "sidebar_sent_after": "100",
+      "sidebar_all_after": "264",
+      "change_polls": 7,
+      "list_fetches": 7,
+      "account_fetches": 7,
+      "count_fetches": 7,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 11.725902557373047,
+      "sync_start_to_commit_ms": 82.22699165344238,
+      "commit_to_observed_ms": 170.9890365600586,
+      "observed_to_rendered_ms": 139.00017738342285,
+      "commit_to_rendered_ms": 309.98921394348145,
+      "event_to_commit_ms": 93.95289421081543,
+      "event_to_rendered_ms": 403.9421081542969,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 77,
+        "rows_min": 77,
+        "rows_max": 78,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 128
+      },
+      "sidebar_sent_after": "101",
+      "sidebar_all_after": "265",
+      "change_polls": 7,
+      "list_fetches": 7,
+      "account_fetches": 7,
+      "count_fetches": 7,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 15.378952026367188,
+      "sync_start_to_commit_ms": 68.64809989929199,
+      "commit_to_observed_ms": 552.0749092102051,
+      "observed_to_rendered_ms": 120.00012397766113,
+      "commit_to_rendered_ms": 672.0750331878662,
+      "event_to_commit_ms": 84.02705192565918,
+      "event_to_rendered_ms": 756.1020851135254,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 78,
+        "rows_min": 78,
+        "rows_max": 79,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 158
+      },
+      "sidebar_sent_after": "102",
+      "sidebar_all_after": "266",
+      "change_polls": 8,
+      "list_fetches": 7,
+      "account_fetches": 6,
+      "count_fetches": 6,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 14.539003372192383,
+      "sync_start_to_commit_ms": 76.48181915283203,
+      "commit_to_observed_ms": 234.7550392150879,
+      "observed_to_rendered_ms": 129.00018692016602,
+      "commit_to_rendered_ms": 363.7552261352539,
+      "event_to_commit_ms": 91.02082252502441,
+      "event_to_rendered_ms": 454.7760486602783,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 79,
+        "rows_min": 79,
+        "rows_max": 80,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 132
+      },
+      "sidebar_sent_after": "103",
+      "sidebar_all_after": "267",
+      "change_polls": 8,
+      "list_fetches": 7,
+      "account_fetches": 7,
+      "count_fetches": 7,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 11.554956436157227,
+      "sync_start_to_commit_ms": 83.7259292602539,
+      "commit_to_observed_ms": 94.05207633972168,
+      "observed_to_rendered_ms": 0,
+      "commit_to_rendered_ms": 94.05207633972168,
+      "event_to_commit_ms": 95.28088569641113,
+      "event_to_rendered_ms": 189.3329620361328,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 80,
+        "rows_min": 80,
+        "rows_max": 81,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 109
+      },
+      "sidebar_sent_after": "104",
+      "sidebar_all_after": "268",
+      "change_polls": 8,
+      "list_fetches": 8,
+      "account_fetches": 8,
+      "count_fetches": 7,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 13.414144515991211,
+      "sync_start_to_commit_ms": 69.07391548156738,
+      "commit_to_observed_ms": 257.3070526123047,
+      "observed_to_rendered_ms": 107.00011253356934,
+      "commit_to_rendered_ms": 364.307165145874,
+      "event_to_commit_ms": 82.4880599975586,
+      "event_to_rendered_ms": 446.7952251434326,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 81,
+        "rows_min": 81,
+        "rows_max": 82,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 131
+      },
+      "sidebar_sent_after": "105",
+      "sidebar_all_after": "269",
+      "change_polls": 8,
+      "list_fetches": 7,
+      "account_fetches": 7,
+      "count_fetches": 6,
+      "warmup": false
+    },
+    {
+      "event_to_sync_start_ms": 13.91911506652832,
+      "sync_start_to_commit_ms": 59.230804443359375,
+      "commit_to_observed_ms": 208.60815048217773,
+      "observed_to_rendered_ms": 250.0,
+      "commit_to_rendered_ms": 458.60815048217773,
+      "event_to_commit_ms": 73.1499195098877,
+      "event_to_rendered_ms": 531.7580699920654,
+      "ui_realtime_at_event": null,
+      "flicker": {
+        "start_rows": 82,
+        "rows_min": 82,
+        "rows_max": 83,
+        "loading_frames": 0,
+        "reader_loading_frames": 0,
+        "counts_min": 6,
+        "counts_max": 6,
+        "frames": 130
+      },
+      "sidebar_sent_after": "106",
+      "sidebar_all_after": "270",
+      "change_polls": 7,
+      "list_fetches": 6,
+      "account_fetches": 6,
+      "count_fetches": 6,
+      "warmup": false
+    }
+  ],
+  "traces": [
+    {
+      "run": {
+        "connected": 1790469527.97306,
+        "run_finished": 1790469531.171988,
+        "lock_acquired": 1790469527.958455,
+        "worker_started": 1790469527.956152,
+        "connect_started": 1790469527.966698,
+        "first_fetch_started": 1790469527.995971,
+        "first_ingestion_started": 1790469527.998313,
+        "first_message_committed": 1790469528.026417
+      },
+      "event": 1790469527.942168,
+      "observed": 1790469528.098,
+      "rendered": 1790469528.401,
+      "subject": "Re: Latency 9ad829f2c87967ea"
+    },
+    {
+      "run": {
+        "connected": 1790469533.01538,
+        "run_finished": 1790469536.077813,
+        "lock_acquired": 1790469533.005803,
+        "worker_started": 1790469533.003895,
+        "connect_started": 1790469533.011096,
+        "first_fetch_started": 1790469533.039123,
+        "first_ingestion_started": 1790469533.041777,
+        "first_message_committed": 1790469533.073834
+      },
+      "event": 1790469532.990006,
+      "observed": 1790469533.363,
+      "rendered": 1790469533.485,
+      "subject": "Re: Latency 7945d4e62589e068"
+    },
+    {
+      "run": {
+        "connected": 1790469537.067042,
+        "run_finished": 1790469540.224584,
+        "lock_acquired": 1790469537.057518,
+        "worker_started": 1790469537.055475,
+        "connect_started": 1790469537.062712,
+        "first_fetch_started": 1790469537.092911,
+        "first_ingestion_started": 1790469537.094819,
+        "first_message_committed": 1790469537.131044
+      },
+      "event": 1790469537.040546,
+      "observed": 1790469537.338,
+      "rendered": 1790469537.458,
+      "subject": "Re: Latency 6462697f7ce2a9ac"
+    },
+    {
+      "run": {
+        "connected": 1790469541.377699,
+        "run_finished": 1790469544.530013,
+        "lock_acquired": 1790469541.362833,
+        "worker_started": 1790469541.361198,
+        "connect_started": 1790469541.369995,
+        "first_fetch_started": 1790469541.40141,
+        "first_ingestion_started": 1790469541.402819,
+        "first_message_committed": 1790469541.433174
+      },
+      "event": 1790469541.346565,
+      "observed": 1790469541.679,
+      "rendered": 1790469541.804,
+      "subject": "Re: Latency ea4b169d4f28a6f3"
+    },
+    {
+      "run": {
+        "connected": 1790469545.430326,
+        "run_finished": 1790469548.51411,
+        "lock_acquired": 1790469545.415238,
+        "worker_started": 1790469545.411954,
+        "connect_started": 1790469545.425133,
+        "first_fetch_started": 1790469545.444565,
+        "first_ingestion_started": 1790469545.44573,
+        "first_message_committed": 1790469545.50764
+      },
+      "event": 1790469545.396756,
+      "observed": 1790469545.981,
+      "rendered": 1790469546.084,
+      "subject": "Re: Latency 96c7ac197f19b9c7"
+    },
+    {
+      "run": {
+        "connected": 1790469549.526872,
+        "run_finished": 1790469552.637604,
+        "lock_acquired": 1790469549.515781,
+        "worker_started": 1790469549.513419,
+        "connect_started": 1790469549.521961,
+        "first_fetch_started": 1790469549.544918,
+        "first_ingestion_started": 1790469549.546635,
+        "first_message_committed": 1790469549.570266
+      },
+      "event": 1790469549.495377,
+      "observed": 1790469549.691,
+      "rendered": 1790469549.817,
+      "subject": "Re: Latency 925574447a7733a1"
+    },
+    {
+      "run": {
+        "connected": 1790469553.607678,
+        "run_finished": 1790469556.581564,
+        "lock_acquired": 1790469553.597487,
+        "worker_started": 1790469553.595678,
+        "connect_started": 1790469553.603167,
+        "first_fetch_started": 1790469553.620163,
+        "first_ingestion_started": 1790469553.621243,
+        "first_message_committed": 1790469553.660247
+      },
+      "event": 1790469553.582609,
+      "observed": 1790469553.82,
+      "rendered": 1790469553.923,
+      "subject": "Re: Latency d185fc5a3a22b966"
+    },
+    {
+      "run": {
+        "connected": 1790469557.494001,
+        "run_finished": 1790469560.717196,
+        "lock_acquired": 1790469557.478017,
+        "worker_started": 1790469557.475597,
+        "connect_started": 1790469557.487881,
+        "first_fetch_started": 1790469557.519688,
+        "first_ingestion_started": 1790469557.521381,
+        "first_message_committed": 1790469557.549388
+      },
+      "event": 1790469557.462672,
+      "observed": 1790469557.6,
+      "rendered": 1790469557.733,
+      "subject": "Re: Latency d7e71da5221b0db4"
+    },
+    {
+      "run": {
+        "connected": 1790469561.702987,
+        "run_finished": 1790469564.757352,
+        "lock_acquired": 1790469561.68529,
+        "worker_started": 1790469561.683248,
+        "connect_started": 1790469561.694908,
+        "first_fetch_started": 1790469561.726089,
+        "first_ingestion_started": 1790469561.727731,
+        "first_message_committed": 1790469561.757229
+      },
+      "event": 1790469561.664216,
+      "observed": 1790469561.899,
+      "rendered": 1790469562.002,
+      "subject": "Re: Latency e9736499eca28f73"
+    },
+    {
+      "run": {
+        "connected": 1790469565.633843,
+        "run_finished": 1790469568.792037,
+        "lock_acquired": 1790469565.620122,
+        "worker_started": 1790469565.617586,
+        "connect_started": 1790469565.627806,
+        "first_fetch_started": 1790469565.652844,
+        "first_ingestion_started": 1790469565.654047,
+        "first_message_committed": 1790469565.69956
+      },
+      "event": 1790469565.601591,
+      "observed": 1790469566.04,
+      "rendered": 1790469566.176,
+      "subject": "Re: Latency a6d3f2d2eb31ee23"
+    },
+    {
+      "run": {
+        "connected": 1790469569.731902,
+        "run_finished": 1790469572.960039,
+        "lock_acquired": 1790469569.721785,
+        "worker_started": 1790469569.719335,
+        "connect_started": 1790469569.727487,
+        "first_fetch_started": 1790469569.760189,
+        "first_ingestion_started": 1790469569.762203,
+        "first_message_committed": 1790469569.808578
+      },
+      "event": 1790469569.705906,
+      "observed": 1790469569.905,
+      "rendered": 1790469569.905,
+      "subject": "Re: Latency 1ef5bc4e46aee39b"
+    },
+    {
+      "run": {
+        "connected": 1790469574.189612,
+        "run_finished": 1790469577.396033,
+        "lock_acquired": 1790469574.174668,
+        "worker_started": 1790469574.172707,
+        "connect_started": 1790469574.182571,
+        "first_fetch_started": 1790469574.209785,
+        "first_ingestion_started": 1790469574.211269,
+        "first_message_committed": 1790469574.252659
+      },
+      "event": 1790469574.157414,
+      "observed": 1790469574.68,
+      "rendered": 1790469574.816,
+      "subject": "Re: Latency 55df78c432a1bf5e"
+    },
+    {
+      "run": {
+        "connected": 1790469578.36558,
+        "run_finished": 1790469581.614393,
+        "lock_acquired": 1790469578.355772,
+        "worker_started": 1790469578.354135,
+        "connect_started": 1790469578.361138,
+        "first_fetch_started": 1790469578.383737,
+        "first_ingestion_started": 1790469578.385479,
+        "first_message_committed": 1790469578.415073
+      },
+      "event": 1790469578.339477,
+      "observed": 1790469578.964,
+      "rendered": 1790469579.086,
+      "subject": "Re: Latency e95780d737eb6799"
+    },
+    {
+      "run": {
+        "connected": 1790469582.639253,
+        "run_finished": 1790469585.867587,
+        "lock_acquired": 1790469582.621009,
+        "worker_started": 1790469582.618328,
+        "connect_started": 1790469582.63182,
+        "first_fetch_started": 1790469582.666044,
+        "first_ingestion_started": 1790469582.667538,
+        "first_message_committed": 1790469582.694142
+      },
+      "event": 1790469582.601918,
+      "observed": 1790469583.243,
+      "rendered": 1790469583.354,
+      "subject": "Re: Latency bbcdc2b1627b64d6"
+    },
+    {
+      "run": {
+        "connected": 1790469586.761245,
+        "run_finished": 1790469590.043611,
+        "lock_acquired": 1790469586.750525,
+        "worker_started": 1790469586.748696,
+        "connect_started": 1790469586.756148,
+        "first_fetch_started": 1790469586.785258,
+        "first_ingestion_started": 1790469586.786926,
+        "first_message_committed": 1790469586.833277
+      },
+      "event": 1790469586.733426,
+      "observed": 1790469587.143,
+      "rendered": 1790469587.256,
+      "subject": "Re: Latency bd855050bf25ad71"
+    },
+    {
+      "run": {
+        "connected": 1790469590.970076,
+        "run_finished": 1790469594.233119,
+        "lock_acquired": 1790469590.951121,
+        "worker_started": 1790469590.948386,
+        "connect_started": 1790469590.960896,
+        "first_fetch_started": 1790469590.990555,
+        "first_ingestion_started": 1790469590.992945,
+        "first_message_committed": 1790469591.030918
+      },
+      "event": 1790469590.932261,
+      "observed": 1790469591.062,
+      "rendered": 1790469591.304,
+      "subject": "Re: Latency 322d0c53e8f84a8f"
+    },
+    {
+      "run": {
+        "connected": 1790469595.247733,
+        "run_finished": 1790469598.432629,
+        "lock_acquired": 1790469595.230047,
+        "worker_started": 1790469595.228264,
+        "connect_started": 1790469595.239007,
+        "first_fetch_started": 1790469595.27847,
+        "first_ingestion_started": 1790469595.280857,
+        "first_message_committed": 1790469595.320325
+      },
+      "event": 1790469595.212992,
+      "observed": 1790469595.098,
+      "rendered": 1790469595.098,
+      "subject": "Re: Latency 836214a48a38e146"
+    },
+    {
+      "run": {
+        "connected": 1790469599.401498,
+        "run_finished": 1790469603.201036,
+        "lock_acquired": 1790469599.388371,
+        "worker_started": 1790469599.386426,
+        "connect_started": 1790469599.396529,
+        "first_fetch_started": 1790469599.427409,
+        "first_ingestion_started": 1790469599.429651,
+        "first_message_committed": 1790469599.475082
+      },
+      "event": 1790469599.372531,
+      "observed": 1790469599.861,
+      "rendered": 1790469599.988,
+      "subject": "Re: Latency 2d0f69f9ec47a431"
+    },
+    {
+      "run": {
+        "connected": 1790469604.163997,
+        "run_finished": 1790469607.335598,
+        "lock_acquired": 1790469604.154226,
+        "worker_started": 1790469604.152157,
+        "connect_started": 1790469604.159577,
+        "first_fetch_started": 1790469604.182454,
+        "first_ingestion_started": 1790469604.18494,
+        "first_message_committed": 1790469604.212767
+      },
+      "event": 1790469604.139231,
+      "observed": 1790469604.731,
+      "rendered": 1790469604.833,
+      "subject": "Re: Latency c3fe477e17473d32"
+    },
+    {
+      "run": {
+        "connected": 1790469608.291967,
+        "run_finished": 1790469611.565166,
+        "lock_acquired": 1790469608.276978,
+        "worker_started": 1790469608.273408,
+        "connect_started": 1790469608.285004,
+        "first_fetch_started": 1790469608.309272,
+        "first_ingestion_started": 1790469608.310524,
+        "first_message_committed": 1790469608.344161
+      },
+      "event": 1790469608.254406,
+      "observed": 1790469608.588,
+      "rendered": 1790469608.705,
+      "subject": "Re: Latency ee96bcb4ac8aae31"
+    },
+    {
+      "run": {
+        "connected": 1790469612.532045,
+        "run_finished": 1790469615.696056,
+        "lock_acquired": 1790469612.517578,
+        "worker_started": 1790469612.514817,
+        "connect_started": 1790469612.524145,
+        "first_fetch_started": 1790469612.551362,
+        "first_ingestion_started": 1790469612.553239,
+        "first_message_committed": 1790469612.586801
+      },
+      "event": 1790469612.500754,
+      "observed": 1790469613.158,
+      "rendered": 1790469613.265,
+      "subject": "Re: Latency 8117e3f601d9ddba"
+    },
+    {
+      "run": {
+        "connected": 1790469616.610286,
+        "run_finished": 1790469619.972334,
+        "lock_acquired": 1790469616.593595,
+        "worker_started": 1790469616.591615,
+        "connect_started": 1790469616.605143,
+        "first_fetch_started": 1790469616.62907,
+        "first_ingestion_started": 1790469616.631683,
+        "first_message_committed": 1790469616.682791
+      },
+      "event": 1790469616.576612,
+      "observed": 1790469616.785,
+      "rendered": 1790469616.785,
+      "subject": "Re: Latency 9a4092315ee35ef7"
+    },
+    {
+      "run": {
+        "connected": 1790469620.936565,
+        "run_finished": 1790469624.281039,
+        "lock_acquired": 1790469620.925319,
+        "worker_started": 1790469620.922924,
+        "connect_started": 1790469620.932019,
+        "first_fetch_started": 1790469620.949217,
+        "first_ingestion_started": 1790469620.950497,
+        "first_message_committed": 1790469620.994116
+      },
+      "event": 1790469620.907595,
+      "observed": 1790469621.607,
+      "rendered": 1790469621.715,
+      "subject": "Re: Latency 5509a5cbc580fd89"
+    },
+    {
+      "run": {
+        "connected": 1790469625.190819,
+        "run_finished": 1790469628.677758,
+        "lock_acquired": 1790469625.174502,
+        "worker_started": 1790469625.17267,
+        "connect_started": 1790469625.183343,
+        "first_fetch_started": 1790469625.216731,
+        "first_ingestion_started": 1790469625.218604,
+        "first_message_committed": 1790469625.250954
+      },
+      "event": 1790469625.158035,
+      "observed": 1790469625.46,
+      "rendered": 1790469625.564,
+      "subject": "Re: Latency cb4d4d57ae96e625"
+    },
+    {
+      "run": {
+        "connected": 1790469629.615492,
+        "run_finished": 1790469632.960916,
+        "lock_acquired": 1790469629.595536,
+        "worker_started": 1790469629.593023,
+        "connect_started": 1790469629.607325,
+        "first_fetch_started": 1790469629.641849,
+        "first_ingestion_started": 1790469629.643561,
+        "first_message_committed": 1790469629.667984
+      },
+      "event": 1790469629.579657,
+      "observed": 1790469629.921,
+      "rendered": 1790469630.034,
+      "subject": "Re: Latency 37b8d2721e40058a"
+    },
+    {
+      "run": {
+        "connected": 1790469633.995721,
+        "run_finished": 1790469637.450091,
+        "lock_acquired": 1790469633.985241,
+        "worker_started": 1790469633.983534,
+        "connect_started": 1790469633.990471,
+        "first_fetch_started": 1790469634.020739,
+        "first_ingestion_started": 1790469634.022473,
+        "first_message_committed": 1790469634.055915
+      },
+      "event": 1790469633.966994,
+      "observed": 1790469634.452,
+      "rendered": 1790469634.554,
+      "subject": "Re: Latency 73eedfaebdce3fa7"
+    },
+    {
+      "run": {
+        "connected": 1790469638.413157,
+        "run_finished": 1790469641.865334,
+        "lock_acquired": 1790469638.395287,
+        "worker_started": 1790469638.392541,
+        "connect_started": 1790469638.405285,
+        "first_fetch_started": 1790469638.436235,
+        "first_ingestion_started": 1790469638.437751,
+        "first_message_committed": 1790469638.472505
+      },
+      "event": 1790469638.378624,
+      "observed": 1790469638.671,
+      "rendered": 1790469638.78,
+      "subject": "Re: Latency 56a0d46039169bbc"
+    },
+    {
+      "run": {
+        "connected": 1790469642.789727,
+        "run_finished": 1790469646.443134,
+        "lock_acquired": 1790469642.7725,
+        "worker_started": 1790469642.770784,
+        "connect_started": 1790469642.781542,
+        "first_fetch_started": 1790469642.812562,
+        "first_ingestion_started": 1790469642.814579,
+        "first_message_committed": 1790469642.853011
+      },
+      "event": 1790469642.759058,
+      "observed": 1790469643.024,
+      "rendered": 1790469643.163,
+      "subject": "Re: Latency 1d00f1e8658339b8"
+    },
+    {
+      "run": {
+        "connected": 1790469647.370609,
+        "run_finished": 1790469650.806143,
+        "lock_acquired": 1790469647.350103,
+        "worker_started": 1790469647.347277,
+        "connect_started": 1790469647.361618,
+        "first_fetch_started": 1790469647.384798,
+        "first_ingestion_started": 1790469647.385947,
+        "first_message_committed": 1790469647.415925
+      },
+      "event": 1790469647.331898,
+      "observed": 1790469647.968,
+      "rendered": 1790469648.088,
+      "subject": "Re: Latency ceede1d45965c6fa"
+    },
+    {
+      "run": {
+        "connected": 1790469651.812377,
+        "run_finished": 1790469655.194221,
+        "lock_acquired": 1790469651.794558,
+        "worker_started": 1790469651.791763,
+        "connect_started": 1790469651.8046,
+        "first_fetch_started": 1790469651.831421,
+        "first_ingestion_started": 1790469651.832609,
+        "first_message_committed": 1790469651.868245
+      },
+      "event": 1790469651.777224,
+      "observed": 1790469652.103,
+      "rendered": 1790469652.232,
+      "subject": "Re: Latency 0278a5ff35ecd7cc"
+    },
+    {
+      "run": {
+        "connected": 1790469656.174648,
+        "run_finished": 1790469659.963237,
+        "lock_acquired": 1790469656.159512,
+        "worker_started": 1790469656.157222,
+        "connect_started": 1790469656.167725,
+        "first_fetch_started": 1790469656.204129,
+        "first_ingestion_started": 1790469656.206252,
+        "first_message_committed": 1790469656.240948
+      },
+      "event": 1790469656.145667,
+      "observed": 1790469656.335,
+      "rendered": 1790469656.335,
+      "subject": "Re: Latency e54c604440f7f6a4"
+    },
+    {
+      "run": {
+        "connected": 1790469661.216051,
+        "run_finished": 1790469664.843735,
+        "lock_acquired": 1790469661.19944,
+        "worker_started": 1790469661.196619,
+        "connect_started": 1790469661.209162,
+        "first_fetch_started": 1790469661.23467,
+        "first_ingestion_started": 1790469661.235901,
+        "first_message_committed": 1790469661.265693
+      },
+      "event": 1790469661.183205,
+      "observed": 1790469661.523,
+      "rendered": 1790469661.63,
+      "subject": "Re: Latency afee2bcc54737493"
+    },
+    {
+      "run": {
+        "connected": 1790469665.775657,
+        "run_finished": 1790469669.093214,
+        "lock_acquired": 1790469665.763528,
+        "worker_started": 1790469665.761161,
+        "connect_started": 1790469665.77075,
+        "first_fetch_started": 1790469665.790937,
+        "first_ingestion_started": 1790469665.792059,
+        "first_message_committed": 1790469665.820392
+      },
+      "event": 1790469665.747242,
+      "observed": 1790469666.029,
+      "rendered": 1790469666.279,
+      "subject": "Re: Latency f780adea4ce5c09f"
+    }
+  ]
+}

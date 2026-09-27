@@ -792,3 +792,36 @@ docker compose run --rm test php artisan test --group=performance
 
 The isolated PostgreSQL tmpfs is capped at 1 GiB for the 100k fixtures and their WAL. It is separate
 from persistent `postgres_data`; this does not change development data persistence.
+
+
+## M3.11 synchronization runtime
+
+See [M3.11 synchronization](m311-synchronization.md) for durable manual requests, IDLE pool sizing,
+latency measurements, isolated harness commands and operator-controlled provider smoke checks.
+Two normal migrations add durable request fields/telemetry and folder watcher leases. Start the
+new `imap-watch` Compose service only after applying them; restart Horizon to activate the
+reserved `sync-high` supervisor. No mail re-ingestion or sanitizer reprocessing is required.
+
+### Realtime services, Sent folders and post-M3.11 update procedure
+
+`imap-watch` is an ordinary (profile-less) service with `restart: unless-stopped`; it starts with
+`docker compose up -d` after Postgres and Redis are healthy. A stack that was already running when
+the service was added is not recreated automatically, which is why it may be missing from
+`docker compose ps` until you recreate it. Apply migrations first, then (non-destructively):
+
+```bash
+sh scripts/backup-dev-db.sh
+docker compose run --rm app php artisan migrate   # includes 2026_09_30_000001 (enable Sent)
+docker compose up -d --force-recreate app horizon scheduler imap-watch
+docker compose ps                                  # imap-watch must be Up
+```
+
+Never use `docker compose down -v`. Inbox and Sent are synchronized and watched by default; other
+folders are opt-in under *Manage accounts → Folders*. Enabling or disabling Sent takes effect
+within the watcher's two-second reconcile tick, without restarting the daemon.
+
+Operator smoke (Gmail, no Sync now presses): (A) send mail to the account and note the time until it
+appears in Inbox; (B) send/reply from Gmail and note the time until it appears in **Sent** and in
+the same conversation; (C) `docker compose stop imap-watch`, press **Sync now** and confirm mail
+still appears within seconds. The account card shows *Realtime · Inbox + Sent* only while watcher
+leases are live, otherwise *Polling fallback*.

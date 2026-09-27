@@ -1,0 +1,3496 @@
+{
+  "A": [
+    {
+      "run": {
+        "connected": 1790452359.791474,
+        "run_finished": 1790452359.856118,
+        "lock_acquired": 1790452358.549548,
+        "worker_started": 1790452358.44201,
+        "connect_started": 1790452358.573686
+      },
+      "click_or_event": 1790452358.106,
+      "accepted": 1790452358.279039,
+      "api_response": 1790452358.412,
+      "freshness_observed": 1790452360.474,
+      "rendered": 1790452360.639
+    },
+    {
+      "run": {
+        "connected": 1790452362.257838,
+        "run_finished": 1790452362.314555,
+        "lock_acquired": 1790452361.043055,
+        "worker_started": 1790452361.038916,
+        "connect_started": 1790452361.054158
+      },
+      "click_or_event": 1790452360.926,
+      "accepted": 1790452361.033544,
+      "api_response": 1790452361.045,
+      "freshness_observed": 1790452362.856,
+      "rendered": 1790452363.015
+    },
+    {
+      "run": {
+        "connected": 1790452364.820265,
+        "run_finished": 1790452364.856181,
+        "lock_acquired": 1790452363.603023,
+        "worker_started": 1790452363.600204,
+        "connect_started": 1790452363.615898
+      },
+      "click_or_event": 1790452363.469,
+      "accepted": 1790452363.563094,
+      "api_response": 1790452363.61,
+      "freshness_observed": 1790452364.982,
+      "rendered": 1790452364.982
+    },
+    {
+      "run": {
+        "connected": 1790452366.721071,
+        "run_finished": 1790452366.773276,
+        "lock_acquired": 1790452365.496532,
+        "worker_started": 1790452365.492584,
+        "connect_started": 1790452365.514638
+      },
+      "click_or_event": 1790452365.354,
+      "accepted": 1790452365.481753,
+      "api_response": 1790452365.505,
+      "freshness_observed": 1790452366.863,
+      "rendered": 1790452367.017
+    },
+    {
+      "run": {
+        "connected": 1790452368.791125,
+        "run_finished": 1790452368.843516,
+        "lock_acquired": 1790452367.575419,
+        "worker_started": 1790452367.572924,
+        "connect_started": 1790452367.586099
+      },
+      "click_or_event": 1790452367.409,
+      "accepted": 1790452367.520011,
+      "api_response": 1790452367.583,
+      "freshness_observed": 1790452369.365,
+      "rendered": 1790452369.365
+    },
+    {
+      "run": {
+        "connected": 1790452376.010799,
+        "run_finished": 1790452376.076489,
+        "lock_acquired": 1790452374.793046,
+        "worker_started": 1790452374.790143,
+        "connect_started": 1790452374.80406
+      },
+      "click_or_event": 1790452373.544,
+      "accepted": 1790452374.372197,
+      "api_response": 1790452374.843,
+      "freshness_observed": 1790452376.705,
+      "rendered": 1790452376.881
+    },
+    {
+      "run": {
+        "connected": 1790452378.59554,
+        "run_finished": 1790452378.65423,
+        "lock_acquired": 1790452377.379623,
+        "worker_started": 1790452377.376648,
+        "connect_started": 1790452377.390745
+      },
+      "click_or_event": 1790452377.234,
+      "accepted": 1790452377.34949,
+      "api_response": 1790452377.383,
+      "freshness_observed": 1790452378.758,
+      "rendered": 1790452378.758
+    },
+    {
+      "run": {
+        "connected": 1790452380.387119,
+        "run_finished": 1790452380.459142,
+        "lock_acquired": 1790452379.171325,
+        "worker_started": 1790452379.168855,
+        "connect_started": 1790452379.180639
+      },
+      "click_or_event": 1790452379.056,
+      "accepted": 1790452379.162509,
+      "api_response": 1790452379.177,
+      "freshness_observed": 1790452380.766,
+      "rendered": 1790452380.766
+    },
+    {
+      "run": {
+        "connected": 1790452384.863329,
+        "run_finished": 1790452384.929102,
+        "lock_acquired": 1790452383.6487,
+        "worker_started": 1790452383.646859,
+        "connect_started": 1790452383.658455
+      },
+      "click_or_event": 1790452383.07,
+      "accepted": 1790452383.504188,
+      "api_response": 1790452383.68,
+      "freshness_observed": 1790452385.387,
+      "rendered": 1790452385.537
+    },
+    {
+      "run": {
+        "connected": 1790452387.250538,
+        "run_finished": 1790452387.301983,
+        "lock_acquired": 1790452386.032124,
+        "worker_started": 1790452386.029209,
+        "connect_started": 1790452386.044449
+      },
+      "click_or_event": 1790452385.916,
+      "accepted": 1790452386.023917,
+      "api_response": 1790452386.039,
+      "freshness_observed": 1790452387.636,
+      "rendered": 1790452387.769
+    },
+    {
+      "run": {
+        "connected": 1790452389.403289,
+        "run_finished": 1790452389.456381,
+        "lock_acquired": 1790452388.191403,
+        "worker_started": 1790452388.18897,
+        "connect_started": 1790452388.198885
+      },
+      "click_or_event": 1790452388.043,
+      "accepted": 1790452388.147672,
+      "api_response": 1790452388.199,
+      "freshness_observed": 1790452389.948,
+      "rendered": 1790452390.094
+    },
+    {
+      "run": {
+        "connected": 1790452391.90348,
+        "run_finished": 1790452391.953986,
+        "lock_acquired": 1790452390.687176,
+        "worker_started": 1790452390.684726,
+        "connect_started": 1790452390.69901
+      },
+      "click_or_event": 1790452390.555,
+      "accepted": 1790452390.678076,
+      "api_response": 1790452390.692,
+      "freshness_observed": 1790452392.417,
+      "rendered": 1790452392.57
+    },
+    {
+      "run": {
+        "connected": 1790452394.194932,
+        "run_finished": 1790452394.236224,
+        "lock_acquired": 1790452392.983641,
+        "worker_started": 1790452392.977985,
+        "connect_started": 1790452392.991686
+      },
+      "click_or_event": 1790452392.855,
+      "accepted": 1790452392.95572,
+      "api_response": 1790452392.985,
+      "freshness_observed": 1790452394.361,
+      "rendered": 1790452394.496
+    },
+    {
+      "run": {
+        "connected": 1790452396.118703,
+        "run_finished": 1790452396.175793,
+        "lock_acquired": 1790452394.905154,
+        "worker_started": 1790452394.901931,
+        "connect_started": 1790452394.914653
+      },
+      "click_or_event": 1790452394.8,
+      "accepted": 1790452394.897225,
+      "api_response": 1790452394.91,
+      "freshness_observed": 1790452396.435,
+      "rendered": 1790452396.435
+    },
+    {
+      "run": {
+        "connected": 1790452398.054866,
+        "run_finished": 1790452398.100934,
+        "lock_acquired": 1790452396.840173,
+        "worker_started": 1790452396.837587,
+        "connect_started": 1790452396.850437
+      },
+      "click_or_event": 1790452396.718,
+      "accepted": 1790452396.813096,
+      "api_response": 1790452396.845,
+      "freshness_observed": 1790452398.589,
+      "rendered": 1790452398.754
+    },
+    {
+      "run": {
+        "connected": 1790452400.526995,
+        "run_finished": 1790452400.574416,
+        "lock_acquired": 1790452399.310959,
+        "worker_started": 1790452399.308873,
+        "connect_started": 1790452399.321558
+      },
+      "click_or_event": 1790452399.058,
+      "accepted": 1790452399.274459,
+      "api_response": 1790452399.329,
+      "freshness_observed": 1790452401.029,
+      "rendered": 1790452401.165
+    },
+    {
+      "run": {
+        "connected": 1790452402.822374,
+        "run_finished": 1790452402.860873,
+        "lock_acquired": 1790452401.609869,
+        "worker_started": 1790452401.606399,
+        "connect_started": 1790452401.61871
+      },
+      "click_or_event": 1790452401.498,
+      "accepted": 1790452401.600668,
+      "api_response": 1790452401.614,
+      "freshness_observed": 1790452402.897,
+      "rendered": 1790452403.04
+    },
+    {
+      "run": {
+        "connected": 1790452404.700462,
+        "run_finished": 1790452404.756481,
+        "lock_acquired": 1790452403.48466,
+        "worker_started": 1790452403.482238,
+        "connect_started": 1790452403.496554
+      },
+      "click_or_event": 1790452403.348,
+      "accepted": 1790452403.457227,
+      "api_response": 1790452403.493,
+      "freshness_observed": 1790452404.902,
+      "rendered": 1790452404.902
+    },
+    {
+      "run": {
+        "connected": 1790452406.676379,
+        "run_finished": 1790452406.73971,
+        "lock_acquired": 1790452405.459939,
+        "worker_started": 1790452405.457535,
+        "connect_started": 1790452405.469545
+      },
+      "click_or_event": 1790452405.358,
+      "accepted": 1790452405.45262,
+      "api_response": 1790452405.467,
+      "freshness_observed": 1790452406.784,
+      "rendered": 1790452406.941
+    },
+    {
+      "run": {
+        "connected": 1790452408.668754,
+        "run_finished": 1790452408.717825,
+        "lock_acquired": 1790452407.448484,
+        "worker_started": 1790452407.444152,
+        "connect_started": 1790452407.462585
+      },
+      "click_or_event": 1790452407.263,
+      "accepted": 1790452407.366716,
+      "api_response": 1790452407.463,
+      "freshness_observed": 1790452408.849,
+      "rendered": 1790452408.991
+    },
+    {
+      "run": {
+        "connected": 1790452410.649835,
+        "run_finished": 1790452410.705946,
+        "lock_acquired": 1790452409.428811,
+        "worker_started": 1790452409.426045,
+        "connect_started": 1790452409.44342
+      },
+      "click_or_event": 1790452409.308,
+      "accepted": 1790452409.419674,
+      "api_response": 1790452409.433,
+      "freshness_observed": 1790452411.325,
+      "rendered": 1790452411.464
+    },
+    {
+      "run": {
+        "connected": 1790452413.123009,
+        "run_finished": 1790452413.19439,
+        "lock_acquired": 1790452411.906344,
+        "worker_started": 1790452411.903576,
+        "connect_started": 1790452411.914772
+      },
+      "click_or_event": 1790452411.78,
+      "accepted": 1790452411.880177,
+      "api_response": 1790452411.911,
+      "freshness_observed": 1790452413.71,
+      "rendered": 1790452413.952
+    },
+    {
+      "run": {
+        "connected": 1790452415.723256,
+        "run_finished": 1790452415.777383,
+        "lock_acquired": 1790452414.509746,
+        "worker_started": 1790452414.507923,
+        "connect_started": 1790452414.518918
+      },
+      "click_or_event": 1790452414.384,
+      "accepted": 1790452414.484861,
+      "api_response": 1790452414.515,
+      "freshness_observed": 1790452415.889,
+      "rendered": 1790452415.889
+    },
+    {
+      "run": {
+        "connected": 1790452417.495658,
+        "run_finished": 1790452417.548588,
+        "lock_acquired": 1790452416.281467,
+        "worker_started": 1790452416.278144,
+        "connect_started": 1790452416.290133
+      },
+      "click_or_event": 1790452416.166,
+      "accepted": 1790452416.271479,
+      "api_response": 1790452416.285,
+      "freshness_observed": 1790452417.685,
+      "rendered": 1790452417.685
+    },
+    {
+      "run": {
+        "connected": 1790452419.358929,
+        "run_finished": 1790452419.402786,
+        "lock_acquired": 1790452418.141904,
+        "worker_started": 1790452418.138895,
+        "connect_started": 1790452418.154658
+      },
+      "click_or_event": 1790452418.002,
+      "accepted": 1790452418.116136,
+      "api_response": 1790452418.148,
+      "freshness_observed": 1790452419.781,
+      "rendered": 1790452419.969
+    },
+    {
+      "run": {
+        "connected": 1790452421.705363,
+        "run_finished": 1790452421.748199,
+        "lock_acquired": 1790452420.490651,
+        "worker_started": 1790452420.488611,
+        "connect_started": 1790452420.499685
+      },
+      "click_or_event": 1790452420.388,
+      "accepted": 1790452420.483468,
+      "api_response": 1790452420.494,
+      "freshness_observed": 1790452422.116,
+      "rendered": 1790452422.261
+    },
+    {
+      "run": {
+        "connected": 1790452423.875793,
+        "run_finished": 1790452423.909901,
+        "lock_acquired": 1790452422.661997,
+        "worker_started": 1790452422.659876,
+        "connect_started": 1790452422.671706
+      },
+      "click_or_event": 1790452422.537,
+      "accepted": 1790452422.640453,
+      "api_response": 1790452422.668,
+      "freshness_observed": 1790452424.039,
+      "rendered": 1790452424.217
+    },
+    {
+      "run": {
+        "connected": 1790452425.858228,
+        "run_finished": 1790452425.897499,
+        "lock_acquired": 1790452424.643938,
+        "worker_started": 1790452424.640685,
+        "connect_started": 1790452424.653994
+      },
+      "click_or_event": 1790452424.539,
+      "accepted": 1790452424.635508,
+      "api_response": 1790452424.65,
+      "freshness_observed": 1790452425.965,
+      "rendered": 1790452425.965
+    },
+    {
+      "run": {
+        "connected": 1790452427.740639,
+        "run_finished": 1790452427.804796,
+        "lock_acquired": 1790452426.52703,
+        "worker_started": 1790452426.524243,
+        "connect_started": 1790452426.536373
+      },
+      "click_or_event": 1790452426.393,
+      "accepted": 1790452426.500846,
+      "api_response": 1790452426.533,
+      "freshness_observed": 1790452428.194,
+      "rendered": 1790452428.336
+    },
+    {
+      "run": {
+        "connected": 1790452430.11772,
+        "run_finished": 1790452430.166053,
+        "lock_acquired": 1790452428.902271,
+        "worker_started": 1790452428.899463,
+        "connect_started": 1790452428.913375
+      },
+      "click_or_event": 1790452428.764,
+      "accepted": 1790452428.893579,
+      "api_response": 1790452428.907,
+      "freshness_observed": 1790452430.169,
+      "rendered": 1790452430.296
+    }
+  ],
+  "B": [
+    {
+      "run": {
+        "connected": 1790452431.955252,
+        "run_finished": 1790452433.371103,
+        "lock_acquired": 1790452430.741165,
+        "worker_started": 1790452430.737806,
+        "connect_started": 1790452430.751975,
+        "first_fetch_started": 1790452431.965365,
+        "first_ingestion_started": 1790452431.96603,
+        "first_message_committed": 1790452433.327733
+      },
+      "click_or_event": 1790452430.609,
+      "accepted": 1790452430.716195,
+      "api_response": 1790452430.748,
+      "freshness_observed": 1790452433.408,
+      "rendered": 1790452433.408
+    },
+    {
+      "run": {
+        "connected": 1790452435.0465,
+        "run_finished": 1790452435.131828,
+        "lock_acquired": 1790452433.830512,
+        "worker_started": 1790452433.827901,
+        "connect_started": 1790452433.8419,
+        "first_fetch_started": 1790452435.062935,
+        "first_ingestion_started": 1790452435.063925,
+        "first_message_committed": 1790452435.092997
+      },
+      "click_or_event": 1790452433.703,
+      "accepted": 1790452433.801122,
+      "api_response": 1790452433.836,
+      "freshness_observed": 1790452435.624,
+      "rendered": 1790452435.847
+    },
+    {
+      "run": {
+        "connected": 1790452437.478118,
+        "run_finished": 1790452437.570499,
+        "lock_acquired": 1790452436.262554,
+        "worker_started": 1790452436.26007,
+        "connect_started": 1790452436.27451,
+        "first_fetch_started": 1790452437.487949,
+        "first_ingestion_started": 1790452437.488756,
+        "first_message_committed": 1790452437.524648
+      },
+      "click_or_event": 1790452436.138,
+      "accepted": 1790452436.237498,
+      "api_response": 1790452436.265,
+      "freshness_observed": 1790452437.906,
+      "rendered": 1790452438.008
+    },
+    {
+      "run": {
+        "connected": 1790452439.802312,
+        "run_finished": 1790452439.884869,
+        "lock_acquired": 1790452438.587073,
+        "worker_started": 1790452438.584435,
+        "connect_started": 1790452438.597926,
+        "first_fetch_started": 1790452439.810686,
+        "first_ingestion_started": 1790452439.811062,
+        "first_message_committed": 1790452439.839476
+      },
+      "click_or_event": 1790452438.465,
+      "accepted": 1790452438.578143,
+      "api_response": 1790452438.592,
+      "freshness_observed": 1790452440.268,
+      "rendered": 1790452440.388
+    },
+    {
+      "run": {
+        "connected": 1790452442.272267,
+        "run_finished": 1790452442.363715,
+        "lock_acquired": 1790452441.052322,
+        "worker_started": 1790452441.049445,
+        "connect_started": 1790452441.064465,
+        "first_fetch_started": 1790452442.28936,
+        "first_ingestion_started": 1790452442.28982,
+        "first_message_committed": 1790452442.316421
+      },
+      "click_or_event": 1790452440.888,
+      "accepted": 1790452441.015126,
+      "api_response": 1790452441.057,
+      "freshness_observed": 1790452442.35,
+      "rendered": 1790452442.576
+    },
+    {
+      "run": {
+        "connected": 1790452444.212131,
+        "run_finished": 1790452444.301327,
+        "lock_acquired": 1790452442.994365,
+        "worker_started": 1790452442.992165,
+        "connect_started": 1790452443.004935,
+        "first_fetch_started": 1790452444.224598,
+        "first_ingestion_started": 1790452444.225081,
+        "first_message_committed": 1790452444.256249
+      },
+      "click_or_event": 1790452442.885,
+      "accepted": 1790452442.984858,
+      "api_response": 1790452443.001,
+      "freshness_observed": 1790452444.257,
+      "rendered": 1790452444.384
+    },
+    {
+      "run": {
+        "connected": 1790452446.054386,
+        "run_finished": 1790452446.147824,
+        "lock_acquired": 1790452444.83862,
+        "worker_started": 1790452444.831578,
+        "connect_started": 1790452444.848894,
+        "first_fetch_started": 1790452446.069479,
+        "first_ingestion_started": 1790452446.070375,
+        "first_message_committed": 1790452446.106085
+      },
+      "click_or_event": 1790452444.692,
+      "accepted": 1790452444.804375,
+      "api_response": 1790452444.842,
+      "freshness_observed": 1790452446.591,
+      "rendered": 1790452446.813
+    },
+    {
+      "run": {
+        "connected": 1790452448.649714,
+        "run_finished": 1790452448.74511,
+        "lock_acquired": 1790452447.440076,
+        "worker_started": 1790452447.437797,
+        "connect_started": 1790452447.446164,
+        "first_fetch_started": 1790452448.667459,
+        "first_ingestion_started": 1790452448.668685,
+        "first_message_committed": 1790452448.692981
+      },
+      "click_or_event": 1790452447.303,
+      "accepted": 1790452447.413233,
+      "api_response": 1790452447.456,
+      "freshness_observed": 1790452449.229,
+      "rendered": 1790452449.472
+    },
+    {
+      "run": {
+        "connected": 1790452451.127473,
+        "run_finished": 1790452451.234156,
+        "lock_acquired": 1790452449.91147,
+        "worker_started": 1790452449.905406,
+        "connect_started": 1790452449.921864,
+        "first_fetch_started": 1790452451.146269,
+        "first_ingestion_started": 1790452451.147126,
+        "first_message_committed": 1790452451.184125
+      },
+      "click_or_event": 1790452449.806,
+      "accepted": 1790452449.899726,
+      "api_response": 1790452449.912,
+      "freshness_observed": 1790452451.667,
+      "rendered": 1790452451.873
+    },
+    {
+      "run": {
+        "connected": 1790452453.524663,
+        "run_finished": 1790452453.604331,
+        "lock_acquired": 1790452452.310241,
+        "worker_started": 1790452452.307989,
+        "connect_started": 1790452452.320439,
+        "first_fetch_started": 1790452453.537234,
+        "first_ingestion_started": 1790452453.537802,
+        "first_message_committed": 1790452453.569567
+      },
+      "click_or_event": 1790452452.179,
+      "accepted": 1790452452.282914,
+      "api_response": 1790452452.315,
+      "freshness_observed": 1790452453.889,
+      "rendered": 1790452453.889
+    },
+    {
+      "run": {
+        "connected": 1790452455.508114,
+        "run_finished": 1790452455.602112,
+        "lock_acquired": 1790452454.296686,
+        "worker_started": 1790452454.294109,
+        "connect_started": 1790452454.304206,
+        "first_fetch_started": 1790452455.52212,
+        "first_ingestion_started": 1790452455.523453,
+        "first_message_committed": 1790452455.558932
+      },
+      "click_or_event": 1790452454.187,
+      "accepted": 1790452454.289624,
+      "api_response": 1790452454.303,
+      "freshness_observed": 1790452456.046,
+      "rendered": 1790452456.394
+    },
+    {
+      "run": {
+        "connected": 1790452458.078695,
+        "run_finished": 1790452458.195957,
+        "lock_acquired": 1790452456.86541,
+        "worker_started": 1790452456.863394,
+        "connect_started": 1790452456.873219,
+        "first_fetch_started": 1790452458.099138,
+        "first_ingestion_started": 1790452458.099667,
+        "first_message_committed": 1790452458.139296
+      },
+      "click_or_event": 1790452456.725,
+      "accepted": 1790452456.842501,
+      "api_response": 1790452456.873,
+      "freshness_observed": 1790452458.493,
+      "rendered": 1790452458.593
+    },
+    {
+      "run": {
+        "connected": 1790452460.208844,
+        "run_finished": 1790452460.295098,
+        "lock_acquired": 1790452458.994397,
+        "worker_started": 1790452458.991858,
+        "connect_started": 1790452459.002603,
+        "first_fetch_started": 1790452460.228318,
+        "first_ingestion_started": 1790452460.228823,
+        "first_message_committed": 1790452460.254514
+      },
+      "click_or_event": 1790452458.895,
+      "accepted": 1790452458.986811,
+      "api_response": 1790452458.997,
+      "freshness_observed": 1790452460.329,
+      "rendered": 1790452460.642
+    },
+    {
+      "run": {
+        "connected": 1790452462.302979,
+        "run_finished": 1790452462.388079,
+        "lock_acquired": 1790452461.086865,
+        "worker_started": 1790452461.081469,
+        "connect_started": 1790452461.0962,
+        "first_fetch_started": 1790452462.324405,
+        "first_ingestion_started": 1790452462.325763,
+        "first_message_committed": 1790452462.353928
+      },
+      "click_or_event": 1790452460.968,
+      "accepted": 1790452461.059125,
+      "api_response": 1790452461.09,
+      "freshness_observed": 1790452462.496,
+      "rendered": 1790452462.839
+    },
+    {
+      "run": {
+        "connected": 1790452464.490352,
+        "run_finished": 1790452464.59053,
+        "lock_acquired": 1790452463.276767,
+        "worker_started": 1790452463.27326,
+        "connect_started": 1790452463.28511,
+        "first_fetch_started": 1790452464.503899,
+        "first_ingestion_started": 1790452464.504714,
+        "first_message_committed": 1790452464.546197
+      },
+      "click_or_event": 1790452463.146,
+      "accepted": 1790452463.250749,
+      "api_response": 1790452463.28,
+      "freshness_observed": 1790452465.131,
+      "rendered": 1790452465.402
+    },
+    {
+      "run": {
+        "connected": 1790452467.078444,
+        "run_finished": 1790452467.176586,
+        "lock_acquired": 1790452465.862352,
+        "worker_started": 1790452465.858739,
+        "connect_started": 1790452465.872572,
+        "first_fetch_started": 1790452467.096977,
+        "first_ingestion_started": 1790452467.098218,
+        "first_message_committed": 1790452467.133634
+      },
+      "click_or_event": 1790452465.741,
+      "accepted": 1790452465.853488,
+      "api_response": 1790452465.867,
+      "freshness_observed": 1790452467.203,
+      "rendered": 1790452467.203
+    },
+    {
+      "run": {
+        "connected": 1790452468.86427,
+        "run_finished": 1790452468.944181,
+        "lock_acquired": 1790452467.647492,
+        "worker_started": 1790452467.645108,
+        "connect_started": 1790452467.660079,
+        "first_fetch_started": 1790452468.880292,
+        "first_ingestion_started": 1790452468.881265,
+        "first_message_committed": 1790452468.907976
+      },
+      "click_or_event": 1790452467.514,
+      "accepted": 1790452467.623449,
+      "api_response": 1790452467.654,
+      "freshness_observed": 1790452468.98,
+      "rendered": 1790452469.089
+    },
+    {
+      "run": {
+        "connected": 1790452470.769124,
+        "run_finished": 1790452470.854387,
+        "lock_acquired": 1790452469.557562,
+        "worker_started": 1790452469.550943,
+        "connect_started": 1790452469.564323,
+        "first_fetch_started": 1790452470.785838,
+        "first_ingestion_started": 1790452470.787202,
+        "first_message_committed": 1790452470.807446
+      },
+      "click_or_event": 1790452469.427,
+      "accepted": 1790452469.546541,
+      "api_response": 1790452469.558,
+      "freshness_observed": 1790452470.832,
+      "rendered": 1790452471.291
+    },
+    {
+      "run": {
+        "connected": 1790452473.00566,
+        "run_finished": 1790452473.108106,
+        "lock_acquired": 1790452471.78915,
+        "worker_started": 1790452471.786234,
+        "connect_started": 1790452471.798854,
+        "first_fetch_started": 1790452473.027543,
+        "first_ingestion_started": 1790452473.028786,
+        "first_message_committed": 1790452473.061662
+      },
+      "click_or_event": 1790452471.649,
+      "accepted": 1790452471.761019,
+      "api_response": 1790452471.792,
+      "freshness_observed": 1790452473.559,
+      "rendered": 1790452473.684
+    },
+    {
+      "run": {
+        "connected": 1790452475.505848,
+        "run_finished": 1790452475.603818,
+        "lock_acquired": 1790452474.292138,
+        "worker_started": 1790452474.28948,
+        "connect_started": 1790452474.300674,
+        "first_fetch_started": 1790452475.518094,
+        "first_ingestion_started": 1790452475.518634,
+        "first_message_committed": 1790452475.551489
+      },
+      "click_or_event": 1790452474.031,
+      "accepted": 1790452474.271641,
+      "api_response": 1790452474.305,
+      "freshness_observed": 1790452475.569,
+      "rendered": 1790452475.569
+    },
+    {
+      "run": {
+        "connected": 1790452478.219058,
+        "run_finished": 1790452478.58784,
+        "lock_acquired": 1790452476.970821,
+        "worker_started": 1790452476.85095,
+        "connect_started": 1790452476.997913,
+        "first_fetch_started": 1790452478.245556,
+        "first_ingestion_started": 1790452478.24686,
+        "first_message_committed": 1790452478.540197
+      },
+      "click_or_event": 1790452475.914,
+      "accepted": 1790452476.01501,
+      "api_response": 1790452476.025,
+      "freshness_observed": 1790452478.835,
+      "rendered": 1790452478.939
+    },
+    {
+      "run": {
+        "connected": 1790452480.62557,
+        "run_finished": 1790452480.745044,
+        "lock_acquired": 1790452479.411697,
+        "worker_started": 1790452479.409221,
+        "connect_started": 1790452479.419646,
+        "first_fetch_started": 1790452480.649672,
+        "first_ingestion_started": 1790452480.650895,
+        "first_message_committed": 1790452480.692015
+      },
+      "click_or_event": 1790452479.26,
+      "accepted": 1790452479.370244,
+      "api_response": 1790452479.416,
+      "freshness_observed": 1790452481.057,
+      "rendered": 1790452481.167
+    },
+    {
+      "run": {
+        "connected": 1790452482.848324,
+        "run_finished": 1790452482.96773,
+        "lock_acquired": 1790452481.631341,
+        "worker_started": 1790452481.62877,
+        "connect_started": 1790452481.641909,
+        "first_fetch_started": 1790452482.865969,
+        "first_ingestion_started": 1790452482.867151,
+        "first_message_committed": 1790452482.9081
+      },
+      "click_or_event": 1790452481.511,
+      "accepted": 1790452481.622933,
+      "api_response": 1790452481.637,
+      "freshness_observed": 1790452483.434,
+      "rendered": 1790452483.653
+    },
+    {
+      "run": {
+        "connected": 1790452485.32462,
+        "run_finished": 1790452485.425764,
+        "lock_acquired": 1790452484.108036,
+        "worker_started": 1790452484.105139,
+        "connect_started": 1790452484.11985,
+        "first_fetch_started": 1790452485.338411,
+        "first_ingestion_started": 1790452485.338915,
+        "first_message_committed": 1790452485.364622
+      },
+      "click_or_event": 1790452483.987,
+      "accepted": 1790452484.080858,
+      "api_response": 1790452484.12,
+      "freshness_observed": 1790452485.735,
+      "rendered": 1790452486.268
+    },
+    {
+      "run": {
+        "connected": 1790452487.954731,
+        "run_finished": 1790452488.052986,
+        "lock_acquired": 1790452486.738513,
+        "worker_started": 1790452486.735253,
+        "connect_started": 1790452486.749239,
+        "first_fetch_started": 1790452487.969387,
+        "first_ingestion_started": 1790452487.970078,
+        "first_message_committed": 1790452488.006453
+      },
+      "click_or_event": 1790452486.598,
+      "accepted": 1790452486.707521,
+      "api_response": 1790452486.753,
+      "freshness_observed": 1790452488.382,
+      "rendered": 1790452488.626
+    },
+    {
+      "run": {
+        "connected": 1790452490.568407,
+        "run_finished": 1790452490.665573,
+        "lock_acquired": 1790452489.35489,
+        "worker_started": 1790452489.352581,
+        "connect_started": 1790452489.362659,
+        "first_fetch_started": 1790452490.583875,
+        "first_ingestion_started": 1790452490.585129,
+        "first_message_committed": 1790452490.615696
+      },
+      "click_or_event": 1790452489.006,
+      "accepted": 1790452489.323827,
+      "api_response": 1790452489.374,
+      "freshness_observed": 1790452490.645,
+      "rendered": 1790452490.645
+    },
+    {
+      "run": {
+        "connected": 1790452492.366481,
+        "run_finished": 1790452492.448373,
+        "lock_acquired": 1790452491.147108,
+        "worker_started": 1790452491.143796,
+        "connect_started": 1790452491.160549,
+        "first_fetch_started": 1790452492.379027,
+        "first_ingestion_started": 1790452492.379697,
+        "first_message_committed": 1790452492.40926
+      },
+      "click_or_event": 1790452491.028,
+      "accepted": 1790452491.138586,
+      "api_response": 1790452491.154,
+      "freshness_observed": 1790452492.626,
+      "rendered": 1790452492.839
+    },
+    {
+      "run": {
+        "connected": 1790452494.518724,
+        "run_finished": 1790452494.610992,
+        "lock_acquired": 1790452493.304672,
+        "worker_started": 1790452493.302349,
+        "connect_started": 1790452493.313523,
+        "first_fetch_started": 1790452494.535261,
+        "first_ingestion_started": 1790452494.536699,
+        "first_message_committed": 1790452494.570629
+      },
+      "click_or_event": 1790452493.167,
+      "accepted": 1790452493.261022,
+      "api_response": 1790452493.312,
+      "freshness_observed": 1790452494.647,
+      "rendered": 1790452494.647
+    },
+    {
+      "run": {
+        "connected": 1790452496.290223,
+        "run_finished": 1790452496.374213,
+        "lock_acquired": 1790452495.074654,
+        "worker_started": 1790452495.070882,
+        "connect_started": 1790452495.084262,
+        "first_fetch_started": 1790452496.301044,
+        "first_ingestion_started": 1790452496.301803,
+        "first_message_committed": 1790452496.334844
+      },
+      "click_or_event": 1790452494.966,
+      "accepted": 1790452495.06304,
+      "api_response": 1790452495.077,
+      "freshness_observed": 1790452496.441,
+      "rendered": 1790452496.545
+    },
+    {
+      "run": {
+        "connected": 1790452498.252654,
+        "run_finished": 1790452498.353282,
+        "lock_acquired": 1790452497.036933,
+        "worker_started": 1790452497.031922,
+        "connect_started": 1790452497.046276,
+        "first_fetch_started": 1790452498.267694,
+        "first_ingestion_started": 1790452498.268616,
+        "first_message_committed": 1790452498.300912
+      },
+      "click_or_event": 1790452496.898,
+      "accepted": 1790452497.003615,
+      "api_response": 1790452497.042,
+      "freshness_observed": 1790452498.34,
+      "rendered": 1790452498.455
+    }
+  ],
+  "C": [
+    {
+      "run": {
+        "connected": 1790452500.10386,
+        "run_finished": 1790452500.21259,
+        "lock_acquired": 1790452498.885837,
+        "worker_started": 1790452498.882476,
+        "connect_started": 1790452498.897952,
+        "first_fetch_started": 1790452500.121011,
+        "first_ingestion_started": 1790452500.121653,
+        "first_message_committed": 1790452500.143633
+      },
+      "click_or_event": 1790452498.776,
+      "accepted": 1790452498.877418,
+      "api_response": 1790452498.898,
+      "freshness_observed": 1790452500.27,
+      "rendered": 1790452500.27
+    },
+    {
+      "run": {
+        "connected": 1790452502.108185,
+        "run_finished": 1790452502.220341,
+        "lock_acquired": 1790452500.889028,
+        "worker_started": 1790452500.886131,
+        "connect_started": 1790452500.901286,
+        "first_fetch_started": 1790452502.13087,
+        "first_ingestion_started": 1790452502.132089,
+        "first_message_committed": 1790452502.166008
+      },
+      "click_or_event": 1790452500.696,
+      "accepted": 1790452500.83741,
+      "api_response": 1790452500.899,
+      "freshness_observed": 1790452502.32,
+      "rendered": 1790452502.444
+    },
+    {
+      "run": {
+        "connected": 1790452504.148171,
+        "run_finished": 1790452504.256905,
+        "lock_acquired": 1790452502.933274,
+        "worker_started": 1790452502.930344,
+        "connect_started": 1790452502.943273,
+        "first_fetch_started": 1790452504.167966,
+        "first_ingestion_started": 1790452504.169011,
+        "first_message_committed": 1790452504.205171
+      },
+      "click_or_event": 1790452502.817,
+      "accepted": 1790452502.924369,
+      "api_response": 1790452502.939,
+      "freshness_observed": 1790452504.307,
+      "rendered": 1790452504.307
+    },
+    {
+      "run": {
+        "connected": 1790452505.981043,
+        "run_finished": 1790452506.080857,
+        "lock_acquired": 1790452504.765953,
+        "worker_started": 1790452504.76333,
+        "connect_started": 1790452504.775731,
+        "first_fetch_started": 1790452506.001185,
+        "first_ingestion_started": 1790452506.002734,
+        "first_message_committed": 1790452506.036443
+      },
+      "click_or_event": 1790452504.638,
+      "accepted": 1790452504.738094,
+      "api_response": 1790452504.771,
+      "freshness_observed": 1790452506.557,
+      "rendered": 1790452506.783
+    },
+    {
+      "run": {
+        "connected": 1790452508.577161,
+        "run_finished": 1790452508.676014,
+        "lock_acquired": 1790452507.361743,
+        "worker_started": 1790452507.358731,
+        "connect_started": 1790452507.369809,
+        "first_fetch_started": 1790452508.596907,
+        "first_ingestion_started": 1790452508.598344,
+        "first_message_committed": 1790452508.63067
+      },
+      "click_or_event": 1790452507.229,
+      "accepted": 1790452507.325327,
+      "api_response": 1790452507.367,
+      "freshness_observed": 1790452509.144,
+      "rendered": 1790452509.402
+    },
+    {
+      "run": {
+        "connected": 1790452511.089093,
+        "run_finished": 1790452511.206562,
+        "lock_acquired": 1790452509.872489,
+        "worker_started": 1790452509.866656,
+        "connect_started": 1790452509.883752,
+        "first_fetch_started": 1790452511.110174,
+        "first_ingestion_started": 1790452511.11179,
+        "first_message_committed": 1790452511.150559
+      },
+      "click_or_event": 1790452509.758,
+      "accepted": 1790452509.860503,
+      "api_response": 1790452509.875,
+      "freshness_observed": 1790452511.198,
+      "rendered": 1790452511.31
+    },
+    {
+      "run": {
+        "connected": 1790452513.023453,
+        "run_finished": 1790452513.157512,
+        "lock_acquired": 1790452511.804144,
+        "worker_started": 1790452511.800573,
+        "connect_started": 1790452511.817263,
+        "first_fetch_started": 1790452513.043379,
+        "first_ingestion_started": 1790452513.044135,
+        "first_message_committed": 1790452513.096222
+      },
+      "click_or_event": 1790452511.669,
+      "accepted": 1790452511.76192,
+      "api_response": 1790452511.807,
+      "freshness_observed": 1790452513.578,
+      "rendered": 1790452513.706
+    },
+    {
+      "run": {
+        "connected": 1790452515.381954,
+        "run_finished": 1790452515.472767,
+        "lock_acquired": 1790452514.167566,
+        "worker_started": 1790452514.163457,
+        "connect_started": 1790452514.17784,
+        "first_fetch_started": 1790452515.401813,
+        "first_ingestion_started": 1790452515.403655,
+        "first_message_committed": 1790452515.433799
+      },
+      "click_or_event": 1790452514.034,
+      "accepted": 1790452514.135623,
+      "api_response": 1790452514.175,
+      "freshness_observed": 1790452515.608,
+      "rendered": 1790452515.608
+    },
+    {
+      "run": {
+        "connected": 1790452517.280339,
+        "run_finished": 1790452517.387057,
+        "lock_acquired": 1790452516.06184,
+        "worker_started": 1790452516.058739,
+        "connect_started": 1790452516.072201,
+        "first_fetch_started": 1790452517.300785,
+        "first_ingestion_started": 1790452517.301717,
+        "first_message_committed": 1790452517.339035
+      },
+      "click_or_event": 1790452515.956,
+      "accepted": 1790452516.053558,
+      "api_response": 1790452516.063,
+      "freshness_observed": 1790452517.757,
+      "rendered": 1790452518.109
+    },
+    {
+      "run": {
+        "connected": 1790452519.798722,
+        "run_finished": 1790452519.903471,
+        "lock_acquired": 1790452518.586036,
+        "worker_started": 1790452518.581798,
+        "connect_started": 1790452518.594897,
+        "first_fetch_started": 1790452519.818902,
+        "first_ingestion_started": 1790452519.819817,
+        "first_message_committed": 1790452519.85209
+      },
+      "click_or_event": 1790452518.448,
+      "accepted": 1790452518.557659,
+      "api_response": 1790452518.59,
+      "freshness_observed": 1790452519.877,
+      "rendered": 1790452519.975
+    },
+    {
+      "run": {
+        "connected": 1790452521.636396,
+        "run_finished": 1790452521.735974,
+        "lock_acquired": 1790452520.417114,
+        "worker_started": 1790452520.415198,
+        "connect_started": 1790452520.430168,
+        "first_fetch_started": 1790452521.652708,
+        "first_ingestion_started": 1790452521.653363,
+        "first_message_committed": 1790452521.687173
+      },
+      "click_or_event": 1790452520.303,
+      "accepted": 1790452520.409859,
+      "api_response": 1790452520.42,
+      "freshness_observed": 1790452521.776,
+      "rendered": 1790452521.776
+    },
+    {
+      "run": {
+        "connected": 1790452523.680695,
+        "run_finished": 1790452523.802202,
+        "lock_acquired": 1790452522.462572,
+        "worker_started": 1790452522.460489,
+        "connect_started": 1790452522.473779,
+        "first_fetch_started": 1790452523.706548,
+        "first_ingestion_started": 1790452523.7074,
+        "first_message_committed": 1790452523.743892
+      },
+      "click_or_event": 1790452522.266,
+      "accepted": 1790452522.439207,
+      "api_response": 1790452522.468,
+      "freshness_observed": 1790452523.819,
+      "rendered": 1790452523.819
+    },
+    {
+      "run": {
+        "connected": 1790452525.498227,
+        "run_finished": 1790452525.615737,
+        "lock_acquired": 1790452524.284232,
+        "worker_started": 1790452524.281387,
+        "connect_started": 1790452524.294409,
+        "first_fetch_started": 1790452525.516761,
+        "first_ingestion_started": 1790452525.517709,
+        "first_message_committed": 1790452525.549089
+      },
+      "click_or_event": 1790452524.158,
+      "accepted": 1790452524.277303,
+      "api_response": 1790452524.289,
+      "freshness_observed": 1790452525.6,
+      "rendered": 1790452525.75
+    },
+    {
+      "run": {
+        "connected": 1790452527.403988,
+        "run_finished": 1790452527.504715,
+        "lock_acquired": 1790452526.189801,
+        "worker_started": 1790452526.186703,
+        "connect_started": 1790452526.199233,
+        "first_fetch_started": 1790452527.431708,
+        "first_ingestion_started": 1790452527.433198,
+        "first_message_committed": 1790452527.455434
+      },
+      "click_or_event": 1790452526.061,
+      "accepted": 1790452526.154206,
+      "api_response": 1790452526.195,
+      "freshness_observed": 1790452527.539,
+      "rendered": 1790452527.539
+    },
+    {
+      "run": {
+        "connected": 1790452529.16138,
+        "run_finished": 1790452529.242981,
+        "lock_acquired": 1790452527.947938,
+        "worker_started": 1790452527.945684,
+        "connect_started": 1790452527.956806,
+        "first_fetch_started": 1790452529.17826,
+        "first_ingestion_started": 1790452529.178903,
+        "first_message_committed": 1790452529.203045
+      },
+      "click_or_event": 1790452527.842,
+      "accepted": 1790452527.941181,
+      "api_response": 1790452527.95,
+      "freshness_observed": 1790452529.353,
+      "rendered": 1790452529.479
+    },
+    {
+      "run": {
+        "connected": 1790452531.198154,
+        "run_finished": 1790452531.294488,
+        "lock_acquired": 1790452529.982809,
+        "worker_started": 1790452529.979516,
+        "connect_started": 1790452529.994128,
+        "first_fetch_started": 1790452531.215542,
+        "first_ingestion_started": 1790452531.216364,
+        "first_message_committed": 1790452531.246656
+      },
+      "click_or_event": 1790452529.845,
+      "accepted": 1790452529.954843,
+      "api_response": 1790452529.986,
+      "freshness_observed": 1790452531.767,
+      "rendered": 1790452531.868
+    },
+    {
+      "run": {
+        "connected": 1790452533.597738,
+        "run_finished": 1790452533.694568,
+        "lock_acquired": 1790452532.384341,
+        "worker_started": 1790452532.381235,
+        "connect_started": 1790452532.392562,
+        "first_fetch_started": 1790452533.61804,
+        "first_ingestion_started": 1790452533.618645,
+        "first_message_committed": 1790452533.649693
+      },
+      "click_or_event": 1790452532.25,
+      "accepted": 1790452532.351051,
+      "api_response": 1790452532.389,
+      "freshness_observed": 1790452534.264,
+      "rendered": 1790452534.387
+    },
+    {
+      "run": {
+        "connected": 1790452536.103689,
+        "run_finished": 1790452536.211478,
+        "lock_acquired": 1790452534.886629,
+        "worker_started": 1790452534.883518,
+        "connect_started": 1790452534.897936,
+        "first_fetch_started": 1790452536.125129,
+        "first_ingestion_started": 1790452536.126291,
+        "first_message_committed": 1790452536.16211
+      },
+      "click_or_event": 1790452534.778,
+      "accepted": 1790452534.878112,
+      "api_response": 1790452534.891,
+      "freshness_observed": 1790452536.691,
+      "rendered": 1790452536.794
+    },
+    {
+      "run": {
+        "connected": 1790452538.638955,
+        "run_finished": 1790452538.751882,
+        "lock_acquired": 1790452537.427484,
+        "worker_started": 1790452537.425216,
+        "connect_started": 1790452537.435182,
+        "first_fetch_started": 1790452538.655446,
+        "first_ingestion_started": 1790452538.656993,
+        "first_message_committed": 1790452538.695546
+      },
+      "click_or_event": 1790452537.3,
+      "accepted": 1790452537.401471,
+      "api_response": 1790452537.433,
+      "freshness_observed": 1790452539.06,
+      "rendered": 1790452539.195
+    },
+    {
+      "run": {
+        "connected": 1790452540.835368,
+        "run_finished": 1790452540.95356,
+        "lock_acquired": 1790452539.618519,
+        "worker_started": 1790452539.614763,
+        "connect_started": 1790452539.629692,
+        "first_fetch_started": 1790452540.861436,
+        "first_ingestion_started": 1790452540.863046,
+        "first_message_committed": 1790452540.899611
+      },
+      "click_or_event": 1790452539.509,
+      "accepted": 1790452539.609751,
+      "api_response": 1790452539.622,
+      "freshness_observed": 1790452540.955,
+      "rendered": 1790452541.194
+    },
+    {
+      "run": {
+        "connected": 1790452542.864378,
+        "run_finished": 1790452542.969574,
+        "lock_acquired": 1790452541.64588,
+        "worker_started": 1790452541.642882,
+        "connect_started": 1790452541.657775,
+        "first_fetch_started": 1790452542.887378,
+        "first_ingestion_started": 1790452542.888824,
+        "first_message_committed": 1790452542.922346
+      },
+      "click_or_event": 1790452541.517,
+      "accepted": 1790452541.620529,
+      "api_response": 1790452541.651,
+      "freshness_observed": 1790452543.03,
+      "rendered": 1790452543.03
+    },
+    {
+      "run": {
+        "connected": 1790452544.816341,
+        "run_finished": 1790452544.924491,
+        "lock_acquired": 1790452543.601293,
+        "worker_started": 1790452543.598489,
+        "connect_started": 1790452543.609884,
+        "first_fetch_started": 1790452544.84084,
+        "first_ingestion_started": 1790452544.841852,
+        "first_message_committed": 1790452544.875064
+      },
+      "click_or_event": 1790452543.472,
+      "accepted": 1790452543.591881,
+      "api_response": 1790452543.604,
+      "freshness_observed": 1790452545.4,
+      "rendered": 1790452545.506
+    },
+    {
+      "run": {
+        "connected": 1790452547.194072,
+        "run_finished": 1790452547.290082,
+        "lock_acquired": 1790452545.979021,
+        "worker_started": 1790452545.9765,
+        "connect_started": 1790452545.988763,
+        "first_fetch_started": 1790452547.213211,
+        "first_ingestion_started": 1790452547.2138,
+        "first_message_committed": 1790452547.242213
+      },
+      "click_or_event": 1790452545.855,
+      "accepted": 1790452545.956955,
+      "api_response": 1790452545.988,
+      "freshness_observed": 1790452547.262,
+      "rendered": 1790452547.491
+    },
+    {
+      "run": {
+        "connected": 1790452549.145419,
+        "run_finished": 1790452549.236716,
+        "lock_acquired": 1790452547.932019,
+        "worker_started": 1790452547.928721,
+        "connect_started": 1790452547.940577,
+        "first_fetch_started": 1790452549.166542,
+        "first_ingestion_started": 1790452549.16725,
+        "first_message_committed": 1790452549.194066
+      },
+      "click_or_event": 1790452547.824,
+      "accepted": 1790452547.922703,
+      "api_response": 1790452547.935,
+      "freshness_observed": 1790452549.311,
+      "rendered": 1790452549.425
+    },
+    {
+      "run": {
+        "connected": 1790452551.12001,
+        "run_finished": 1790452551.21712,
+        "lock_acquired": 1790452549.905001,
+        "worker_started": 1790452549.90249,
+        "connect_started": 1790452549.914081,
+        "first_fetch_started": 1790452551.140666,
+        "first_ingestion_started": 1790452551.141286,
+        "first_message_committed": 1790452551.16859
+      },
+      "click_or_event": 1790452549.776,
+      "accepted": 1790452549.880896,
+      "api_response": 1790452549.911,
+      "freshness_observed": 1790452551.665,
+      "rendered": 1790452551.772
+    },
+    {
+      "run": {
+        "connected": 1790452553.583208,
+        "run_finished": 1790452553.703568,
+        "lock_acquired": 1790452552.37103,
+        "worker_started": 1790452552.36782,
+        "connect_started": 1790452552.379106,
+        "first_fetch_started": 1790452553.600574,
+        "first_ingestion_started": 1790452553.60185,
+        "first_message_committed": 1790452553.642639
+      },
+      "click_or_event": 1790452552.243,
+      "accepted": 1790452552.345566,
+      "api_response": 1790452552.379,
+      "freshness_observed": 1790452553.776,
+      "rendered": 1790452553.776
+    },
+    {
+      "run": {
+        "connected": 1790452555.536573,
+        "run_finished": 1790452555.627427,
+        "lock_acquired": 1790452554.308282,
+        "worker_started": 1790452554.298606,
+        "connect_started": 1790452554.330367,
+        "first_fetch_started": 1790452555.558833,
+        "first_ingestion_started": 1790452555.559921,
+        "first_message_committed": 1790452555.591797
+      },
+      "click_or_event": 1790452554.144,
+      "accepted": 1790452554.287842,
+      "api_response": 1790452554.349,
+      "freshness_observed": 1790452555.973,
+      "rendered": 1790452556.221
+    },
+    {
+      "run": {
+        "connected": 1790452557.895002,
+        "run_finished": 1790452558.010783,
+        "lock_acquired": 1790452556.679782,
+        "worker_started": 1790452556.676913,
+        "connect_started": 1790452556.689965,
+        "first_fetch_started": 1790452557.918998,
+        "first_ingestion_started": 1790452557.92025,
+        "first_message_committed": 1790452557.949601
+      },
+      "click_or_event": 1790452556.555,
+      "accepted": 1790452556.655591,
+      "api_response": 1790452556.685,
+      "freshness_observed": 1790452558.427,
+      "rendered": 1790452558.539
+    },
+    {
+      "run": {
+        "connected": 1790452560.251764,
+        "run_finished": 1790452560.373758,
+        "lock_acquired": 1790452559.03101,
+        "worker_started": 1790452559.028688,
+        "connect_started": 1790452559.045571,
+        "first_fetch_started": 1790452560.276207,
+        "first_ingestion_started": 1790452560.280076,
+        "first_message_committed": 1790452560.315704
+      },
+      "click_or_event": 1790452558.924,
+      "accepted": 1790452559.021724,
+      "api_response": 1790452559.038,
+      "freshness_observed": 1790452560.37,
+      "rendered": 1790452560.37
+    },
+    {
+      "run": {
+        "connected": 1790452562.234849,
+        "run_finished": 1790452562.314457,
+        "lock_acquired": 1790452561.012465,
+        "worker_started": 1790452561.00755,
+        "connect_started": 1790452561.029456,
+        "first_fetch_started": 1790452562.257268,
+        "first_ingestion_started": 1790452562.25841,
+        "first_message_committed": 1790452562.281563
+      },
+      "click_or_event": 1790452560.773,
+      "accepted": 1790452560.91877,
+      "api_response": 1790452561.021,
+      "freshness_observed": 1790452562.299,
+      "rendered": 1790452562.433
+    }
+  ],
+  "D": [
+    {
+      "run": {
+        "connected": 1790452564.101535,
+        "run_finished": 1790452565.249873,
+        "lock_acquired": 1790452562.887233,
+        "worker_started": 1790452562.884026,
+        "connect_started": 1790452562.895188,
+        "first_fetch_started": 1790452564.123999,
+        "first_ingestion_started": 1790452564.125715,
+        "first_message_committed": 1790452564.156498
+      },
+      "click_or_event": 1790452562.774,
+      "accepted": 1790452562.878708,
+      "api_response": 1790452562.893,
+      "freshness_observed": 1790452564.302,
+      "rendered": 1790452564.302
+    },
+    {
+      "run": {
+        "connected": 1790452570.566615,
+        "run_finished": 1790452571.725623,
+        "lock_acquired": 1790452569.347682,
+        "worker_started": 1790452569.344799,
+        "connect_started": 1790452569.359245,
+        "first_fetch_started": 1790452570.590119,
+        "first_ingestion_started": 1790452570.592432,
+        "first_message_committed": 1790452570.613977
+      },
+      "click_or_event": 1790452569.206,
+      "accepted": 1790452569.314009,
+      "api_response": 1790452569.375,
+      "freshness_observed": 1790452570.967,
+      "rendered": 1790452571.076
+    },
+    {
+      "run": {
+        "connected": 1790452576.420554,
+        "run_finished": 1790452577.5877,
+        "lock_acquired": 1790452575.204127,
+        "worker_started": 1790452575.198962,
+        "connect_started": 1790452575.214609,
+        "first_fetch_started": 1790452576.443125,
+        "first_ingestion_started": 1790452576.444207,
+        "first_message_committed": 1790452576.488035
+      },
+      "click_or_event": 1790452575.073,
+      "accepted": 1790452575.17542,
+      "api_response": 1790452575.208,
+      "freshness_observed": 1790452576.488,
+      "rendered": 1790452576.702
+    },
+    {
+      "run": {
+        "connected": 1790452582.254454,
+        "run_finished": 1790452583.430837,
+        "lock_acquired": 1790452581.035257,
+        "worker_started": 1790452581.031568,
+        "connect_started": 1790452581.046693,
+        "first_fetch_started": 1790452582.273801,
+        "first_ingestion_started": 1790452582.274739,
+        "first_message_committed": 1790452582.303504
+      },
+      "click_or_event": 1790452580.907,
+      "accepted": 1790452581.004946,
+      "api_response": 1790452581.043,
+      "freshness_observed": 1790452582.316,
+      "rendered": 1790452582.412
+    },
+    {
+      "run": {
+        "connected": 1790452588.129076,
+        "run_finished": 1790452589.321423,
+        "lock_acquired": 1790452586.914404,
+        "worker_started": 1790452586.911175,
+        "connect_started": 1790452586.922115,
+        "first_fetch_started": 1790452588.151607,
+        "first_ingestion_started": 1790452588.153192,
+        "first_message_committed": 1790452588.187084
+      },
+      "click_or_event": 1790452586.778,
+      "accepted": 1790452586.885772,
+      "api_response": 1790452586.919,
+      "freshness_observed": 1790452588.311,
+      "rendered": 1790452588.413
+    },
+    {
+      "run": {
+        "connected": 1790452594.043567,
+        "run_finished": 1790452595.231266,
+        "lock_acquired": 1790452592.823565,
+        "worker_started": 1790452592.82074,
+        "connect_started": 1790452592.834976,
+        "first_fetch_started": 1790452594.068607,
+        "first_ingestion_started": 1790452594.070713,
+        "first_message_committed": 1790452594.10974
+      },
+      "click_or_event": 1790452592.701,
+      "accepted": 1790452592.797753,
+      "api_response": 1790452592.831,
+      "freshness_observed": 1790452594.893,
+      "rendered": 1790452595.004
+    },
+    {
+      "run": {
+        "connected": 1790452600.050274,
+        "run_finished": 1790452601.23328,
+        "lock_acquired": 1790452598.835267,
+        "worker_started": 1790452598.832466,
+        "connect_started": 1790452598.844127,
+        "first_fetch_started": 1790452600.074344,
+        "first_ingestion_started": 1790452600.076348,
+        "first_message_committed": 1790452600.112511
+      },
+      "click_or_event": 1790452598.707,
+      "accepted": 1790452598.814652,
+      "api_response": 1790452598.84,
+      "freshness_observed": 1790452600.497,
+      "rendered": 1790452600.497
+    },
+    {
+      "run": {
+        "connected": 1790452606.063527,
+        "run_finished": 1790452607.250697,
+        "lock_acquired": 1790452604.846343,
+        "worker_started": 1790452604.844157,
+        "connect_started": 1790452604.85685,
+        "first_fetch_started": 1790452606.08856,
+        "first_ingestion_started": 1790452606.090761,
+        "first_message_committed": 1790452606.123922
+      },
+      "click_or_event": 1790452604.698,
+      "accepted": 1790452604.802664,
+      "api_response": 1790452604.854,
+      "freshness_observed": 1790452606.319,
+      "rendered": 1790452606.319
+    },
+    {
+      "run": {
+        "connected": 1790452612.011986,
+        "run_finished": 1790452613.193393,
+        "lock_acquired": 1790452610.796165,
+        "worker_started": 1790452610.793233,
+        "connect_started": 1790452610.804259,
+        "first_fetch_started": 1790452612.038487,
+        "first_ingestion_started": 1790452612.040154,
+        "first_message_committed": 1790452612.070064
+      },
+      "click_or_event": 1790452610.681,
+      "accepted": 1790452610.773688,
+      "api_response": 1790452610.805,
+      "freshness_observed": 1790452612.317,
+      "rendered": 1790452612.317
+    },
+    {
+      "run": {
+        "connected": 1790452618.03066,
+        "run_finished": 1790452619.217582,
+        "lock_acquired": 1790452616.811662,
+        "worker_started": 1790452616.808766,
+        "connect_started": 1790452616.822713,
+        "first_fetch_started": 1790452618.055596,
+        "first_ingestion_started": 1790452618.058571,
+        "first_message_committed": 1790452618.098259
+      },
+      "click_or_event": 1790452616.665,
+      "accepted": 1790452616.784037,
+      "api_response": 1790452616.817,
+      "freshness_observed": 1790452618.335,
+      "rendered": 1790452618.335
+    },
+    {
+      "run": {
+        "connected": 1790452624.450182,
+        "run_finished": 1790452625.952069,
+        "lock_acquired": 1790452623.200222,
+        "worker_started": 1790452623.099303,
+        "connect_started": 1790452623.226034,
+        "first_fetch_started": 1790452624.479944,
+        "first_ingestion_started": 1790452624.48139,
+        "first_message_committed": 1790452624.81876
+      },
+      "click_or_event": 1790452622.939,
+      "accepted": 1790452623.031622,
+      "api_response": 1790452623.067,
+      "freshness_observed": 1790452625.191,
+      "rendered": 1790452625.516
+    },
+    {
+      "run": {
+        "connected": 1790452632.159426,
+        "run_finished": 1790452633.359942,
+        "lock_acquired": 1790452630.94073,
+        "worker_started": 1790452630.937923,
+        "connect_started": 1790452630.952518,
+        "first_fetch_started": 1790452632.186706,
+        "first_ingestion_started": 1790452632.189769,
+        "first_message_committed": 1790452632.216147
+      },
+      "click_or_event": 1790452630.806,
+      "accepted": 1790452630.913279,
+      "api_response": 1790452630.946,
+      "freshness_observed": 1790452632.396,
+      "rendered": 1790452632.71
+    },
+    {
+      "run": {
+        "connected": 1790452638.477865,
+        "run_finished": 1790452639.673812,
+        "lock_acquired": 1790452637.257883,
+        "worker_started": 1790452637.255713,
+        "connect_started": 1790452637.270303,
+        "first_fetch_started": 1790452638.501359,
+        "first_ingestion_started": 1790452638.502914,
+        "first_message_committed": 1790452638.533573
+      },
+      "click_or_event": 1790452637.129,
+      "accepted": 1790452637.22534,
+      "api_response": 1790452637.269,
+      "freshness_observed": 1790452638.605,
+      "rendered": 1790452638.605
+    },
+    {
+      "run": {
+        "connected": 1790452644.707751,
+        "run_finished": 1790452645.952549,
+        "lock_acquired": 1790452643.491021,
+        "worker_started": 1790452643.488426,
+        "connect_started": 1790452643.499889,
+        "first_fetch_started": 1790452644.739626,
+        "first_ingestion_started": 1790452644.742312,
+        "first_message_committed": 1790452644.787112
+      },
+      "click_or_event": 1790452643.361,
+      "accepted": 1790452643.467083,
+      "api_response": 1790452643.497,
+      "freshness_observed": 1790452645.567,
+      "rendered": 1790452645.689
+    },
+    {
+      "run": {
+        "connected": 1790452651.050747,
+        "run_finished": 1790452652.24676,
+        "lock_acquired": 1790452649.830873,
+        "worker_started": 1790452649.828588,
+        "connect_started": 1790452649.841724,
+        "first_fetch_started": 1790452651.074815,
+        "first_ingestion_started": 1790452651.076927,
+        "first_message_committed": 1790452651.109795
+      },
+      "click_or_event": 1790452649.701,
+      "accepted": 1790452649.807382,
+      "api_response": 1790452649.839,
+      "freshness_observed": 1790452651.61,
+      "rendered": 1790452651.706
+    },
+    {
+      "run": {
+        "connected": 1790452657.392448,
+        "run_finished": 1790452658.574337,
+        "lock_acquired": 1790452656.174137,
+        "worker_started": 1790452656.172258,
+        "connect_started": 1790452656.185026,
+        "first_fetch_started": 1790452657.413164,
+        "first_ingestion_started": 1790452657.415656,
+        "first_message_committed": 1790452657.448711
+      },
+      "click_or_event": 1790452656.025,
+      "accepted": 1790452656.1451,
+      "api_response": 1790452656.179,
+      "freshness_observed": 1790452657.925,
+      "rendered": 1790452658.037
+    },
+    {
+      "run": {
+        "connected": 1790452663.738714,
+        "run_finished": 1790452664.852684,
+        "lock_acquired": 1790452662.521699,
+        "worker_started": 1790452662.52,
+        "connect_started": 1790452662.529435,
+        "first_fetch_started": 1790452663.773029,
+        "first_ingestion_started": 1790452663.77502,
+        "first_message_committed": 1790452663.79801
+      },
+      "click_or_event": 1790452662.364,
+      "accepted": 1790452662.482582,
+      "api_response": 1790452662.525,
+      "freshness_observed": 1790452664.327,
+      "rendered": 1790452664.583
+    },
+    {
+      "run": {
+        "connected": 1790452670.012741,
+        "run_finished": 1790452671.192575,
+        "lock_acquired": 1790452668.795059,
+        "worker_started": 1790452668.792363,
+        "connect_started": 1790452668.805104,
+        "first_fetch_started": 1790452670.037661,
+        "first_ingestion_started": 1790452670.040571,
+        "first_message_committed": 1790452670.070773
+      },
+      "click_or_event": 1790452668.648,
+      "accepted": 1790452668.750066,
+      "api_response": 1790452668.799,
+      "freshness_observed": 1790452670.127,
+      "rendered": 1790452670.244
+    },
+    {
+      "run": {
+        "connected": 1790452676.290514,
+        "run_finished": 1790452677.526478,
+        "lock_acquired": 1790452675.069753,
+        "worker_started": 1790452675.066848,
+        "connect_started": 1790452675.081224,
+        "first_fetch_started": 1790452676.319621,
+        "first_ingestion_started": 1790452676.322611,
+        "first_message_committed": 1790452676.370293
+      },
+      "click_or_event": 1790452674.944,
+      "accepted": 1790452675.040387,
+      "api_response": 1790452675.08,
+      "freshness_observed": 1790452676.491,
+      "rendered": 1790452676.491
+    },
+    {
+      "run": {
+        "connected": 1790452684.34244,
+        "run_finished": 1790452685.572984,
+        "lock_acquired": 1790452683.120985,
+        "worker_started": 1790452683.116553,
+        "connect_started": 1790452683.132998,
+        "first_fetch_started": 1790452684.369948,
+        "first_ingestion_started": 1790452684.373109,
+        "first_message_committed": 1790452684.405592
+      },
+      "click_or_event": 1790452682.677,
+      "accepted": 1790452682.977028,
+      "api_response": 1790452683.17,
+      "freshness_observed": 1790452684.556,
+      "rendered": 1790452684.696
+    },
+    {
+      "run": {
+        "connected": 1790452690.986392,
+        "run_finished": 1790452692.074628,
+        "lock_acquired": 1790452689.765888,
+        "worker_started": 1790452689.763529,
+        "connect_started": 1790452689.775913,
+        "first_fetch_started": 1790452691.014938,
+        "first_ingestion_started": 1790452691.016938,
+        "first_message_committed": 1790452691.037922
+      },
+      "click_or_event": 1790452689.637,
+      "accepted": 1790452689.742411,
+      "api_response": 1790452689.771,
+      "freshness_observed": 1790452691.273,
+      "rendered": 1790452691.416
+    },
+    {
+      "run": {
+        "connected": 1790452697.759177,
+        "run_finished": 1790452698.995737,
+        "lock_acquired": 1790452696.533677,
+        "worker_started": 1790452696.528786,
+        "connect_started": 1790452696.543467,
+        "first_fetch_started": 1790452697.78856,
+        "first_ingestion_started": 1790452697.793987,
+        "first_message_committed": 1790452697.829853
+      },
+      "click_or_event": 1790452696.364,
+      "accepted": 1790452696.490367,
+      "api_response": 1790452696.537,
+      "freshness_observed": 1790452697.898,
+      "rendered": 1790452697.898
+    },
+    {
+      "run": {
+        "connected": 1790452704.332064,
+        "run_finished": 1790452705.588526,
+        "lock_acquired": 1790452703.111759,
+        "worker_started": 1790452703.109683,
+        "connect_started": 1790452703.120494,
+        "first_fetch_started": 1790452704.362016,
+        "first_ingestion_started": 1790452704.364837,
+        "first_message_committed": 1790452704.404982
+      },
+      "click_or_event": 1790452702.981,
+      "accepted": 1790452703.076542,
+      "api_response": 1790452703.117,
+      "freshness_observed": 1790452704.754,
+      "rendered": 1790452704.912
+    },
+    {
+      "run": {
+        "connected": 1790452710.87382,
+        "run_finished": 1790452712.0719,
+        "lock_acquired": 1790452709.652634,
+        "worker_started": 1790452709.649502,
+        "connect_started": 1790452709.663535,
+        "first_fetch_started": 1790452710.905124,
+        "first_ingestion_started": 1790452710.907751,
+        "first_message_committed": 1790452710.9345
+      },
+      "click_or_event": 1790452709.531,
+      "accepted": 1790452709.623759,
+      "api_response": 1790452709.66,
+      "freshness_observed": 1790452710.991,
+      "rendered": 1790452711.336
+    },
+    {
+      "run": {
+        "connected": 1790452717.448082,
+        "run_finished": 1790452718.637843,
+        "lock_acquired": 1790452716.223298,
+        "worker_started": 1790452716.218366,
+        "connect_started": 1790452716.234998,
+        "first_fetch_started": 1790452717.474981,
+        "first_ingestion_started": 1790452717.477571,
+        "first_message_committed": 1790452717.505014
+      },
+      "click_or_event": 1790452716.055,
+      "accepted": 1790452716.182657,
+      "api_response": 1790452716.228,
+      "freshness_observed": 1790452717.618,
+      "rendered": 1790452717.709
+    },
+    {
+      "run": {
+        "connected": 1790452723.941499,
+        "run_finished": 1790452725.136011,
+        "lock_acquired": 1790452722.722281,
+        "worker_started": 1790452722.718963,
+        "connect_started": 1790452722.732346,
+        "first_fetch_started": 1790452723.966122,
+        "first_ingestion_started": 1790452723.968199,
+        "first_message_committed": 1790452723.996243
+      },
+      "click_or_event": 1790452722.597,
+      "accepted": 1790452722.697846,
+      "api_response": 1790452722.728,
+      "freshness_observed": 1790452724.504,
+      "rendered": 1790452724.664
+    },
+    {
+      "run": {
+        "connected": 1790452730.724008,
+        "run_finished": 1790452731.955165,
+        "lock_acquired": 1790452729.499158,
+        "worker_started": 1790452729.497069,
+        "connect_started": 1790452729.511572,
+        "first_fetch_started": 1790452730.758249,
+        "first_ingestion_started": 1790452730.7609,
+        "first_message_committed": 1790452730.796108
+      },
+      "click_or_event": 1790452729.36,
+      "accepted": 1790452729.476697,
+      "api_response": 1790452729.502,
+      "freshness_observed": 1790452731.295,
+      "rendered": 1790452731.513
+    },
+    {
+      "run": {
+        "connected": 1790452737.510673,
+        "run_finished": 1790452738.688067,
+        "lock_acquired": 1790452736.286411,
+        "worker_started": 1790452736.282403,
+        "connect_started": 1790452736.298176,
+        "first_fetch_started": 1790452737.540492,
+        "first_ingestion_started": 1790452737.543505,
+        "first_message_committed": 1790452737.573723
+      },
+      "click_or_event": 1790452736.154,
+      "accepted": 1790452736.257238,
+      "api_response": 1790452736.293,
+      "freshness_observed": 1790452737.79,
+      "rendered": 1790452737.79
+    },
+    {
+      "run": {
+        "connected": 1790452744.363333,
+        "run_finished": 1790452745.604777,
+        "lock_acquired": 1790452743.140167,
+        "worker_started": 1790452743.137399,
+        "connect_started": 1790452743.150842,
+        "first_fetch_started": 1790452744.390857,
+        "first_ingestion_started": 1790452744.393333,
+        "first_message_committed": 1790452744.425613
+      },
+      "click_or_event": 1790452742.984,
+      "accepted": 1790452743.098457,
+      "api_response": 1790452743.148,
+      "freshness_observed": 1790452744.503,
+      "rendered": 1790452744.503
+    },
+    {
+      "run": {
+        "connected": 1790452751.411002,
+        "run_finished": 1790452752.617112,
+        "lock_acquired": 1790452750.187237,
+        "worker_started": 1790452750.184497,
+        "connect_started": 1790452750.199484,
+        "first_fetch_started": 1790452751.438115,
+        "first_ingestion_started": 1790452751.442416,
+        "first_message_committed": 1790452751.475121
+      },
+      "click_or_event": 1790452749.925,
+      "accepted": 1790452750.087941,
+      "api_response": 1790452750.196,
+      "freshness_observed": 1790452751.569,
+      "rendered": 1790452751.569
+    }
+  ],
+  "E": [
+    {
+      "run": {
+        "connected": 1790452758.258095,
+        "run_finished": 1790452758.355079,
+        "lock_acquired": 1790452757.038714,
+        "worker_started": 1790452757.034266,
+        "connect_started": 1790452757.047122,
+        "first_fetch_started": 1790452758.28697,
+        "first_ingestion_started": 1790452758.290845,
+        "first_message_committed": 1790452758.334375
+      },
+      "click_or_event": 1790452756.907,
+      "accepted": 1790452757.010229,
+      "api_response": 1790452757.043,
+      "freshness_observed": 1790452758.669,
+      "rendered": 1790452758.777
+    },
+    {
+      "run": {
+        "connected": 1790452761.413393,
+        "run_finished": 1790452761.48201,
+        "lock_acquired": 1790452760.190788,
+        "worker_started": 1790452760.187439,
+        "connect_started": 1790452760.20168,
+        "first_fetch_started": 1790452761.430831,
+        "first_ingestion_started": 1790452761.434133,
+        "first_message_committed": 1790452761.465742
+      },
+      "click_or_event": 1790452760.054,
+      "accepted": 1790452760.163054,
+      "api_response": 1790452760.195,
+      "freshness_observed": 1790452761.936,
+      "rendered": 1790452762.055
+    },
+    {
+      "run": {
+        "connected": 1790452764.409377,
+        "run_finished": 1790452764.480638,
+        "lock_acquired": 1790452763.189903,
+        "worker_started": 1790452763.18719,
+        "connect_started": 1790452763.198538,
+        "first_fetch_started": 1790452764.427181,
+        "first_ingestion_started": 1790452764.429861,
+        "first_message_committed": 1790452764.465056
+      },
+      "click_or_event": 1790452763.051,
+      "accepted": 1790452763.162346,
+      "api_response": 1790452763.194,
+      "freshness_observed": 1790452764.52,
+      "rendered": 1790452764.657
+    },
+    {
+      "run": {
+        "connected": 1790452767.44357,
+        "run_finished": 1790452767.504945,
+        "lock_acquired": 1790452766.225073,
+        "worker_started": 1790452766.222546,
+        "connect_started": 1790452766.233431,
+        "first_fetch_started": 1790452767.456667,
+        "first_ingestion_started": 1790452767.459884,
+        "first_message_committed": 1790452767.491394
+      },
+      "click_or_event": 1790452766.077,
+      "accepted": 1790452766.199953,
+      "api_response": 1790452766.232,
+      "freshness_observed": 1790452767.574,
+      "rendered": 1790452767.574
+    },
+    {
+      "run": {
+        "connected": 1790452770.437991,
+        "run_finished": 1790452770.512327,
+        "lock_acquired": 1790452769.215715,
+        "worker_started": 1790452769.213564,
+        "connect_started": 1790452769.226129,
+        "first_fetch_started": 1790452770.458609,
+        "first_ingestion_started": 1790452770.461547,
+        "first_message_committed": 1790452770.497467
+      },
+      "click_or_event": 1790452769.07,
+      "accepted": 1790452769.183196,
+      "api_response": 1790452769.222,
+      "freshness_observed": 1790452770.64,
+      "rendered": 1790452770.64
+    },
+    {
+      "run": {
+        "connected": 1790452773.527212,
+        "run_finished": 1790452773.599466,
+        "lock_acquired": 1790452772.305762,
+        "worker_started": 1790452772.302786,
+        "connect_started": 1790452772.315056,
+        "first_fetch_started": 1790452773.550085,
+        "first_ingestion_started": 1790452773.55304,
+        "first_message_committed": 1790452773.585027
+      },
+      "click_or_event": 1790452772.179,
+      "accepted": 1790452772.277188,
+      "api_response": 1790452772.314,
+      "freshness_observed": 1790452773.703,
+      "rendered": 1790452773.802
+    },
+    {
+      "run": {
+        "connected": 1790452776.57693,
+        "run_finished": 1790452776.661154,
+        "lock_acquired": 1790452775.356108,
+        "worker_started": 1790452775.353296,
+        "connect_started": 1790452775.365292,
+        "first_fetch_started": 1790452776.600665,
+        "first_ingestion_started": 1790452776.604479,
+        "first_message_committed": 1790452776.642774
+      },
+      "click_or_event": 1790452775.203,
+      "accepted": 1790452775.329648,
+      "api_response": 1790452775.359,
+      "freshness_observed": 1790452776.965,
+      "rendered": 1790452777.096
+    },
+    {
+      "run": {
+        "connected": 1790452779.676826,
+        "run_finished": 1790452779.752606,
+        "lock_acquired": 1790452778.454717,
+        "worker_started": 1790452778.452151,
+        "connect_started": 1790452778.46502,
+        "first_fetch_started": 1790452779.700231,
+        "first_ingestion_started": 1790452779.703028,
+        "first_message_committed": 1790452779.736263
+      },
+      "click_or_event": 1790452778.267,
+      "accepted": 1790452778.429565,
+      "api_response": 1790452778.46,
+      "freshness_observed": 1790452780.345,
+      "rendered": 1790452780.456
+    },
+    {
+      "run": {
+        "connected": 1790452782.809811,
+        "run_finished": 1790452782.882015,
+        "lock_acquired": 1790452781.586867,
+        "worker_started": 1790452781.583104,
+        "connect_started": 1790452781.597447,
+        "first_fetch_started": 1790452782.829867,
+        "first_ingestion_started": 1790452782.832437,
+        "first_message_committed": 1790452782.867395
+      },
+      "click_or_event": 1790452781.456,
+      "accepted": 1790452781.553077,
+      "api_response": 1790452781.589,
+      "freshness_observed": 1790452783.423,
+      "rendered": 1790452783.531
+    },
+    {
+      "run": {
+        "connected": 1790452785.781624,
+        "run_finished": 1790452785.86698,
+        "lock_acquired": 1790452784.56111,
+        "worker_started": 1790452784.557803,
+        "connect_started": 1790452784.570833,
+        "first_fetch_started": 1790452785.802967,
+        "first_ingestion_started": 1790452785.806559,
+        "first_message_committed": 1790452785.852239
+      },
+      "click_or_event": 1790452784.434,
+      "accepted": 1790452784.53623,
+      "api_response": 1790452784.568,
+      "freshness_observed": 1790452785.988,
+      "rendered": 1790452786.347
+    },
+    {
+      "run": {
+        "connected": 1790452788.912169,
+        "run_finished": 1790452788.982199,
+        "lock_acquired": 1790452787.689184,
+        "worker_started": 1790452787.687006,
+        "connect_started": 1790452787.699824,
+        "first_fetch_started": 1790452788.931757,
+        "first_ingestion_started": 1790452788.934754,
+        "first_message_committed": 1790452788.965131
+      },
+      "click_or_event": 1790452787.546,
+      "accepted": 1790452787.651255,
+      "api_response": 1790452787.694,
+      "freshness_observed": 1790452789.056,
+      "rendered": 1790452789.056
+    },
+    {
+      "run": {
+        "connected": 1790452791.957612,
+        "run_finished": 1790452792.035271,
+        "lock_acquired": 1790452790.734778,
+        "worker_started": 1790452790.731607,
+        "connect_started": 1790452790.745835,
+        "first_fetch_started": 1790452791.976678,
+        "first_ingestion_started": 1790452791.981033,
+        "first_message_committed": 1790452792.017153
+      },
+      "click_or_event": 1790452790.594,
+      "accepted": 1790452790.70547,
+      "api_response": 1790452790.739,
+      "freshness_observed": 1790452792.093,
+      "rendered": 1790452792.093
+    },
+    {
+      "run": {
+        "connected": 1790452795.053785,
+        "run_finished": 1790452795.119439,
+        "lock_acquired": 1790452793.832727,
+        "worker_started": 1790452793.829878,
+        "connect_started": 1790452793.843577,
+        "first_fetch_started": 1790452795.077995,
+        "first_ingestion_started": 1790452795.080603,
+        "first_message_committed": 1790452795.105886
+      },
+      "click_or_event": 1790452793.642,
+      "accepted": 1790452793.808537,
+      "api_response": 1790452793.837,
+      "freshness_observed": 1790452795.688,
+      "rendered": 1790452795.795
+    },
+    {
+      "run": {
+        "connected": 1790452798.114069,
+        "run_finished": 1790452798.186587,
+        "lock_acquired": 1790452796.892899,
+        "worker_started": 1790452796.890268,
+        "connect_started": 1790452796.903678,
+        "first_fetch_started": 1790452798.132897,
+        "first_ingestion_started": 1790452798.135883,
+        "first_message_committed": 1790452798.174619
+      },
+      "click_or_event": 1790452796.771,
+      "accepted": 1790452796.867331,
+      "api_response": 1790452796.899,
+      "freshness_observed": 1790452798.281,
+      "rendered": 1790452798.398
+    },
+    {
+      "run": {
+        "connected": 1790452801.268857,
+        "run_finished": 1790452801.368407,
+        "lock_acquired": 1790452800.046432,
+        "worker_started": 1790452800.043423,
+        "connect_started": 1790452800.056913,
+        "first_fetch_started": 1790452801.291367,
+        "first_ingestion_started": 1790452801.294894,
+        "first_message_committed": 1790452801.344473
+      },
+      "click_or_event": 1790452799.91,
+      "accepted": 1790452800.019424,
+      "api_response": 1790452800.054,
+      "freshness_observed": 1790452801.587,
+      "rendered": 1790452801.732
+    },
+    {
+      "run": {
+        "connected": 1790452805.562477,
+        "run_finished": 1790452806.084487,
+        "lock_acquired": 1790452804.319269,
+        "worker_started": 1790452804.211841,
+        "connect_started": 1790452804.339997,
+        "first_fetch_started": 1790452805.587733,
+        "first_ingestion_started": 1790452805.59098,
+        "first_message_committed": 1790452806.008172
+      },
+      "click_or_event": 1790452803.258,
+      "accepted": 1790452803.372641,
+      "api_response": 1790452803.422,
+      "freshness_observed": 1790452806.473,
+      "rendered": 1790452806.596
+    },
+    {
+      "run": {
+        "connected": 1790452808.273799,
+        "run_finished": 1790452808.352176,
+        "lock_acquired": 1790452807.051599,
+        "worker_started": 1790452807.048171,
+        "connect_started": 1790452807.062964,
+        "first_fetch_started": 1790452808.292799,
+        "first_ingestion_started": 1790452808.296598,
+        "first_message_committed": 1790452808.337424
+      },
+      "click_or_event": 1790452806.928,
+      "accepted": 1790452807.025063,
+      "api_response": 1790452807.064,
+      "freshness_observed": 1790452808.875,
+      "rendered": 1790452808.996
+    },
+    {
+      "run": {
+        "connected": 1790452811.620426,
+        "run_finished": 1790452811.720495,
+        "lock_acquired": 1790452810.3955,
+        "worker_started": 1790452810.392745,
+        "connect_started": 1790452810.405549,
+        "first_fetch_started": 1790452811.648546,
+        "first_ingestion_started": 1790452811.654289,
+        "first_message_committed": 1790452811.702899
+      },
+      "click_or_event": 1790452810.252,
+      "accepted": 1790452810.368519,
+      "api_response": 1790452810.399,
+      "freshness_observed": 1790452812.201,
+      "rendered": 1790452812.445
+    },
+    {
+      "run": {
+        "connected": 1790452814.88249,
+        "run_finished": 1790452814.977143,
+        "lock_acquired": 1790452813.658262,
+        "worker_started": 1790452813.655737,
+        "connect_started": 1790452813.669892,
+        "first_fetch_started": 1790452814.907236,
+        "first_ingestion_started": 1790452814.911676,
+        "first_message_committed": 1790452814.958282
+      },
+      "click_or_event": 1790452813.539,
+      "accepted": 1790452813.633976,
+      "api_response": 1790452813.664,
+      "freshness_observed": 1790452815.421,
+      "rendered": 1790452815.692
+    },
+    {
+      "run": {
+        "connected": 1790452817.993717,
+        "run_finished": 1790452818.06422,
+        "lock_acquired": 1790452816.775385,
+        "worker_started": 1790452816.77323,
+        "connect_started": 1790452816.783732,
+        "first_fetch_started": 1790452818.011949,
+        "first_ingestion_started": 1790452818.014568,
+        "first_message_committed": 1790452818.049109
+      },
+      "click_or_event": 1790452816.632,
+      "accepted": 1790452816.7477,
+      "api_response": 1790452816.783,
+      "freshness_observed": 1790452818.44,
+      "rendered": 1790452818.544
+    },
+    {
+      "run": {
+        "connected": 1790452821.144809,
+        "run_finished": 1790452821.210047,
+        "lock_acquired": 1790452819.920344,
+        "worker_started": 1790452819.917821,
+        "connect_started": 1790452819.934077,
+        "first_fetch_started": 1790452821.164829,
+        "first_ingestion_started": 1790452821.168259,
+        "first_message_committed": 1790452821.196954
+      },
+      "click_or_event": 1790452819.755,
+      "accepted": 1790452819.892051,
+      "api_response": 1790452819.926,
+      "freshness_observed": 1790452821.264,
+      "rendered": 1790452821.264
+    },
+    {
+      "run": {
+        "connected": 1790452824.223856,
+        "run_finished": 1790452824.299636,
+        "lock_acquired": 1790452823.001801,
+        "worker_started": 1790452822.996889,
+        "connect_started": 1790452823.011699,
+        "first_fetch_started": 1790452824.245391,
+        "first_ingestion_started": 1790452824.24919,
+        "first_message_committed": 1790452824.281374
+      },
+      "click_or_event": 1790452822.858,
+      "accepted": 1790452822.96792,
+      "api_response": 1790452823.015,
+      "freshness_observed": 1790452824.372,
+      "rendered": 1790452824.372
+    },
+    {
+      "run": {
+        "connected": 1790452827.33686,
+        "run_finished": 1790452827.419067,
+        "lock_acquired": 1790452826.117156,
+        "worker_started": 1790452826.114962,
+        "connect_started": 1790452826.12682,
+        "first_fetch_started": 1790452827.366652,
+        "first_ingestion_started": 1790452827.369789,
+        "first_message_committed": 1790452827.402743
+      },
+      "click_or_event": 1790452825.975,
+      "accepted": 1790452826.07332,
+      "api_response": 1790452826.121,
+      "freshness_observed": 1790452827.486,
+      "rendered": 1790452827.486
+    },
+    {
+      "run": {
+        "connected": 1790452830.311711,
+        "run_finished": 1790452830.381038,
+        "lock_acquired": 1790452829.091214,
+        "worker_started": 1790452829.087753,
+        "connect_started": 1790452829.100676,
+        "first_fetch_started": 1790452830.330922,
+        "first_ingestion_started": 1790452830.333885,
+        "first_message_committed": 1790452830.363665
+      },
+      "click_or_event": 1790452828.966,
+      "accepted": 1790452829.062088,
+      "api_response": 1790452829.093,
+      "freshness_observed": 1790452830.562,
+      "rendered": 1790452830.562
+    },
+    {
+      "run": {
+        "connected": 1790452833.303422,
+        "run_finished": 1790452833.386401,
+        "lock_acquired": 1790452832.082891,
+        "worker_started": 1790452832.080425,
+        "connect_started": 1790452832.092687,
+        "first_fetch_started": 1790452833.324216,
+        "first_ingestion_started": 1790452833.32817,
+        "first_message_committed": 1790452833.368387
+      },
+      "click_or_event": 1790452831.96,
+      "accepted": 1790452832.057567,
+      "api_response": 1790452832.088,
+      "freshness_observed": 1790452833.901,
+      "rendered": 1790452834.489
+    },
+    {
+      "run": {
+        "connected": 1790452836.398359,
+        "run_finished": 1790452836.479701,
+        "lock_acquired": 1790452835.177465,
+        "worker_started": 1790452835.17475,
+        "connect_started": 1790452835.187001,
+        "first_fetch_started": 1790452836.421041,
+        "first_ingestion_started": 1790452836.424764,
+        "first_message_committed": 1790452836.462089
+      },
+      "click_or_event": 1790452835.049,
+      "accepted": 1790452835.152496,
+      "api_response": 1790452835.184,
+      "freshness_observed": 1790452836.914,
+      "rendered": 1790452837.024
+    },
+    {
+      "run": {
+        "connected": 1790452839.507019,
+        "run_finished": 1790452839.575913,
+        "lock_acquired": 1790452838.280985,
+        "worker_started": 1790452838.278877,
+        "connect_started": 1790452838.293675,
+        "first_fetch_started": 1790452839.524942,
+        "first_ingestion_started": 1790452839.527443,
+        "first_message_committed": 1790452839.558223
+      },
+      "click_or_event": 1790452838.125,
+      "accepted": 1790452838.241805,
+      "api_response": 1790452838.289,
+      "freshness_observed": 1790452840.021,
+      "rendered": 1790452840.478
+    },
+    {
+      "run": {
+        "connected": 1790452842.538384,
+        "run_finished": 1790452842.636692,
+        "lock_acquired": 1790452841.316867,
+        "worker_started": 1790452841.313719,
+        "connect_started": 1790452841.325857,
+        "first_fetch_started": 1790452842.585108,
+        "first_ingestion_started": 1790452842.589266,
+        "first_message_committed": 1790452842.62272
+      },
+      "click_or_event": 1790452841.184,
+      "accepted": 1790452841.291036,
+      "api_response": 1790452841.323,
+      "freshness_observed": 1790452843.318,
+      "rendered": 1790452843.565
+    },
+    {
+      "run": {
+        "connected": 1790452845.65678,
+        "run_finished": 1790452845.728202,
+        "lock_acquired": 1790452844.437059,
+        "worker_started": 1790452844.434216,
+        "connect_started": 1790452844.447048,
+        "first_fetch_started": 1790452845.679647,
+        "first_ingestion_started": 1790452845.682801,
+        "first_message_committed": 1790452845.710895
+      },
+      "click_or_event": 1790452844.315,
+      "accepted": 1790452844.413345,
+      "api_response": 1790452844.444,
+      "freshness_observed": 1790452846.289,
+      "rendered": 1790452846.418
+    },
+    {
+      "run": {
+        "connected": 1790452848.666939,
+        "run_finished": 1790452848.738902,
+        "lock_acquired": 1790452847.445943,
+        "worker_started": 1790452847.442919,
+        "connect_started": 1790452847.456173,
+        "first_fetch_started": 1790452848.686725,
+        "first_ingestion_started": 1790452848.690358,
+        "first_message_committed": 1790452848.729455
+      },
+      "click_or_event": 1790452847.3,
+      "accepted": 1790452847.405394,
+      "api_response": 1790452847.454,
+      "freshness_observed": 1790452848.761,
+      "rendered": 1790452848.889
+    }
+  ],
+  "F": [
+    {
+      "run": {
+        "connected": 1790452851.643518,
+        "run_finished": 1790452851.73884,
+        "lock_acquired": 1790452850.417217,
+        "worker_started": 1790452850.409572,
+        "connect_started": 1790452850.430051,
+        "first_fetch_started": 1790452851.66506,
+        "first_ingestion_started": 1790452851.668372,
+        "first_message_committed": 1790452851.72079
+      },
+      "click_or_event": 1790452850.416,
+      "accepted": 1790452850.536167,
+      "api_response": 1790452850.545,
+      "freshness_observed": 1790452851.964,
+      "rendered": 1790452851.964
+    },
+    {
+      "run": {
+        "connected": 1790452855.714602,
+        "run_finished": 1790452855.773338,
+        "lock_acquired": 1790452854.494348,
+        "worker_started": 1790452854.492187,
+        "connect_started": 1790452854.504281,
+        "first_fetch_started": 1790452855.729598,
+        "first_ingestion_started": 1790452855.732283,
+        "first_message_committed": 1790452855.759461
+      },
+      "click_or_event": 1790452854.507,
+      "accepted": 1790452854.631936,
+      "api_response": 1790452854.639,
+      "freshness_observed": 1790452855.962,
+      "rendered": 1790452856.289
+    },
+    {
+      "run": {
+        "connected": 1790452858.669207,
+        "run_finished": 1790452858.737997,
+        "lock_acquired": 1790452857.448733,
+        "worker_started": 1790452857.44621,
+        "connect_started": 1790452857.4576,
+        "first_fetch_started": 1790452858.691935,
+        "first_ingestion_started": 1790452858.694697,
+        "first_message_committed": 1790452858.72451
+      },
+      "click_or_event": 1790452857.451,
+      "accepted": 1790452857.57243,
+      "api_response": 1790452857.581,
+      "freshness_observed": 1790452858.933,
+      "rendered": 1790452859.055
+    },
+    {
+      "run": {
+        "connected": 1790452861.8124,
+        "run_finished": 1790452861.885828,
+        "lock_acquired": 1790452860.587327,
+        "worker_started": 1790452860.584517,
+        "connect_started": 1790452860.598668,
+        "first_fetch_started": 1790452861.83305,
+        "first_ingestion_started": 1790452861.836641,
+        "first_message_committed": 1790452861.872002
+      },
+      "click_or_event": 1790452860.599,
+      "accepted": 1790452860.888073,
+      "api_response": 1790452860.903,
+      "freshness_observed": 1790452862.36,
+      "rendered": 1790452862.709
+    },
+    {
+      "run": {
+        "connected": 1790452864.808407,
+        "run_finished": 1790452864.887327,
+        "lock_acquired": 1790452863.583932,
+        "worker_started": 1790452863.579745,
+        "connect_started": 1790452863.595858,
+        "first_fetch_started": 1790452864.834016,
+        "first_ingestion_started": 1790452864.837223,
+        "first_message_committed": 1790452864.869882
+      },
+      "click_or_event": 1790452863.585,
+      "accepted": 1790452863.722874,
+      "api_response": 1790452863.731,
+      "freshness_observed": 1790452865.054,
+      "rendered": 1790452865.183
+    },
+    {
+      "run": {
+        "connected": 1790452867.800577,
+        "run_finished": 1790452867.872231,
+        "lock_acquired": 1790452866.57326,
+        "worker_started": 1790452866.569854,
+        "connect_started": 1790452866.585469,
+        "first_fetch_started": 1790452867.822793,
+        "first_ingestion_started": 1790452867.826632,
+        "first_message_committed": 1790452867.859871
+      },
+      "click_or_event": 1790452866.576,
+      "accepted": 1790452866.704812,
+      "api_response": 1790452866.716,
+      "freshness_observed": 1790452868.005,
+      "rendered": 1790452868.225
+    },
+    {
+      "run": {
+        "connected": 1790452870.779012,
+        "run_finished": 1790452870.841457,
+        "lock_acquired": 1790452869.557934,
+        "worker_started": 1790452869.554139,
+        "connect_started": 1790452869.569195,
+        "first_fetch_started": 1790452870.793727,
+        "first_ingestion_started": 1790452870.796843,
+        "first_message_committed": 1790452870.826247
+      },
+      "click_or_event": 1790452869.56,
+      "accepted": 1790452869.676407,
+      "api_response": 1790452869.686,
+      "freshness_observed": 1790452871.047,
+      "rendered": 1790452871.408
+    },
+    {
+      "run": {
+        "connected": 1790452873.762553,
+        "run_finished": 1790452873.839533,
+        "lock_acquired": 1790452872.539716,
+        "worker_started": 1790452872.535811,
+        "connect_started": 1790452872.550286,
+        "first_fetch_started": 1790452873.784516,
+        "first_ingestion_started": 1790452873.787879,
+        "first_message_committed": 1790452873.82422
+      },
+      "click_or_event": 1790452872.542,
+      "accepted": 1790452872.664284,
+      "api_response": 1790452872.671,
+      "freshness_observed": 1790452873.982,
+      "rendered": 1790452874.105
+    },
+    {
+      "run": {
+        "connected": 1790452876.699867,
+        "run_finished": 1790452876.775361,
+        "lock_acquired": 1790452875.480439,
+        "worker_started": 1790452875.477968,
+        "connect_started": 1790452875.489154,
+        "first_fetch_started": 1790452876.716579,
+        "first_ingestion_started": 1790452876.718954,
+        "first_message_committed": 1790452876.757958
+      },
+      "click_or_event": 1790452875.482,
+      "accepted": 1790452875.59785,
+      "api_response": 1790452875.608,
+      "freshness_observed": 1790452876.964,
+      "rendered": 1790452877.101
+    },
+    {
+      "run": {
+        "connected": 1790452879.712496,
+        "run_finished": 1790452879.783137,
+        "lock_acquired": 1790452878.487827,
+        "worker_started": 1790452878.484426,
+        "connect_started": 1790452878.499235,
+        "first_fetch_started": 1790452879.738668,
+        "first_ingestion_started": 1790452879.741423,
+        "first_message_committed": 1790452879.772387
+      },
+      "click_or_event": 1790452878.492,
+      "accepted": 1790452878.619836,
+      "api_response": 1790452878.63,
+      "freshness_observed": 1790452879.896,
+      "rendered": 1790452879.993
+    },
+    {
+      "run": {
+        "connected": 1790452882.610102,
+        "run_finished": 1790452882.676667,
+        "lock_acquired": 1790452881.388368,
+        "worker_started": 1790452881.385375,
+        "connect_started": 1790452881.398074,
+        "first_fetch_started": 1790452882.628288,
+        "first_ingestion_started": 1790452882.631354,
+        "first_message_committed": 1790452882.661128
+      },
+      "click_or_event": 1790452881.397,
+      "accepted": 1790452881.50437,
+      "api_response": 1790452881.511,
+      "freshness_observed": 1790452882.749,
+      "rendered": 1790452882.968
+    },
+    {
+      "run": {
+        "connected": 1790452885.512214,
+        "run_finished": 1790452885.569516,
+        "lock_acquired": 1790452884.292079,
+        "worker_started": 1790452884.288302,
+        "connect_started": 1790452884.302676,
+        "first_fetch_started": 1790452885.529055,
+        "first_ingestion_started": 1790452885.531759,
+        "first_message_committed": 1790452885.556408
+      },
+      "click_or_event": 1790452884.294,
+      "accepted": 1790452884.418527,
+      "api_response": 1790452884.437,
+      "freshness_observed": 1790452885.839,
+      "rendered": 1790452885.946
+    },
+    {
+      "run": {
+        "connected": 1790452888.385875,
+        "run_finished": 1790452888.464523,
+        "lock_acquired": 1790452887.162596,
+        "worker_started": 1790452887.160108,
+        "connect_started": 1790452887.173549,
+        "first_fetch_started": 1790452888.408006,
+        "first_ingestion_started": 1790452888.411205,
+        "first_message_committed": 1790452888.45351
+      },
+      "click_or_event": 1790452887.165,
+      "accepted": 1790452887.280509,
+      "api_response": 1790452887.288,
+      "freshness_observed": 1790452888.611,
+      "rendered": 1790452888.713
+    },
+    {
+      "run": {
+        "connected": 1790452891.273483,
+        "run_finished": 1790452891.344445,
+        "lock_acquired": 1790452890.052138,
+        "worker_started": 1790452890.048352,
+        "connect_started": 1790452890.062866,
+        "first_fetch_started": 1790452891.289372,
+        "first_ingestion_started": 1790452891.292024,
+        "first_message_committed": 1790452891.329048
+      },
+      "click_or_event": 1790452890.052,
+      "accepted": 1790452890.176706,
+      "api_response": 1790452890.184,
+      "freshness_observed": 1790452891.473,
+      "rendered": 1790452891.575
+    },
+    {
+      "run": {
+        "connected": 1790452894.253004,
+        "run_finished": 1790452894.336608,
+        "lock_acquired": 1790452893.029398,
+        "worker_started": 1790452893.026964,
+        "connect_started": 1790452893.041374,
+        "first_fetch_started": 1790452894.27635,
+        "first_ingestion_started": 1790452894.280735,
+        "first_message_committed": 1790452894.317876
+      },
+      "click_or_event": 1790452893.055,
+      "accepted": 1790452893.163446,
+      "api_response": 1790452893.17,
+      "freshness_observed": 1790452894.502,
+      "rendered": 1790452894.611
+    },
+    {
+      "run": {
+        "connected": 1790452897.183776,
+        "run_finished": 1790452897.252826,
+        "lock_acquired": 1790452895.963355,
+        "worker_started": 1790452895.9606,
+        "connect_started": 1790452895.972098,
+        "first_fetch_started": 1790452897.204396,
+        "first_ingestion_started": 1790452897.207391,
+        "first_message_committed": 1790452897.237435
+      },
+      "click_or_event": 1790452895.967,
+      "accepted": 1790452896.080659,
+      "api_response": 1790452896.088,
+      "freshness_observed": 1790452897.347,
+      "rendered": 1790452897.448
+    },
+    {
+      "run": {
+        "connected": 1790452900.104086,
+        "run_finished": 1790452900.170521,
+        "lock_acquired": 1790452898.876286,
+        "worker_started": 1790452898.873342,
+        "connect_started": 1790452898.889851,
+        "first_fetch_started": 1790452900.124969,
+        "first_ingestion_started": 1790452900.128109,
+        "first_message_committed": 1790452900.155548
+      },
+      "click_or_event": 1790452898.885,
+      "accepted": 1790452899.018765,
+      "api_response": 1790452899.027,
+      "freshness_observed": 1790452900.297,
+      "rendered": 1790452900.397
+    },
+    {
+      "run": {
+        "connected": 1790452903.072483,
+        "run_finished": 1790452903.167605,
+        "lock_acquired": 1790452901.854931,
+        "worker_started": 1790452901.852008,
+        "connect_started": 1790452901.862332,
+        "first_fetch_started": 1790452903.091833,
+        "first_ingestion_started": 1790452903.095773,
+        "first_message_committed": 1790452903.147895
+      },
+      "click_or_event": 1790452901.857,
+      "accepted": 1790452901.975192,
+      "api_response": 1790452901.983,
+      "freshness_observed": 1790452903.731,
+      "rendered": 1790452903.845
+    },
+    {
+      "run": {
+        "connected": 1790452906.090183,
+        "run_finished": 1790452906.167929,
+        "lock_acquired": 1790452904.863785,
+        "worker_started": 1790452904.860993,
+        "connect_started": 1790452904.874494,
+        "first_fetch_started": 1790452906.113302,
+        "first_ingestion_started": 1790452906.116494,
+        "first_message_committed": 1790452906.15056
+      },
+      "click_or_event": 1790452904.868,
+      "accepted": 1790452904.9981,
+      "api_response": 1790452905.004,
+      "freshness_observed": 1790452906.29,
+      "rendered": 1790452906.495
+    },
+    {
+      "run": {
+        "connected": 1790452909.225208,
+        "run_finished": 1790452909.353678,
+        "lock_acquired": 1790452908.000113,
+        "worker_started": 1790452907.997068,
+        "connect_started": 1790452908.014013,
+        "first_fetch_started": 1790452909.245503,
+        "first_ingestion_started": 1790452909.248563,
+        "first_message_committed": 1790452909.280883
+      },
+      "click_or_event": 1790452907.862,
+      "accepted": 1790452907.991548,
+      "api_response": 1790452908.009,
+      "freshness_observed": 1790452909.303,
+      "rendered": 1790452909.415
+    },
+    {
+      "run": {
+        "connected": 1790452911.030337,
+        "run_finished": 1790452912.743673,
+        "lock_acquired": 1790452909.774629,
+        "worker_started": 1790452909.77168,
+        "connect_started": 1790452909.801656,
+        "first_fetch_started": 1790452911.061622,
+        "first_ingestion_started": 1790452911.065228,
+        "first_message_committed": 1790452912.723205
+      },
+      "click_or_event": 1790452909.776,
+      "accepted": 1790452909.889251,
+      "api_response": 1790452909.9,
+      "freshness_observed": 1790452913.103,
+      "rendered": 1790452913.223
+    },
+    {
+      "run": {
+        "connected": 1790452915.676178,
+        "run_finished": 1790452915.742692,
+        "lock_acquired": 1790452914.452297,
+        "worker_started": 1790452914.449001,
+        "connect_started": 1790452914.462957,
+        "first_fetch_started": 1790452915.690235,
+        "first_ingestion_started": 1790452915.6948,
+        "first_message_committed": 1790452915.730169
+      },
+      "click_or_event": 1790452914.455,
+      "accepted": 1790452914.607389,
+      "api_response": 1790452914.615,
+      "freshness_observed": 1790452916.018,
+      "rendered": 1790452916.17
+    },
+    {
+      "run": {
+        "connected": 1790452918.732268,
+        "run_finished": 1790452918.811055,
+        "lock_acquired": 1790452917.510334,
+        "worker_started": 1790452917.507615,
+        "connect_started": 1790452917.519504,
+        "first_fetch_started": 1790452918.754339,
+        "first_ingestion_started": 1790452918.757691,
+        "first_message_committed": 1790452918.794035
+      },
+      "click_or_event": 1790452917.513,
+      "accepted": 1790452917.625142,
+      "api_response": 1790452917.636,
+      "freshness_observed": 1790452918.906,
+      "rendered": 1790452919.011
+    },
+    {
+      "run": {
+        "connected": 1790452922.867234,
+        "run_finished": 1790452922.953552,
+        "lock_acquired": 1790452921.641108,
+        "worker_started": 1790452921.637867,
+        "connect_started": 1790452921.652011,
+        "first_fetch_started": 1790452922.886431,
+        "first_ingestion_started": 1790452922.889857,
+        "first_message_committed": 1790452922.939905
+      },
+      "click_or_event": 1790452921.659,
+      "accepted": 1790452922.539478,
+      "api_response": 1790452922.573,
+      "freshness_observed": 1790452923.32,
+      "rendered": 1790452923.558
+    },
+    {
+      "run": {
+        "connected": 1790452926.187279,
+        "run_finished": 1790452926.266809,
+        "lock_acquired": 1790452924.962756,
+        "worker_started": 1790452924.957187,
+        "connect_started": 1790452924.973448,
+        "first_fetch_started": 1790452926.211182,
+        "first_ingestion_started": 1790452926.214665,
+        "first_message_committed": 1790452926.25184
+      },
+      "click_or_event": 1790452924.963,
+      "accepted": 1790452925.082929,
+      "api_response": 1790452925.094,
+      "freshness_observed": 1790452926.339,
+      "rendered": 1790452926.453
+    },
+    {
+      "run": {
+        "connected": 1790452929.134528,
+        "run_finished": 1790452929.216125,
+        "lock_acquired": 1790452927.913226,
+        "worker_started": 1790452927.910243,
+        "connect_started": 1790452927.921853,
+        "first_fetch_started": 1790452929.157139,
+        "first_ingestion_started": 1790452929.16011,
+        "first_message_committed": 1790452929.203986
+      },
+      "click_or_event": 1790452927.916,
+      "accepted": 1790452928.025538,
+      "api_response": 1790452928.037,
+      "freshness_observed": 1790452929.522,
+      "rendered": 1790452929.789
+    },
+    {
+      "run": {
+        "connected": 1790452932.037628,
+        "run_finished": 1790452932.120999,
+        "lock_acquired": 1790452930.815114,
+        "worker_started": 1790452930.812451,
+        "connect_started": 1790452930.82564,
+        "first_fetch_started": 1790452932.058541,
+        "first_ingestion_started": 1790452932.061931,
+        "first_message_committed": 1790452932.103611
+      },
+      "click_or_event": 1790452930.819,
+      "accepted": 1790452930.936032,
+      "api_response": 1790452930.946,
+      "freshness_observed": 1790452932.188,
+      "rendered": 1790452932.408
+    },
+    {
+      "run": {
+        "connected": 1790452934.982537,
+        "run_finished": 1790452935.060222,
+        "lock_acquired": 1790452933.760816,
+        "worker_started": 1790452933.757935,
+        "connect_started": 1790452933.771375,
+        "first_fetch_started": 1790452934.999206,
+        "first_ingestion_started": 1790452935.001987,
+        "first_message_committed": 1790452935.042525
+      },
+      "click_or_event": 1790452933.763,
+      "accepted": 1790452933.88105,
+      "api_response": 1790452933.892,
+      "freshness_observed": 1790452935.058,
+      "rendered": 1790452935.277
+    },
+    {
+      "run": {
+        "connected": 1790452938.573409,
+        "run_finished": 1790452938.64262,
+        "lock_acquired": 1790452937.347579,
+        "worker_started": 1790452937.344746,
+        "connect_started": 1790452937.361918,
+        "first_fetch_started": 1790452938.593802,
+        "first_ingestion_started": 1790452938.597049,
+        "first_message_committed": 1790452938.625121
+      },
+      "click_or_event": 1790452937.355,
+      "accepted": 1790452937.487855,
+      "api_response": 1790452937.501,
+      "freshness_observed": 1790452938.717,
+      "rendered": 1790452938.717
+    },
+    {
+      "run": {
+        "connected": 1790452941.485989,
+        "run_finished": 1790452941.547546,
+        "lock_acquired": 1790452940.265872,
+        "worker_started": 1790452940.262063,
+        "connect_started": 1790452940.274419,
+        "first_fetch_started": 1790452941.503763,
+        "first_ingestion_started": 1790452941.506813,
+        "first_message_committed": 1790452941.535733
+      },
+      "click_or_event": 1790452940.268,
+      "accepted": 1790452940.393555,
+      "api_response": 1790452940.404,
+      "freshness_observed": 1790452942.005,
+      "rendered": 1790452942.224
+    }
+  ],
+  "G": [
+    {
+      "run": {
+        "connected": 1790452944.333063,
+        "run_finished": 1790452944.414857,
+        "lock_acquired": 1790452943.310621,
+        "worker_started": 1790452943.308232,
+        "connect_started": 1790452943.318954,
+        "first_fetch_started": 1790452944.355223,
+        "first_ingestion_started": 1790452944.358852,
+        "first_message_committed": 1790452944.39817
+      },
+      "click_or_event": 1790452943.52,
+      "accepted": 1790452943.635042,
+      "api_response": 1790452943.647,
+      "freshness_observed": 1790452944.515,
+      "rendered": 1790452944.515
+    },
+    {
+      "run": {
+        "connected": 1790452947.015286,
+        "run_finished": 1790452947.100404,
+        "lock_acquired": 1790452945.99424,
+        "worker_started": 1790452945.990182,
+        "connect_started": 1790452946.003943,
+        "first_fetch_started": 1790452947.040935,
+        "first_ingestion_started": 1790452947.045028,
+        "first_message_committed": 1790452947.082611
+      },
+      "click_or_event": 1790452946.261,
+      "accepted": 1790452946.374691,
+      "api_response": 1790452946.385,
+      "freshness_observed": 1790452947.516,
+      "rendered": 1790452947.627
+    },
+    {
+      "run": {
+        "connected": 1790452949.804298,
+        "run_finished": 1790452949.879902,
+        "lock_acquired": 1790452948.787288,
+        "worker_started": 1790452948.784436,
+        "connect_started": 1790452948.794997,
+        "first_fetch_started": 1790452949.826981,
+        "first_ingestion_started": 1790452949.830036,
+        "first_message_committed": 1790452949.863125
+      },
+      "click_or_event": 1790452948.998,
+      "accepted": 1790452949.115212,
+      "api_response": 1790452949.124,
+      "freshness_observed": 1790452949.992,
+      "rendered": 1790452949.992
+    },
+    {
+      "run": {
+        "connected": 1790452952.538098,
+        "run_finished": 1790452952.613162,
+        "lock_acquired": 1790452951.516252,
+        "worker_started": 1790452951.513117,
+        "connect_started": 1790452951.525529,
+        "first_fetch_started": 1790452952.558772,
+        "first_ingestion_started": 1790452952.561606,
+        "first_message_committed": 1790452952.601177
+      },
+      "click_or_event": 1790452951.722,
+      "accepted": 1790452951.842034,
+      "api_response": 1790452951.851,
+      "freshness_observed": 1790452952.961,
+      "rendered": 1790452953.066
+    },
+    {
+      "run": {
+        "connected": 1790452955.388707,
+        "run_finished": 1790452955.453123,
+        "lock_acquired": 1790452954.367838,
+        "worker_started": 1790452954.365551,
+        "connect_started": 1790452954.376706,
+        "first_fetch_started": 1790452955.406317,
+        "first_ingestion_started": 1790452955.409439,
+        "first_message_committed": 1790452955.436801
+      },
+      "click_or_event": 1790452954.583,
+      "accepted": 1790452954.696146,
+      "api_response": 1790452954.704,
+      "freshness_observed": 1790452955.833,
+      "rendered": 1790452955.942
+    },
+    {
+      "run": {
+        "connected": 1790452958.300241,
+        "run_finished": 1790452958.361167,
+        "lock_acquired": 1790452957.278343,
+        "worker_started": 1790452957.276382,
+        "connect_started": 1790452957.287948,
+        "first_fetch_started": 1790452958.321413,
+        "first_ingestion_started": 1790452958.324352,
+        "first_message_committed": 1790452958.346465
+      },
+      "click_or_event": 1790452957.513,
+      "accepted": 1790452957.634939,
+      "api_response": 1790452957.641,
+      "freshness_observed": 1790452958.384,
+      "rendered": 1790452958.384
+    },
+    {
+      "run": {
+        "connected": 1790452960.965198,
+        "run_finished": 1790452961.030512,
+        "lock_acquired": 1790452959.944862,
+        "worker_started": 1790452959.941968,
+        "connect_started": 1790452959.954071,
+        "first_fetch_started": 1790452960.978265,
+        "first_ingestion_started": 1790452960.980688,
+        "first_message_committed": 1790452961.010796
+      },
+      "click_or_event": 1790452960.287,
+      "accepted": 1790452960.405427,
+      "api_response": 1790452960.411,
+      "freshness_observed": 1790452961.547,
+      "rendered": 1790452961.772
+    },
+    {
+      "run": {
+        "connected": 1790452963.675163,
+        "run_finished": 1790452963.742468,
+        "lock_acquired": 1790452962.652487,
+        "worker_started": 1790452962.648624,
+        "connect_started": 1790452962.662721,
+        "first_fetch_started": 1790452963.692872,
+        "first_ingestion_started": 1790452963.696023,
+        "first_message_committed": 1790452963.727255
+      },
+      "click_or_event": 1790452962.963,
+      "accepted": 1790452963.069457,
+      "api_response": 1790452963.077,
+      "freshness_observed": 1790452963.884,
+      "rendered": 1790452964.336
+    },
+    {
+      "run": {
+        "connected": 1790452966.449656,
+        "run_finished": 1790452966.525621,
+        "lock_acquired": 1790452965.42525,
+        "worker_started": 1790452965.422663,
+        "connect_started": 1790452965.436184,
+        "first_fetch_started": 1790452966.466423,
+        "first_ingestion_started": 1790452966.470932,
+        "first_message_committed": 1790452966.507505
+      },
+      "click_or_event": 1790452965.669,
+      "accepted": 1790452965.789104,
+      "api_response": 1790452965.795,
+      "freshness_observed": 1790452966.579,
+      "rendered": 1790452966.579
+    },
+    {
+      "run": {
+        "connected": 1790452969.354999,
+        "run_finished": 1790452969.425861,
+        "lock_acquired": 1790452968.331682,
+        "worker_started": 1790452968.328542,
+        "connect_started": 1790452968.342902,
+        "first_fetch_started": 1790452969.374424,
+        "first_ingestion_started": 1790452969.378079,
+        "first_message_committed": 1790452969.412441
+      },
+      "click_or_event": 1790452968.725,
+      "accepted": 1790452968.877323,
+      "api_response": 1790452968.886,
+      "freshness_observed": 1790452969.834,
+      "rendered": 1790452969.941
+    },
+    {
+      "run": {
+        "connected": 1790452972.030311,
+        "run_finished": 1790452972.102111,
+        "lock_acquired": 1790452971.010103,
+        "worker_started": 1790452971.007032,
+        "connect_started": 1790452971.018359,
+        "first_fetch_started": 1790452972.043582,
+        "first_ingestion_started": 1790452972.04621,
+        "first_message_committed": 1790452972.085368
+      },
+      "click_or_event": 1790452971.226,
+      "accepted": 1790452971.334713,
+      "api_response": 1790452971.34,
+      "freshness_observed": 1790452972.449,
+      "rendered": 1790452972.589
+    },
+    {
+      "run": {
+        "connected": 1790452974.825017,
+        "run_finished": 1790452974.902446,
+        "lock_acquired": 1790452973.801638,
+        "worker_started": 1790452973.798355,
+        "connect_started": 1790452973.812121,
+        "first_fetch_started": 1790452974.843515,
+        "first_ingestion_started": 1790452974.848219,
+        "first_message_committed": 1790452974.885278
+      },
+      "click_or_event": 1790452974.011,
+      "accepted": 1790452974.129166,
+      "api_response": 1790452974.142,
+      "freshness_observed": 1790452975.459,
+      "rendered": 1790452975.566
+    },
+    {
+      "run": {
+        "connected": 1790452977.547505,
+        "run_finished": 1790452977.619972,
+        "lock_acquired": 1790452976.524969,
+        "worker_started": 1790452976.521986,
+        "connect_started": 1790452976.534584,
+        "first_fetch_started": 1790452977.568662,
+        "first_ingestion_started": 1790452977.571867,
+        "first_message_committed": 1790452977.604073
+      },
+      "click_or_event": 1790452976.732,
+      "accepted": 1790452976.869326,
+      "api_response": 1790452976.882,
+      "freshness_observed": 1790452977.999,
+      "rendered": 1790452978.128
+    },
+    {
+      "run": {
+        "connected": 1790452980.227552,
+        "run_finished": 1790452980.304064,
+        "lock_acquired": 1790452979.20258,
+        "worker_started": 1790452979.199682,
+        "connect_started": 1790452979.216054,
+        "first_fetch_started": 1790452980.248573,
+        "first_ingestion_started": 1790452980.251697,
+        "first_message_committed": 1790452980.285725
+      },
+      "click_or_event": 1790452979.423,
+      "accepted": 1790452979.552877,
+      "api_response": 1790452979.559,
+      "freshness_observed": 1790452980.96,
+      "rendered": 1790452981.121
+    },
+    {
+      "run": {
+        "connected": 1790452982.977069,
+        "run_finished": 1790452983.041687,
+        "lock_acquired": 1790452981.956938,
+        "worker_started": 1790452981.953904,
+        "connect_started": 1790452981.966187,
+        "first_fetch_started": 1790452982.994984,
+        "first_ingestion_started": 1790452982.998479,
+        "first_message_committed": 1790452983.023923
+      },
+      "click_or_event": 1790452982.177,
+      "accepted": 1790452982.296524,
+      "api_response": 1790452982.307,
+      "freshness_observed": 1790452983.161,
+      "rendered": 1790452983.161
+    },
+    {
+      "run": {
+        "connected": 1790452985.655369,
+        "run_finished": 1790452985.722127,
+        "lock_acquired": 1790452984.637143,
+        "worker_started": 1790452984.63401,
+        "connect_started": 1790452984.646148,
+        "first_fetch_started": 1790452985.673212,
+        "first_ingestion_started": 1790452985.676312,
+        "first_message_committed": 1790452985.707101
+      },
+      "click_or_event": 1790452984.848,
+      "accepted": 1790452984.97527,
+      "api_response": 1790452985.004,
+      "freshness_observed": 1790452986.145,
+      "rendered": 1790452986.477
+    },
+    {
+      "run": {
+        "connected": 1790452988.486393,
+        "run_finished": 1790452988.568432,
+        "lock_acquired": 1790452987.468081,
+        "worker_started": 1790452987.466338,
+        "connect_started": 1790452987.475325,
+        "first_fetch_started": 1790452988.503783,
+        "first_ingestion_started": 1790452988.50737,
+        "first_message_committed": 1790452988.550116
+      },
+      "click_or_event": 1790452987.701,
+      "accepted": 1790452987.811038,
+      "api_response": 1790452987.818,
+      "freshness_observed": 1790452988.934,
+      "rendered": 1790452989.043
+    },
+    {
+      "run": {
+        "connected": 1790452991.510901,
+        "run_finished": 1790452991.58011,
+        "lock_acquired": 1790452990.49073,
+        "worker_started": 1790452990.48825,
+        "connect_started": 1790452990.500158,
+        "first_fetch_started": 1790452991.527517,
+        "first_ingestion_started": 1790452991.530477,
+        "first_message_committed": 1790452991.56283
+      },
+      "click_or_event": 1790452990.722,
+      "accepted": 1790452990.852748,
+      "api_response": 1790452990.864,
+      "freshness_observed": 1790452991.699,
+      "rendered": 1790452991.699
+    },
+    {
+      "run": {
+        "connected": 1790452994.387648,
+        "run_finished": 1790452994.468909,
+        "lock_acquired": 1790452993.364152,
+        "worker_started": 1790452993.358645,
+        "connect_started": 1790452993.374684,
+        "first_fetch_started": 1790452994.410688,
+        "first_ingestion_started": 1790452994.413902,
+        "first_message_committed": 1790452994.449152
+      },
+      "click_or_event": 1790452993.607,
+      "accepted": 1790452993.736718,
+      "api_response": 1790452993.745,
+      "freshness_observed": 1790452994.864,
+      "rendered": 1790452994.976
+    },
+    {
+      "run": {
+        "connected": 1790452997.094275,
+        "run_finished": 1790452997.169181,
+        "lock_acquired": 1790452996.076212,
+        "worker_started": 1790452996.073888,
+        "connect_started": 1790452996.084099,
+        "first_fetch_started": 1790452997.115612,
+        "first_ingestion_started": 1790452997.119015,
+        "first_message_committed": 1790452997.147471
+      },
+      "click_or_event": 1790452996.391,
+      "accepted": 1790452996.538763,
+      "api_response": 1790452996.547,
+      "freshness_observed": 1790452997.18,
+      "rendered": 1790452997.18
+    },
+    {
+      "run": {
+        "connected": 1790452999.791214,
+        "run_finished": 1790452999.867905,
+        "lock_acquired": 1790452998.769491,
+        "worker_started": 1790452998.76759,
+        "connect_started": 1790452998.778286,
+        "first_fetch_started": 1790452999.815539,
+        "first_ingestion_started": 1790452999.818721,
+        "first_message_committed": 1790452999.851287
+      },
+      "click_or_event": 1790452998.964,
+      "accepted": 1790452999.088035,
+      "api_response": 1790452999.099,
+      "freshness_observed": 1790453000.239,
+      "rendered": 1790453000.366
+    },
+    {
+      "run": {
+        "connected": 1790453002.521358,
+        "run_finished": 1790453002.603259,
+        "lock_acquired": 1790453001.497046,
+        "worker_started": 1790453001.492837,
+        "connect_started": 1790453001.507512,
+        "first_fetch_started": 1790453002.542477,
+        "first_ingestion_started": 1790453002.545887,
+        "first_message_committed": 1790453002.582432
+      },
+      "click_or_event": 1790453001.714,
+      "accepted": 1790453001.830594,
+      "api_response": 1790453001.842,
+      "freshness_observed": 1790453002.691,
+      "rendered": 1790453002.691
+    },
+    {
+      "run": {
+        "connected": 1790453005.237774,
+        "run_finished": 1790453005.308151,
+        "lock_acquired": 1790453004.213659,
+        "worker_started": 1790453004.209905,
+        "connect_started": 1790453004.223918,
+        "first_fetch_started": 1790453005.254975,
+        "first_ingestion_started": 1790453005.258229,
+        "first_message_committed": 1790453005.293773
+      },
+      "click_or_event": 1790453004.468,
+      "accepted": 1790453004.603362,
+      "api_response": 1790453004.612,
+      "freshness_observed": 1790453005.378,
+      "rendered": 1790453005.378
+    },
+    {
+      "run": {
+        "connected": 1790453007.948706,
+        "run_finished": 1790453008.022603,
+        "lock_acquired": 1790453006.92577,
+        "worker_started": 1790453006.922831,
+        "connect_started": 1790453006.935502,
+        "first_fetch_started": 1790453007.963115,
+        "first_ingestion_started": 1790453007.965834,
+        "first_message_committed": 1790453008.004784
+      },
+      "click_or_event": 1790453007.21,
+      "accepted": 1790453007.324028,
+      "api_response": 1790453007.331,
+      "freshness_observed": 1790453008.642,
+      "rendered": 1790453008.77
+    },
+    {
+      "run": {
+        "connected": 1790453010.748371,
+        "run_finished": 1790453010.816759,
+        "lock_acquired": 1790453009.725139,
+        "worker_started": 1790453009.721826,
+        "connect_started": 1790453009.73455,
+        "first_fetch_started": 1790453010.770116,
+        "first_ingestion_started": 1790453010.772984,
+        "first_message_committed": 1790453010.801169
+      },
+      "click_or_event": 1790453009.929,
+      "accepted": 1790453010.041943,
+      "api_response": 1790453010.052,
+      "freshness_observed": 1790453011.567,
+      "rendered": 1790453011.7
+    },
+    {
+      "run": {
+        "connected": 1790453013.496964,
+        "run_finished": 1790453013.559431,
+        "lock_acquired": 1790453012.480329,
+        "worker_started": 1790453012.477121,
+        "connect_started": 1790453012.487185,
+        "first_fetch_started": 1790453013.513321,
+        "first_ingestion_started": 1790453013.517178,
+        "first_message_committed": 1790453013.547176
+      },
+      "click_or_event": 1790453012.678,
+      "accepted": 1790453012.799066,
+      "api_response": 1790453012.811,
+      "freshness_observed": 1790453013.936,
+      "rendered": 1790453014.042
+    },
+    {
+      "run": {
+        "connected": 1790453016.314231,
+        "run_finished": 1790453016.387444,
+        "lock_acquired": 1790453015.291372,
+        "worker_started": 1790453015.288905,
+        "connect_started": 1790453015.301532,
+        "first_fetch_started": 1790453016.335829,
+        "first_ingestion_started": 1790453016.339029,
+        "first_message_committed": 1790453016.373013
+      },
+      "click_or_event": 1790453015.481,
+      "accepted": 1790453015.596987,
+      "api_response": 1790453015.608,
+      "freshness_observed": 1790453016.746,
+      "rendered": 1790453016.892
+    },
+    {
+      "run": {
+        "connected": 1790453018.991108,
+        "run_finished": 1790453019.067275,
+        "lock_acquired": 1790453017.965478,
+        "worker_started": 1790453017.961666,
+        "connect_started": 1790453017.980021,
+        "first_fetch_started": 1790453019.01251,
+        "first_ingestion_started": 1790453019.015995,
+        "first_message_committed": 1790453019.049712
+      },
+      "click_or_event": 1790453018.278,
+      "accepted": 1790453018.398735,
+      "api_response": 1790453018.407,
+      "freshness_observed": 1790453019.282,
+      "rendered": 1790453019.282
+    },
+    {
+      "run": {
+        "connected": 1790453021.704541,
+        "run_finished": 1790453021.772146,
+        "lock_acquired": 1790453020.682265,
+        "worker_started": 1790453020.68021,
+        "connect_started": 1790453020.692561,
+        "first_fetch_started": 1790453021.722421,
+        "first_ingestion_started": 1790453021.729597,
+        "first_message_committed": 1790453021.752255
+      },
+      "click_or_event": 1790453020.934,
+      "accepted": 1790453021.048362,
+      "api_response": 1790453021.059,
+      "freshness_observed": 1790453021.771,
+      "rendered": 1790453021.771
+    },
+    {
+      "run": {
+        "connected": 1790453024.594143,
+        "run_finished": 1790453024.674898,
+        "lock_acquired": 1790453023.575703,
+        "worker_started": 1790453023.573074,
+        "connect_started": 1790453023.583314,
+        "first_fetch_started": 1790453024.615399,
+        "first_ingestion_started": 1790453024.618993,
+        "first_message_committed": 1790453024.658276
+      },
+      "click_or_event": 1790453023.782,
+      "accepted": 1790453023.899219,
+      "api_response": 1790453023.907,
+      "freshness_observed": 1790453025.036,
+      "rendered": 1790453025.381
+    }
+  ]
+}

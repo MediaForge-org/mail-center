@@ -12,6 +12,11 @@ class AccountPresenter
     {
         $incoming = $account->incoming;
 
+        $watched = DB::table('sync_watchers')->join('remote_folders', 'remote_folders.id', '=', 'sync_watchers.remote_folder_id')
+            ->where('sync_watchers.mail_account_id', $account->id)->where('state', 'watching')->where('lease_until', '>', now())
+            ->where('remote_folders.sync_enabled', true)->whereNull('remote_folders.removed_at')->orderBy('remote_folders.id')
+            ->get(['remote_folders.name', 'remote_folders.role']);
+
         return [
             'id' => $account->id, 'provider' => $account->provider,
             'display_name' => $account->display_name, 'email_address' => $account->email_address,
@@ -24,6 +29,18 @@ class AccountPresenter
             'seen_writeback_error' => $account->seen_writeback_error,
             'enabled' => $account->enabled, 'sync_enabled' => $account->sync_enabled,
             'sync_interval_seconds' => $account->sync_interval_seconds,
+            'sync_request' => [
+                'generation' => $account->sync_requested_generation,
+                'completed_generation' => $account->sync_completed_generation,
+                'state' => $account->sync_started_generation > $account->sync_completed_generation ? 'syncing'
+                    : ($account->sync_requested_generation > $account->sync_completed_generation ? 'queued' : 'complete'),
+            ],
+            'realtime' => [
+                'state' => $watched->isNotEmpty() && $account->enabled && $account->sync_enabled ? 'watching' : 'polling',
+                'folders' => $watched->pluck('name')->all(), 'roles' => $watched->pluck('role')->all(),
+            ],
+            'backfilling_folders' => $account->remoteFolders()->where('sync_enabled', true)->whereNull('removed_at')
+                ->whereNull('backfill_completed_at')->pluck('name')->all(),
             'sync_status' => $account->sync_status, 'next_sync_at' => $account->next_sync_at,
             'last_sync_started_at' => $account->last_sync_started_at,
             'last_sync_finished_at' => $account->last_sync_finished_at,

@@ -27,7 +27,6 @@ async function load(more = false) {
             expanded.value = new Set(props.messageId === null ? [] : [props.messageId]);
         }
         selected = props.messageId;
-        cursor.value = null;
     }
     const active = controller;
     if (props.messageId === null || !active) return;
@@ -40,10 +39,26 @@ async function load(more = false) {
             active.signal,
         );
         if (active.signal.aborted) return;
-        if (!more) items.value = [];
-        const known = new Set(items.value.map((item) => item.id));
-        items.value = [...items.value, ...page.data.filter((item) => !known.has(item.id))];
-        cursor.value = page.next_cursor;
+        if (more) {
+            const known = new Set(items.value.map((item) => item.id));
+            items.value = [...items.value, ...page.data.filter((item) => !known.has(item.id))];
+            cursor.value = page.next_cursor;
+        } else {
+            // Refresh in place: keep already-loaded later pages and skip identical results.
+            const first = new Set(page.data.map((item) => item.id));
+            const last = page.data.at(-1);
+            const tail =
+                last && page.next_cursor !== null && cursor.value !== null
+                    ? items.value.filter(
+                          (item) =>
+                              !first.has(item.id) &&
+                              Date.parse(item.sort_date) >= Date.parse(last.sort_date),
+                      )
+                    : [];
+            const merged = tail.length ? [...page.data, ...tail] : page.data;
+            if (JSON.stringify(merged) !== JSON.stringify(items.value)) items.value = merged;
+            if (!tail.length) cursor.value = page.next_cursor;
+        }
     } catch {
         if (!active.signal.aborted) error.value = true;
     } finally {
@@ -68,7 +83,9 @@ onBeforeUnmount(() => controller?.abort());
             <span>Conversation · oldest first</span>
             <button class="text-button" type="button" @click="$emit('close')">Close message</button>
         </div>
-        <p v-if="loading" class="conversation-status" role="status">Loading conversation…</p>
+        <p v-if="loading && !items.length" class="conversation-status" role="status">
+            Loading conversation…
+        </p>
         <p v-if="error" class="conversation-status" role="alert">
             Unable to load the conversation.
             <button class="text-button" type="button" @click="load(!!items.length)">

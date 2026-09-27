@@ -11,7 +11,9 @@ use App\Models\User;
 use App\Organization\SystemFolders;
 use App\Sync\AccountSyncLock;
 use App\Sync\SyncAborted;
+use App\Sync\SyncRequests;
 use App\Sync\SyncRunner;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
@@ -60,15 +62,15 @@ it('synchronizes INBOX initially, newest first, and stays idempotent', function 
     expect(DB::table('sync_runs')->where('mail_account_id', $account->id)->pluck('status')->all())->toBe(['success', 'success']);
 });
 
-it('only synchronizes INBOX by default and never issues a remote write', function () {
+it('synchronizes only Inbox and Sent by default and never issues a remote write', function () {
     $this->imap->mailbox('Sent', 'sent')->mailbox('Archive');
     $this->imap->add(FakeImapClient::raw('Inbox'));
     $this->imap->add(FakeImapClient::raw('Sent one'), [], 'Sent');
 
     ($this->runner)();
 
-    expect(DB::table('messages')->count())->toBe(1);
-    expect($this->account->remoteFolders()->where('sync_enabled', true)->pluck('raw_name')->all())->toBe(['INBOX']);
+    expect(DB::table('messages')->count())->toBe(2);
+    expect($this->account->remoteFolders()->where('sync_enabled', true)->orderBy('raw_name')->pluck('raw_name')->all())->toBe(['INBOX', 'Sent']);
     expect($this->account->remoteFolders()->count())->toBe(3);
     foreach ($this->imap->calls as $call) {
         expect($call)->toMatch('/^(CONNECT|LIST|DISCONNECT|EXAMINE |UID SEARCH |UID FETCH )/');
@@ -418,4 +420,33 @@ it('persists sanitized HTML during ingestion and rebuilds stale output in a queu
     $job->handle(new EmailHtml);
     expect(DB::table('message_bodies')->value('html_sanitized'))->toBe($body->html_sanitized);
     expect(DB::table('messages')->count())->toBe(1);
+});
+
+it('treats a database deadlock as a lost race: aborted run, no failure count, a continuation is queued', function () {
+    Queue::fake();
+    $deadlock = new class('deadlock detected') extends PDOException
+    {
+        protected $code = '40P01';
+    };
+    $broken = new class($deadlock) extends FakeImapClient
+    {
+        public function __construct(private readonly Throwable $error)
+        {
+            parent::__construct();
+        }
+
+        public function folders(): array
+        {
+            throw new QueryException('pgsql', 'select 1', [], $this->error);
+        }
+    };
+    $this->app->instance(ImapClient::class, $broken);
+    app(SyncRequests::class)->request($this->account->id, 'idle');
+
+    expect(app(SyncRunner::class)->run($this->account->id, 'idle', true))->toBe('aborted');
+    $account = $this->account->refresh();
+    expect($account->sync_status)->not->toBe('backing_off')->and($account->consecutive_failures)->toBe(0)
+        ->and($account->last_error_code)->toBeNull();
+    expect(DB::table('sync_runs')->latest('id')->value('status'))->toBe('aborted');
+    expect($account->sync_requested_generation)->toBeGreaterThan($account->sync_completed_generation);
 });

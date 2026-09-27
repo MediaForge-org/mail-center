@@ -20,6 +20,9 @@ const messages = shallowRef<MessageListItem[]>([]);
 const cursor = ref<string | null>(null);
 const loading = ref(false);
 const error = ref(false);
+const refreshing = ref(false);
+let refreshPending = false;
+let refreshFailed = false;
 const emit = defineEmits<{ select: [id: number]; loaded: [] }>();
 const accountMap = computed(() => new Map(props.accounts.map((account) => [account.id, account])));
 const emptyText = computed(
@@ -32,6 +35,12 @@ const emptyText = computed(
             archive: 'Your Archive is empty.',
         })[props.view],
 );
+// Same ordering as the API: sort_date descending, then id descending.
+function isOlder(a: MessageListItem, b: MessageListItem): boolean {
+    const da = Date.parse(a.sort_date);
+    const db = Date.parse(b.sort_date);
+    return da < db || (da === db && a.id < b.id);
+}
 let controller: AbortController;
 let seen = new Set<number>();
 
@@ -46,41 +55,80 @@ watch(
             .filter((m) => props.view !== 'unread' || !m.is_read);
     },
 );
-async function loadPage() {
-    if (loading.value) return;
+async function loadPage(replace = false) {
+    if (loading.value) {
+        if (replace) refreshPending = true;
+        return;
+    }
+    replace ||= refreshFailed;
+    refreshFailed = false;
+    refreshing.value = replace;
+    if (replace) readOverrides.clear();
     const active = controller;
     loading.value = true;
     error.value = false;
     try {
-        const firstPage = cursor.value === null;
-        const page = await listMessages(props.view, cursor.value, active.signal, props.accountId);
+        const requestedCursor = replace ? null : cursor.value;
+        const firstPage = requestedCursor === null;
+        const page = await listMessages(
+            props.view,
+            requestedCursor,
+            active.signal,
+            props.accountId,
+        );
         if (active.signal.aborted) return;
+        if (replace) seen = new Set();
         const additions = page.data
             .map((message) =>
                 readOverrides.has(message.id)
                     ? { ...message, is_read: readOverrides.get(message.id)! }
                     : message,
             )
+            .filter((m) => props.view !== 'unread' || !m.is_read)
             .filter((message) => {
-                if (props.view === 'unread' && message.is_read) return false;
                 if (seen.has(message.id)) return false;
                 seen.add(message.id);
                 return true;
             });
-        messages.value = messages.value.concat(additions);
-        cursor.value = page.next_cursor;
-        if (firstPage) emit('loaded');
+        if (!replace) {
+            messages.value = messages.value.concat(additions);
+            cursor.value = page.next_cursor;
+        } else {
+            // Update the newest page in place and keep already-loaded older pages (and scroll position).
+            const previous = messages.value;
+            const oldest = page.data.at(-1);
+            const tail =
+                oldest && page.next_cursor !== null && cursor.value !== null
+                    ? previous.filter((m) => !seen.has(m.id) && isOlder(m, oldest))
+                    : [];
+            messages.value = tail.length ? [...additions, ...tail] : additions;
+            if (!tail.length) cursor.value = page.next_cursor;
+            seen = new Set(messages.value.map((m) => m.id));
+        }
+        if (firstPage && !replace) emit('loaded');
     } catch {
-        if (!active.signal.aborted) error.value = true;
+        if (!active.signal.aborted) {
+            error.value = true;
+            refreshFailed = replace;
+        }
     } finally {
-        if (!active.signal.aborted) loading.value = false;
+        if (!active.signal.aborted) {
+            loading.value = false;
+            refreshing.value = false;
+            if (refreshPending) {
+                refreshPending = false;
+                void loadPage(true);
+            }
+        }
     }
 }
 
 watch(
-    () => [props.view, props.accountId, props.refreshVersion],
+    () => [props.view, props.accountId],
     () => {
         controller?.abort();
+        refreshPending = false;
+        refreshFailed = false;
         readOverrides.clear();
         controller = new AbortController();
         messages.value = [];
@@ -90,6 +138,11 @@ watch(
         void loadPage();
     },
     { immediate: true },
+);
+// Same-scope invalidations coalesce; never starve an in-flight response or blank visible mail.
+watch(
+    () => props.refreshVersion,
+    () => void loadPage(true),
 );
 // Also cancel when switching to Accounts or leaving the workspace.
 onBeforeUnmount(() => controller.abort());
@@ -168,7 +221,15 @@ function dateLabel(value: string): string {
             </li>
         </ul>
         <div class="message-feed-footer" aria-live="polite">
-            <p v-if="loading">{{ messages.length ? 'Loading more…' : 'Loading mailbox…' }}</p>
+            <p v-if="loading">
+                {{
+                    messages.length
+                        ? refreshing
+                            ? 'Refreshing mailbox…'
+                            : 'Loading more…'
+                        : 'Loading mailbox…'
+                }}
+            </p>
             <template v-else-if="error">
                 <p role="alert">
                     {{
@@ -177,10 +238,10 @@ function dateLabel(value: string): string {
                             : 'Unable to load this mailbox.'
                     }}
                 </p>
-                <button class="small-button" type="button" @click="loadPage">Try again</button>
+                <button class="small-button" type="button" @click="loadPage()">Try again</button>
             </template>
             <p v-else-if="!messages.length">{{ emptyText }}</p>
-            <button v-else-if="cursor" class="small-button" type="button" @click="loadPage">
+            <button v-else-if="cursor" class="small-button" type="button" @click="loadPage()">
                 Load more
             </button>
             <p v-else>End of messages</p>

@@ -8,6 +8,16 @@ class PinnedImapStream extends ImapStream
 {
     public function __construct(private readonly string $address, private readonly string $hostname) {}
 
+    /** @return resource */
+    public function socket(): mixed
+    {
+        if (! is_resource($this->stream)) {
+            throw new \RuntimeException('IMAP stream is closed.');
+        }
+
+        return $this->stream;
+    }
+
     public function open(string $transport, string $host, int $port, int $timeout, array $options = []): bool
     {
         $options['ssl'] = array_merge($options['ssl'] ?? [], [

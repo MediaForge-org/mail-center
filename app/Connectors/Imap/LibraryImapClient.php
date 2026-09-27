@@ -17,7 +17,7 @@ class LibraryImapClient implements ImapClient
     private ?Mailbox $mailbox = null;
 
     /** @param  Closure(string, string): ConnectionInterface|null  $connections  test seam: (address, hostname) => connection */
-    public function __construct(private readonly DestinationPolicy $destinations, private readonly ?Closure $connections = null) {}
+    public function __construct(private readonly DestinationPolicy $destinations, private readonly ?Closure $connections = null, private readonly ?int $timeoutSeconds = null) {}
 
     public function connect(MailAccount $account, Secret $secret): void
     {
@@ -32,7 +32,7 @@ class LibraryImapClient implements ImapClient
             'password' => $secret->password,
             'encryption' => $settings['security'] === 'tls' ? 'ssl' : 'starttls',
             'validate_cert' => true,
-            'timeout' => (int) config('mailcenter.imap.timeout_seconds'),
+            'timeout' => $this->timeoutSeconds ?? (int) config('mailcenter.imap.timeout_seconds'),
             'debug' => false,
         ]);
         $connection = $this->connections ? ($this->connections)($address, $host)

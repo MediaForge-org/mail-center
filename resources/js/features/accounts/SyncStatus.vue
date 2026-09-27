@@ -9,7 +9,19 @@ const label = computed(() =>
         ? 'Account disabled'
         : !props.account.sync_enabled
           ? 'Auto sync paused'
-          : statusLabels[props.account.sync_status],
+          : ['auth_failed', 'backing_off', 'error'].includes(props.account.sync_status)
+            ? statusLabels[props.account.sync_status]
+            : props.account.sync_request?.state === 'queued'
+              ? 'Sync queued…'
+              : props.account.sync_request?.state === 'syncing'
+                ? 'Syncing…'
+                : statusLabels[props.account.sync_status],
+);
+const roleLabels: Record<string, string> = { inbox: 'Inbox', sent: 'Sent' };
+const watched = computed(() =>
+    (props.account.realtime?.roles ?? props.account.realtime?.folders ?? [])
+        .map((role) => roleLabels[role] ?? role)
+        .join(' + '),
 );
 const interval = computed(() => {
     const seconds = props.account.sync_interval_seconds;
@@ -31,7 +43,14 @@ const next = computed(() => {
 <template>
     <div class="sync-summary" :class="{ 'sync-summary-compact': compact }" role="status">
         <strong>{{ label }}</strong>
-        <span v-if="active">{{ interval }}</span>
+        <span v-if="active && account.realtime?.state === 'watching'"
+            >Realtime · {{ watched }}</span
+        >
+        <span v-else-if="active">Polling fallback · {{ interval }}</span>
+        <span v-if="active && account.backfilling_folders?.length"
+            >Backfilling {{ account.backfilling_folders.join(', ') }} · history loads
+            separately</span
+        >
         <span
             v-if="account.last_successful_sync_at"
             :title="new Date(account.last_successful_sync_at).toLocaleString()"

@@ -303,3 +303,107 @@ it('explicitly toggles Seen mirroring without enabling it by default', async () 
     expect(wrapper.emitted('changed')).toHaveLength(1);
     wrapper.unmount();
 });
+
+it('emits the accepted generation immediately and keeps the manual action available for a follow-up', async () => {
+    vi.stubGlobal(
+        'fetch',
+        vi.fn(() => reply(202, { data: { generation: 7, state: 'queued' } })),
+    );
+    const wrapper = mount(AccountsPanel, { props: { accounts: [account()] } });
+    await wrapper
+        .findAll('button')
+        .find((button) => button.text() === 'Sync now')!
+        .trigger('click');
+    await flushPromises();
+    expect(wrapper.emitted('syncAccepted')?.[0]).toEqual([1, { generation: 7, state: 'queued' }]);
+    expect(wrapper.text()).toContain('Synchronization accepted.');
+    expect(
+        wrapper
+            .findAll('button')
+            .find((button) => button.text() === 'Sync now')!
+            .attributes('disabled'),
+    ).toBeUndefined();
+});
+
+it('shows truthful queued, realtime, paused and error states without hiding authentication failures', async () => {
+    const item = account({
+        sync_request: { generation: 1, completed_generation: 0, state: 'queued' },
+        realtime: { state: 'watching', folders: ['Inbox', 'Sent'] },
+        backfilling_folders: ['Sent'],
+    });
+    const wrapper = mount(AccountsPanel, { props: { accounts: [item] } });
+    expect(wrapper.text()).toContain('Sync queued');
+    expect(wrapper.text()).toContain('Realtime · Inbox + Sent');
+    expect(wrapper.text()).toContain('Backfilling Sent');
+    await wrapper.setProps({ accounts: [account({ ...item, sync_status: 'auth_failed' })] });
+    expect(wrapper.text()).toContain('Password rejected');
+    await wrapper.setProps({ accounts: [account({ ...item, sync_enabled: false })] });
+    expect(wrapper.text()).toContain('Auto sync paused');
+    expect(wrapper.text()).not.toContain('Realtime ·');
+});
+
+it('labels realtime by watched roles and falls back to Polling without a watcher lease', async () => {
+    const item = account({ realtime: { state: 'watching', folders: ['INBOX'], roles: ['inbox'] } });
+    const wrapper = mount(AccountsPanel, { props: { accounts: [item] } });
+    expect(wrapper.text()).toContain('Realtime · Inbox');
+    expect(wrapper.text()).not.toContain('Sent');
+    await wrapper.setProps({
+        accounts: [account({ realtime: { state: 'polling', folders: [] } })],
+    });
+    expect(wrapper.text()).toContain('Polling fallback');
+    expect(wrapper.text()).not.toContain('Realtime ·');
+});
+
+it('lists remote folders with their purpose and toggles synchronization', async () => {
+    const folders = [
+        {
+            id: 3,
+            name: 'Archive',
+            role: 'archive',
+            selectable: true,
+            sync_enabled: false,
+            backfill_complete: false,
+        },
+        {
+            id: 2,
+            name: '[Gmail]/Gesendet',
+            role: 'sent',
+            selectable: true,
+            sync_enabled: true,
+            backfill_complete: true,
+        },
+        {
+            id: 1,
+            name: 'INBOX',
+            role: 'inbox',
+            selectable: true,
+            sync_enabled: true,
+            backfill_complete: true,
+        },
+    ];
+    const fetchMock = vi.fn((_url: string, init?: RequestInit) =>
+        init?.method === 'PATCH'
+            ? reply(200, { data: { ...folders[0], sync_enabled: true } })
+            : reply(200, { data: folders }),
+    );
+    vi.stubGlobal('fetch', fetchMock);
+    const wrapper = mount(AccountsPanel, { props: { accounts: [account()] } });
+    await wrapper
+        .findAll('button')
+        .find((b) => b.text() === 'Folders')!
+        .trigger('click');
+    await flushPromises();
+    const rows = wrapper.findAll('.folder-sync-list li').map((row) => row.text());
+    expect(rows[0]).toContain('INBOX');
+    expect(rows[0]).toContain('Received mail');
+    expect(rows[1]).toContain('Mail sent from this account');
+    expect(rows[2]).toContain('optional sync folder');
+    expect(rows[2]).toContain('Not synced');
+    await wrapper.findAll('.folder-sync-list input')[2].setValue(true);
+    await flushPromises();
+    const patch = fetchMock.mock.calls.find(([, init]) => init?.method === 'PATCH')!;
+    expect(patch[0]).toBe('/api/remote-folders/3');
+    expect(JSON.parse(String(patch[1]?.body))).toEqual({ sync_enabled: true });
+    expect(wrapper.findAll('.folder-sync-list li')[2].text()).toContain('Syncing');
+    expect(wrapper.emitted('changed')).toBeTruthy();
+});

@@ -16,6 +16,12 @@ it('reads system folders with matching counts without hiding done or remotely re
     $account = makeAccount($user, ['enabled' => false, 'sync_enabled' => false]);
     foreach (['sent', 'archive'] as $view) {
         $id = listMessage($user, $account->id, $view, '2026-01-01', ['folder_id' => SystemFolders::idFor($user->id, $view), 'is_done' => true, 'remote_status' => 'removed']);
+        if ($view === 'sent') {
+            // Remote Sent-folder membership is authoritative for the Sent view.
+            $remote = $account->remoteFolders()->create(['raw_name' => 'Sent', 'name' => 'Sent', 'role' => 'sent']);
+            DB::table('message_locations')->insert(['message_id' => $id, 'mail_account_id' => $account->id, 'remote_folder_id' => $remote->id,
+                'uidvalidity' => 1, 'uid' => 1, 'flags' => '[]', 'first_seen_at' => now(), 'last_seen_at' => now()]);
+        }
         $this->actingAs($user)->getJson("/api/messages?view={$view}")->assertOk()->assertJsonCount(0, 'data');
         $this->getJson("/api/messages?view={$view}&account_id={$account->id}")->assertOk()->assertJsonPath('data.0.id', $id);
         $account->update(['enabled' => true]);

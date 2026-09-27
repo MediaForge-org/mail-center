@@ -16,6 +16,13 @@ export type AccountSummary = {
     write_back_seen: boolean;
     seen_writeback_error: string | null;
     sync_status: SyncStatus;
+    sync_request?: {
+        generation: number;
+        completed_generation: number;
+        state: 'queued' | 'syncing' | 'complete';
+    };
+    backfilling_folders?: string[];
+    realtime?: { state: 'watching' | 'polling'; folders: string[]; roles?: string[] };
     next_sync_at: string | null;
     last_successful_sync_at: string | null;
     last_error_code: string | null;
@@ -111,9 +118,12 @@ export async function updateAccount(
     if (!response.ok) return fail(response, 'Unable to update the account.');
 }
 
-export async function syncNow(id: number): Promise<void> {
+export type SyncAccepted = { generation: number; state: 'queued' | 'syncing' };
+
+export async function syncNow(id: number): Promise<SyncAccepted> {
     const response = await request(`/api/accounts/${id}/sync`, { method: 'POST' });
     if (!response.ok) return fail(response, 'Unable to start synchronization.');
+    return ((await response.json()) as { data: SyncAccepted }).data;
 }
 
 export async function replacePassword(
@@ -136,4 +146,29 @@ export async function removeAccount(id: number, currentPassword: string): Promis
         body: JSON.stringify({ current_password: currentPassword }),
     });
     if (!response.ok) return fail(response, 'Unable to remove the account.');
+}
+
+export type RemoteFolder = {
+    id: number;
+    name: string;
+    role: string;
+    selectable: boolean;
+    sync_enabled: boolean;
+    backfill_complete: boolean;
+};
+
+export async function listRemoteFolders(accountId: number): Promise<RemoteFolder[]> {
+    const response = await request(`/api/accounts/${accountId}/remote-folders`);
+    if (!response.ok) return fail(response, 'Unable to load folders.');
+    return ((await response.json()) as { data: RemoteFolder[] }).data;
+}
+
+export async function setFolderSync(id: number, syncEnabled: boolean): Promise<RemoteFolder> {
+    const response = await request(`/api/remote-folders/${id}`, {
+        method: 'PATCH',
+        headers: json,
+        body: JSON.stringify({ sync_enabled: syncEnabled }),
+    });
+    if (!response.ok) return fail(response, 'Unable to update this folder.');
+    return ((await response.json()) as { data: RemoteFolder }).data;
 }

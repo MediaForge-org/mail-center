@@ -9,8 +9,10 @@ use App\Models\User;
 use App\Organization\OrganizationService;
 use App\Sync\AccountSyncLock;
 use App\Sync\SyncAborted;
+use App\Sync\SyncRequests;
 use App\Sync\SyncRunner;
 use App\Writeback\SeenWriteback;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -280,11 +282,12 @@ it('aborts when lock ownership is lost and never issues a stale batch', function
     expect(DB::table('messages')->value('is_read'))->toBeTrue();
 });
 
-it('configures an isolated writeback queue with shared overlap protection', function () {
+it('configures writeback transport independently of the shared PostgreSQL writer guard', function () {
     $job = new PushRemoteFlagChangesJob($this->account->id);
     expect($job->connection)->toBe('writeback')->and($job->queue)->toBe('writeback');
     expect($job->timeout)->toBe(120)->and(config('queue.connections.writeback.retry_after'))->toBe(180);
-    expect($job->middleware()[0]->key)->toBe((new SyncAccountJob($this->account->id))->middleware()[0]->key);
+    expect($job->middleware()[0]->key)->toBe('imap-account:'.$this->account->id);
+    expect(new SyncAccountJob($this->account->id))->not->toBeInstanceOf(ShouldBeUnique::class);
     expect(config('horizon.defaults.writeback-supervisor.timeout'))->toBe(120);
 });
 
@@ -406,4 +409,20 @@ it('converges rapid read unread read even while the first generation is in fligh
     expect(DB::table('messages')->value('is_read'))->toBeTrue();
     expect($this->imap->mailboxes['INBOX']['messages'][1]['flags'])->toContain('\\Seen');
     expect(DB::table('remote_flag_changes')->orderByDesc('generation')->value('status'))->toBe('done');
+});
+
+it('coalesces an IDLE event during Seen STORE without a conflicting sync writer', function () {
+    $this->org->setSeenMirroring($this->user->id, $this->account->id, true);
+    $this->org->setRead($this->user->id, $this->id, true);
+    $this->imap->onStore = function () {
+        app(SyncRequests::class)->request($this->account->id, 'idle');
+        expect(app(SyncRunner::class)->run($this->account->id, 'idle', true))->toBe('locked');
+    };
+    app(SeenWriteback::class)->run($this->account->id);
+    expect($this->account->refresh()->sync_requested_generation)->toBe(1)
+        ->and($this->account->sync_completed_generation)->toBe(0);
+    $this->imap->onStore = null;
+    (new SyncAccountJob($this->account->id))->handle(app(SyncRunner::class));
+    expect($this->account->refresh()->sync_completed_generation)->toBe(1)
+        ->and(DB::table('messages')->where('id', $this->id)->value('is_read'))->toBeTrue();
 });

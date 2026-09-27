@@ -8,11 +8,13 @@ import {
     testConnection,
     updateAccount,
     type AccountSummary,
+    type SyncAccepted,
 } from '../../api/accounts';
+import AccountFolders from './AccountFolders.vue';
 import SyncStatus from './SyncStatus.vue';
 
 defineProps<{ accounts: AccountSummary[] }>();
-const emit = defineEmits<{ changed: [] }>();
+const emit = defineEmits<{ changed: []; syncAccepted: [id: number, request: SyncAccepted] }>();
 
 const blank = () => ({
     display_name: '',
@@ -25,6 +27,7 @@ const blank = () => ({
 });
 const form = reactive(blank());
 const pending = ref(false);
+const foldersOpen = ref<number | null>(null);
 const message = ref('');
 const failed = ref(false);
 const adding = ref(false);
@@ -60,6 +63,13 @@ async function run(action: () => Promise<void>, success = '') {
     } finally {
         pending.value = false;
     }
+}
+
+async function requestSync(id: number) {
+    await run(async () => {
+        const accepted = await syncNow(id);
+        emit('syncAccepted', id, accepted);
+    }, 'Synchronization accepted.');
 }
 
 function onSecurity() {
@@ -249,7 +259,7 @@ async function submitSecret(account: AccountSummary) {
                         class="small-button"
                         type="button"
                         :disabled="pending || !account.sync_enabled"
-                        @click="run(() => syncNow(account.id), 'Synchronization queued.')"
+                        @click="requestSync(account.id)"
                     >
                         Sync now
                     </button>
@@ -268,6 +278,14 @@ async function submitSecret(account: AccountSummary) {
                     <button
                         class="small-button"
                         type="button"
+                        :aria-expanded="foldersOpen === account.id"
+                        @click="foldersOpen = foldersOpen === account.id ? null : account.id"
+                    >
+                        Folders
+                    </button>
+                    <button
+                        class="small-button"
+                        type="button"
                         @click="open(account.id, 'password')"
                     >
                         Change password
@@ -280,6 +298,11 @@ async function submitSecret(account: AccountSummary) {
                         Remove
                     </button>
                 </div>
+                <AccountFolders
+                    v-if="foldersOpen === account.id"
+                    :account-id="account.id"
+                    @changed="emit('changed')"
+                />
                 <form
                     v-if="editing.id === account.id"
                     class="auth-form account-form"

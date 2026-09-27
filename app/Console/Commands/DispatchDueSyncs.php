@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\SyncAccountJob;
 use App\Models\MailAccount;
+use App\Sync\SyncRequests;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -16,6 +16,7 @@ class DispatchDueSyncs extends Command
     public function handle(): int
     {
         $this->recoverStaleRuns();
+        app(SyncRequests::class)->recover();
         DB::table('connection_tests')->where('created_at', '<', now()->subDay())->delete();
 
         $count = 0;
@@ -25,7 +26,7 @@ class DispatchDueSyncs extends Command
             ->whereHas('credentials')
             ->orderBy('next_sync_at')->limit(500)->pluck('id')
             ->each(function (int $id) use (&$count) {
-                SyncAccountJob::dispatch($id);
+                app(SyncRequests::class)->request($id);
                 $count++;
             });
         $this->info("Dispatched {$count} account sync job(s).");

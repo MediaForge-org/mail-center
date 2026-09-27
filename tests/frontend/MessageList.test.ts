@@ -164,3 +164,73 @@ it('resets messages and cursor on view changes and ignores a stale next page', a
     expect(wrapper.findAll('.message-subject').map((row) => row.text())).toEqual(['Subject 9']);
     expect(wrapper.text()).toContain('End of messages');
 });
+
+it('coalesces freshness bursts without aborting responses or blanking committed rows', async () => {
+    const finishes: ((value: Response) => void)[] = [];
+    const fetchMock = vi
+        .fn()
+        .mockResolvedValueOnce(response([message(1)], 'old-cursor'))
+        .mockImplementation(() => new Promise<Response>((resolve) => finishes.push(resolve)));
+    const wrapper = setup(fetchMock);
+    await flushPromises();
+    await wrapper.setProps({ refreshVersion: 1 });
+    expect(wrapper.text()).toContain('Subject 1');
+    expect(wrapper.text()).toContain('Refreshing mailbox');
+    await wrapper.setProps({ refreshVersion: 2 });
+    await wrapper.setProps({ refreshVersion: 3 });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock.mock.calls[1][1].signal.aborted).toBe(false);
+    finishes[0](response([message(2), message(1)], 'fresh-cursor'));
+    await flushPromises();
+    expect(wrapper.text()).toContain('Subject 2');
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock.mock.calls[2][0]).toBe('/api/messages?view=all&limit=50');
+    finishes[1](response([message(3), message(2), message(1)]));
+    await flushPromises();
+    expect(wrapper.findAll('.message-row')).toHaveLength(3);
+    expect(wrapper.text()).toContain('End of messages');
+});
+
+it('keeps rows on a refresh failure and retries the first page rather than an old cursor', async () => {
+    const fetchMock = vi
+        .fn()
+        .mockResolvedValueOnce(response([message(1)], 'old-cursor'))
+        .mockResolvedValueOnce(response([], null, 500))
+        .mockResolvedValueOnce(response([message(2)]));
+    const wrapper = setup(fetchMock);
+    await flushPromises();
+    await wrapper.setProps({ refreshVersion: 1 });
+    await flushPromises();
+    expect(wrapper.text()).toContain('Subject 1');
+    await wrapper.find('.message-feed-footer button').trigger('click');
+    await flushPromises();
+    expect(fetchMock.mock.calls[2][0]).toBe('/api/messages?view=all&limit=50');
+    expect(wrapper.findAll('.message-subject').map((row) => row.text())).toEqual(['Subject 2']);
+});
+
+it('refreshes the newest page in place and keeps older loaded pages and the cursor', async () => {
+    const fetchMock = vi
+        .fn()
+        .mockResolvedValueOnce(response([message(9), message(8)], 'page-2'))
+        .mockResolvedValueOnce(response([message(7), message(6)], 'page-3'))
+        .mockResolvedValueOnce(response([message(10), message(9)], 'fresh-cursor'));
+    const wrapper = setup(fetchMock);
+    await flushPromises();
+    await wrapper.find('.message-feed-footer button').trigger('click');
+    await flushPromises();
+    expect(wrapper.findAll('.message-row')).toHaveLength(4);
+    await wrapper.setProps({ refreshVersion: 1 });
+    // Rows never disappear while the refresh is in flight.
+    expect(wrapper.findAll('.message-row')).toHaveLength(4);
+    await flushPromises();
+    expect(wrapper.findAll('.message-subject').map((row) => row.text())).toEqual([
+        'Subject 10',
+        'Subject 9',
+        'Subject 8',
+        'Subject 7',
+        'Subject 6',
+    ]);
+    expect(wrapper.text()).not.toContain('Loading mailbox');
+    await wrapper.find('.message-feed-footer button').trigger('click');
+    expect(fetchMock.mock.calls[3][0]).toContain('cursor=page-3');
+});

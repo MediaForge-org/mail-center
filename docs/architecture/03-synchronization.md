@@ -24,6 +24,13 @@ never an internal application folder.
 
 ## 1. Scheduling and job model
 
+**M3.11 supersedes the M2 queue/Redis gating below:** durable PostgreSQL request generations,
+reserved `sync-high` capacity, advisory-lock fencing and leased multiplexed IDLE are implemented.
+See [M3.11 design, incident evidence and measurements](../m311-synchronization.md). The older
+diagram is retained as historical context; `SyncAccountJob` no longer uses Redis uniqueness or
+WithoutOverlapping. Seen write-back retains its own transport optimization and shares the
+PostgreSQL writer lock.
+
 ```
 scheduler (every minute)
   └─ sync:dispatch-due
@@ -397,9 +404,12 @@ sync; credential replacement wakes both. Revoked/disabled accounts cannot start 
 
 - The Horizon connection is named `mail_sync` (queue `sync`, `retry_after` 660 s) so that it does
   not shadow Laravel's built-in `sync` queue driver.
-- M2 synchronizes **INBOX only** by default: other folders are discovered and listed, but
-  `sync_enabled` starts false for them (`PATCH /api/remote-folders/{id}` opts in). Sent/other-folder
-  behaviour above is implemented but not enabled by default because the M2 brief scopes to INBOX.
+- Discovered **Inbox** (received mail) and **Sent** (mail sent from this account) folders sync by
+  default; all other folders (Spam, Trash, Drafts, All Mail, Important, Other) start disabled and
+  are opted in per folder in *Manage accounts → Folders* (`PATCH /api/remote-folders/{id}`, which
+  requests a sync when a folder is enabled). Migration `2026_09_30_000001` enables legacy disabled
+  Sent folders. The Sent view is defined by **remote Sent-folder membership** (an active
+  `message_locations` row in a `role = sent` remote folder), never by the From address.
 - A run makes repeated passes over the enabled folders (one UID window per folder per pass)
   until the 240 s budget ends; checkpoints (`sync_high_uid`, `backfill_low_uid`, membership
   cursor) are written after each completed window, or after the last completed message when the
